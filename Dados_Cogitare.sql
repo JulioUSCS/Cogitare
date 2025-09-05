@@ -71,7 +71,7 @@ INSERT INTO Idoso (IdResponsavel, IdMobilidade, IdNivelAutonomia, Nome, DataNasc
 
 -- Inserir administrador de exemplo
 INSERT INTO Administrador (Usuario, Senha, Tipo, UltimoAcesso) VALUES 
-('admin', '$2b$10$example', 'Admistrador', NOW());
+('admin', '$2b$10$xFuotUy80CHp3AgS7fdKkevnzD7b9r47iQP2Jk7nQvSYHOUhcgh0.', 'Admistrador', NOW());
 
 -- Inserir relacionamentos
 INSERT INTO CuidadorEspecialidade (IdCuidador, IdEspecialidade) VALUES 

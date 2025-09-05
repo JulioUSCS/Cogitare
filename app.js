@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const dbConfig = require('./config/db');
-const sql = require('mssql');
+// Removido mssql - usando mysql2
 
 // Importar rotas
 const usuarioRoute = require('./routes/usuarioRoute');
