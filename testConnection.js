@@ -1,24 +1,13 @@
 
 require('dotenv').config();
-const sql = require('mssql');
-
-const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    port: parseInt(process.env.DB_PORT),
-    database: process.env.DB_DATABASE,
-    options: {
-        encrypt: true,
-        trustServerCertificate: true
-    }
-};
+const mysql = require('mysql2/promise');
+const dbConfig = require('./config/db');
 
 async function testarConexao() {
   try {
-    let pool = await sql.connect(dbConfig);
-    console.log('Conexão ao banco realizada com sucesso!');
-    await pool.close();
+    const connection = await mysql.createConnection(dbConfig);
+    console.log('Conexão ao MySQL realizada com sucesso!');
+    await connection.end();
   } catch (error) {
     console.error('Erro na conexão:', error);
   }

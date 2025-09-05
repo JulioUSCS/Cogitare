@@ -1,11 +1,12 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 const dbConfig = require('../config/db');
 
 const Responsavel = {
     async listar() {
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request().query('SELECT IdResponsavel, Nome FROM Responsavel');
-        return result.recordset;
+        const connection = await mysql.createConnection(dbConfig);
+        const [rows] = await connection.execute('SELECT IdResponsavel, Nome FROM Responsavel ORDER BY Nome');
+        await connection.end();
+        return rows;
     }
 };
 

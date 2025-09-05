@@ -1,4 +1,4 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 const dbConfig = require('../config/db');
 const Usuario = require('../model/usuarioModel');
 
@@ -10,13 +10,12 @@ const usuarioController = {
             const usuarioLogado = await Usuario.validarLogin(usuario, senha);
             if (usuarioLogado) {
                 req.session.usuario = {
-                    id: usuarioLogado.IdAdministrador || usuarioLogado.id,
-                    nome: usuarioLogado.nome || usuarioLogado.Usuario,
-                    tipo: usuarioLogado.tipo || usuarioLogado.Tipo,
+                    id: usuarioLogado.id,
+                    nome: usuarioLogado.nome,
+                    tipo: usuarioLogado.tipo,
                     loginTime: Date.now()
                 };
-                // *** MUDANÇA AQUI ***
-                res.json({ sucesso: true, redirectUrl: '/view/index.html' }); // Envia a URL para o frontend
+                res.json({ sucesso: true, redirectUrl: '/view/index.html' });
             } else {
                 res.json({ sucesso: false, mensagem: 'Usuário ou senha inválidos.' });
             }
@@ -30,10 +29,12 @@ const usuarioController = {
         try {
             const idAdm = req.session.usuario?.id;
             if (idAdm) {
-                const pool = await sql.connect(dbConfig);
-                await pool.request()
-                    .input('IdAdministrador', sql.Int, idAdm)
-                    .execute('sp_Logout_Administrador');
+                const connection = await mysql.createConnection(dbConfig);
+                await connection.execute(
+                    'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+                    [idAdm, 'Logout']
+                );
+                await connection.end();
             }
 
             req.session.destroy(err => {

@@ -1,21 +1,44 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const dbConfig = require('../config/db');
 
 const Usuario = {
     async validarLogin(usuario, senha) {
         try {
-            const pool = await sql.connect(dbConfig);
-            const result = await pool.request()
-                .input('Usuario', sql.VarChar, usuario)
-                .execute('sp_Login_Administrador');
+            const connection = await mysql.createConnection(dbConfig);
+            
+            // Buscar administrador pelo usuário
+            const [rows] = await connection.execute(
+                'SELECT IdAdministrador, Usuario, Senha, Tipo, UltimoAcesso FROM Administrador WHERE Usuario = ?',
+                [usuario]
+            );
 
-            const admin = result.recordset[0];
+            const admin = rows[0];
 
-            if (!admin) return null;
+            if (!admin) {
+                await connection.end();
+                return null;
+            }
 
             const senhaValida = await bcrypt.compare(senha, admin.Senha);
-            if (!senhaValida) return null;
+            if (!senhaValida) {
+                await connection.end();
+                return null;
+            }
+
+            // Atualizar último acesso
+            await connection.execute(
+                'UPDATE Administrador SET UltimoAcesso = NOW() WHERE IdAdministrador = ?',
+                [admin.IdAdministrador]
+            );
+
+            // Inserir no histórico
+            await connection.execute(
+                'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+                [admin.IdAdministrador, 'Login']
+            );
+
+            await connection.end();
 
             return {
                 id: admin.IdAdministrador,
