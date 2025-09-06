@@ -60,18 +60,42 @@
                 <input type="text" placeholder="Buscar cuidador..." class="search-input" />
             </header>
 
-            <section class="card-grid">
-                <!-- Cuidador exemplo -->
-                <div class="card">
-                    <img src="/images/cuidador1.jpg" alt="Foto Cuidador" />
-                    <div class="card-info">
-                        <h3>Maria Souza</h3>
-                        <p>Especialidades: Alzheimer, Pós-cirúrgico</p>
-                        <p>Experiência: 4 anos</p>
-                        <button class="btn-ver">Ver Perfil</button>
-                    </div>
-                </div>
-                <!-- Repita este bloco para mais cuidadores -->
+            <section class="table-container">
+                <table class="cuidadores-table">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nome</th>
+                            <th>Especialidades</th>
+                            <th>Experiência</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="foto-cell">
+                                <img src="/images/cuidador1.jpg" alt="Foto Cuidador" class="foto-cuidador" />
+                            </td>
+                            <td class="nome-cell">
+                                <strong>Maria Souza</strong>
+                            </td>
+                            <td class="especialidades-cell">
+                                Alzheimer, Pós-cirúrgico
+                            </td>
+                            <td class="experiencia-cell">
+                                4 anos
+                            </td>
+                            <td class="status-cell">
+                                <span class="status-badge ativo">Ativo</span>
+                            </td>
+                            <td class="acoes-cell">
+                                <button class="btn-ver">Ver Perfil</button>
+                            </td>
+                        </tr>
+                        <!-- Adicione mais linhas para outros cuidadores -->
+                    </tbody>
+                </table>
             </section>
         </main>
     </div>

@@ -21,7 +21,8 @@ div {
     width: 100%;
     max-width: 400px;
     text-align: center;
-    animation: fadeIn 1s ease-in-out;
+    position: relative;
+    z-index: 1;
 }
 
 /* Cabeçalhos */
@@ -48,6 +49,8 @@ input[type="password"]:focus {
     border-color: #2575fc;
     box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
     outline: none;
+    position: relative;
+    z-index: 1;
 }
 
 /* Botão */
@@ -68,7 +71,6 @@ button:hover {
     transform: scale(1.03);
 }
 
-
 /* Animação de entrada */
 @keyframes fadeIn {
     from {
@@ -83,4 +85,30 @@ button:hover {
 
 .logo{
     width: 200px;
+}
+
+/* Solução simples para o problema do Kaspersky */
+input[type="password"] {
+    position: relative;
+    z-index: 10;
+    -webkit-text-security: disc;
+    -moz-text-security: disc;
+}
+
+input[type="password"]:focus {
+    z-index: 20;
+    position: relative;
+}
+
+/* Previne detecção inicial do Kaspersky */
+input[type="password"][data-kaspersky="false"] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+input[type="password"][data-kaspersky="false"]:focus {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }

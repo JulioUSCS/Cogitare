@@ -64,9 +64,98 @@
       <!-- Botão para mostrar o formulário -->
       <button id="btnToggleForm" type="button" style="margin-bottom: 1rem;">Adicionar Idoso</button>
 
-      <section class="card-grid">
-        <!-- Idoso exemplo -->
-        <!-- Repita este bloco para mais idosos -->
+      <section class="table-container">
+        <table class="idosos-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nome</th>
+              <th>Idade</th>
+              <th>Sexo</th>
+              <th>Condições</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="foto-cell">
+                <img src="/images/idoso1.jpg" alt="Foto do Idoso" class="foto-idoso" />
+              </td>
+              <td class="nome-cell">
+                <strong>José Silva</strong>
+              </td>
+              <td class="idade-cell">
+                75 anos
+              </td>
+              <td class="sexo-cell">
+                Masculino
+              </td>
+              <td class="condicoes-cell">
+                Gosta de ler e assistir TV
+              </td>
+              <td class="status-cell">
+                <span class="status-badge ativo">Ativo</span>
+              </td>
+              <td class="acoes-cell">
+                <button class="btn-ver-responsavel">Ver Responsável</button>
+                <button class="btn-editar">Editar</button>
+                <button class="btn-excluir">Excluir</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="foto-cell">
+                <img src="/images/idoso2.jpg" alt="Foto do Idoso" class="foto-idoso" />
+              </td>
+              <td class="nome-cell">
+                <strong>Rosa Santos</strong>
+              </td>
+              <td class="idade-cell">
+                80 anos
+              </td>
+              <td class="sexo-cell">
+                Feminino
+              </td>
+              <td class="condicoes-cell">
+                Precisa de auxílio para locomoção
+              </td>
+              <td class="status-cell">
+                <span class="status-badge ativo">Ativo</span>
+              </td>
+              <td class="acoes-cell">
+                <button class="btn-ver-responsavel">Ver Responsável</button>
+                <button class="btn-editar">Editar</button>
+                <button class="btn-excluir">Excluir</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="foto-cell">
+                <img src="/images/idoso3.jpg" alt="Foto do Idoso" class="foto-idoso" />
+              </td>
+              <td class="nome-cell">
+                <strong>Pedro Costa</strong>
+              </td>
+              <td class="idade-cell">
+                69 anos
+              </td>
+              <td class="sexo-cell">
+                Masculino
+              </td>
+              <td class="condicoes-cell">
+                Independente, gosta de caminhar
+              </td>
+              <td class="status-cell">
+                <span class="status-badge ativo">Ativo</span>
+              </td>
+              <td class="acoes-cell">
+                <button class="btn-ver-responsavel">Ver Responsável</button>
+                <button class="btn-editar">Editar</button>
+                <button class="btn-excluir">Excluir</button>
+              </td>
+            </tr>
+            <!-- Adicione mais linhas para outros idosos -->
+          </tbody>
+        </table>
       </section>
     </main>
   </div>

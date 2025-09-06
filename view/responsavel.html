@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cogitare - Responsáveis</title>
     <link rel="stylesheet" href="/css/responsavel.css" />
-    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/sidebar.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
@@ -60,28 +60,62 @@
                 <input type="text" placeholder="Buscar responsável..." class="search-input" />
             </header>
 
-            <section class="card-grid">
-                <!-- Responsável exemplo -->
-                <div class="card">
-                    <img src="/img/responsavel1.jpg" alt="Foto Responsável" />
-                    <div class="card-info">
-                        <h3>João Lima</h3>
-                        <p>Contato: joao.lima@email.com</p>
-                        <p>Telefone: (11) 91234-5678</p>
-                        <button class="btn-ver">Ver Perfil</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="/img/responsavel2.jpg" alt="Foto Responsável" />
-                    <div class="card-info">
-                        <h3>Ana Paula</h3>
-                        <p>Contato: ana.paula@email.com</p>
-                        <p>Telefone: (21) 98765-4321</p>
-                        <button class="btn-ver">Ver Perfil</button>
-                    </div>
-                </div>
-                <!-- Adicione mais cards conforme necessário -->
+            <section class="table-container">
+                <table class="responsaveis-table">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="foto-cell">
+                                <img src="/img/responsavel1.jpg" alt="Foto Responsável" class="foto-responsavel" />
+                            </td>
+                            <td class="nome-cell">
+                                <strong>João Lima</strong>
+                            </td>
+                            <td class="email-cell">
+                                joao.lima@email.com
+                            </td>
+                            <td class="telefone-cell">
+                                (11) 91234-5678
+                            </td>
+                            <td class="status-cell">
+                                <span class="status-badge ativo">Ativo</span>
+                            </td>
+                            <td class="acoes-cell">
+                                <button class="btn-ver">Ver Perfil</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="foto-cell">
+                                <img src="/img/responsavel2.jpg" alt="Foto Responsável" class="foto-responsavel" />
+                            </td>
+                            <td class="nome-cell">
+                                <strong>Ana Paula</strong>
+                            </td>
+                            <td class="email-cell">
+                                ana.paula@email.com
+                            </td>
+                            <td class="telefone-cell">
+                                (21) 98765-4321
+                            </td>
+                            <td class="status-cell">
+                                <span class="status-badge ativo">Ativo</span>
+                            </td>
+                            <td class="acoes-cell">
+                                <button class="btn-ver">Ver Perfil</button>
+                            </td>
+                        </tr>
+                        <!-- Adicione mais linhas para outros responsáveis -->
+                    </tbody>
+                </table>
             </section>
         </main>
     </div>

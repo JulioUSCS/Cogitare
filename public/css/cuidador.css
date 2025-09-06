@@ -22,55 +22,10 @@ body.collapsed .main-content {
   min-height: 100vh;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width: 250px;
-  background-color: #a26fff;
-  color: white;
-  padding: 20px;
-  position: fixed;
-  height: 100vh;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-}
-
-.sidebar .logo {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 40px;
-}
-
-.sidebar nav ul {
-  list-style: none;
-}
-
-.sidebar nav ul li {
-  margin-bottom: 20px;
-}
-
-.sidebar nav ul li a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-}
-
-.sidebar nav ul li a:hover {
-  opacity: 0.8;
-  transform: translateX(5px);
-}
-
-.sidebar nav ul li a i {
-  width: 20px;
-  height: 20px;
-}
 
 /* CONTEÚDO PRINCIPAL */
 .main-content {
-  margin-left: 250px;
+  margin-left: 13rem;
   padding: 40px;
   flex: 1;
   transition: margin-left 0.3s ease;
@@ -113,61 +68,125 @@ body.collapsed .main-content {
   box-shadow: 0 0 0 3px rgba(162, 111, 255, 0.2);
 }
 
-/* CARDS */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.card {
+/* TABELA */
+.table-container {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  transition: transform 0.3s;
+  margin-top: 20px;
 }
 
-.card:hover {
-  transform: scale(1.02);
-}
-
-.card img {
+.cuidadores-table {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
+  border-collapse: collapse;
+  font-size: 0.95rem;
 }
 
-.card-info {
-  padding: 15px;
+.cuidadores-table thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
 }
 
-.card-info h3 {
-  margin: 0;
-  font-size: 1.2rem;
+.cuidadores-table th {
+  padding: 16px 12px;
+  text-align: left;
   font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.card-info p {
-  margin: 5px 0;
-  color: #555;
+.cuidadores-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.cuidadores-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+/* Células específicas */
+.foto-cell {
+  width: 80px;
+  text-align: center;
+}
+
+.foto-cuidador {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 2px solid #e9ecef;
+}
+
+.nome-cell {
+  font-weight: 600;
+  color: #212529;
+  min-width: 150px;
+}
+
+.especialidades-cell {
+  color: #6c757d;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.experiencia-cell {
+  color: #6c757d;
+  text-align: left;
+  min-width: 100px;
+}
+
+.status-cell {
+  text-align: left;
+  min-width: 100px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.ativo {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inativo {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.acoes-cell {
+  text-align: left;
+  min-width: 120px;
 }
 
 /* BOTÃO */
 .btn-ver {
-  margin-top: 10px;
   background-color: #d92b2b;
   color: white;
   border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
 }
 
 .btn-ver:hover {
   background-color: #b02222;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(217, 43, 43, 0.3);
 }
 
 /* RESPONSIVO */
@@ -186,7 +205,27 @@ body.collapsed .main-content {
     padding: 20px;
   }
 
-  .card-grid {
-    grid-template-columns: 1fr;
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .cuidadores-table {
+    min-width: 600px;
+  }
+
+  .cuidadores-table th,
+  .cuidadores-table td {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+  }
+
+  .foto-cuidador {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn-ver {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 }
