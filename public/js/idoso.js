@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="card-info">
                             <h3>${idoso.Nome || 'Nome não informado'}</h3>
                             <p>Idade: ${calcularIdade(idoso.DataNascimento)} anos</p>
-                            <p>Condições: ${idoso.DescricaoExtra || 'Não informado'}</p>
+                            <p>Descrição Extra: ${idoso.DescricaoExtra || 'Não informado'}</p>
                             <a href="/view/responsavel.html?id=${idoso.IdResponsavel}" class="link-responsavel">Ver Responsável</a>
                             <button class="btn-editar" data-idoso='${JSON.stringify(idoso)}'>Editar</button>
                             <button class="btn-excluir" data-id="${idoso.IdIdoso}">Excluir</button>
