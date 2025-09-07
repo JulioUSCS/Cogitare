@@ -1,55 +1,42 @@
-const mysql = require('mysql2/promise');
-const bcrypt = require('bcrypt');
-const dbConfig = require('../config/db');
+// model/usuarioModel.js
+import pool from '../config/db.js';
+import bcrypt from 'bcrypt';
 
 const Usuario = {
-    async validarLogin(usuario, senha) {
-        try {
-            const connection = await mysql.createConnection(dbConfig);
-            
-            // Buscar administrador pelo usuário
-            const [rows] = await connection.execute(
-                'SELECT IdAdministrador, Usuario, Senha, Tipo, UltimoAcesso FROM Administrador WHERE Usuario = ?',
-                [usuario]
-            );
+  async validarLogin(usuario, senha) {
+    try {
+      const [rows] = await pool.query(
+        'SELECT IdAdministrador, Usuario, Senha, Tipo, UltimoAcesso FROM administrador WHERE Usuario = ?',
+        [usuario]
+      );
 
-            const admin = rows[0];
+      const admin = rows[0];
+      if (!admin) return null;
 
-            if (!admin) {
-                await connection.end();
-                return null;
-            }
+      const senhaValida = await bcrypt.compare(senha, admin.Senha);
+      if (!senhaValida) return null;
 
-            const senhaValida = await bcrypt.compare(senha, admin.Senha);
-            if (!senhaValida) {
-                await connection.end();
-                return null;
-            }
+      await pool.query(
+        'UPDATE administrador SET UltimoAcesso = NOW() WHERE IdAdministrador = ?',
+        [admin.IdAdministrador]
+      );
 
-            // Atualizar último acesso
-            await connection.execute(
-                'UPDATE Administrador SET UltimoAcesso = NOW() WHERE IdAdministrador = ?',
-                [admin.IdAdministrador]
-            );
+      await pool.query(
+        'INSERT INTO historicoadministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+        [admin.IdAdministrador, 'Login']
+      );
 
-            // Inserir no histórico
-            await connection.execute(
-                'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
-                [admin.IdAdministrador, 'Login']
-            );
-
-            await connection.end();
-
-            return {
-                id: admin.IdAdministrador,
-                nome: admin.Usuario,
-                tipo: admin.Tipo,
-                ultimoAcesso: admin.UltimoAcesso
-            };
-        } catch (err) {
-            throw new Error('Erro ao validar login: ' + err.message);
-        }
+      return {
+        id: admin.IdAdministrador,
+        nome: admin.Usuario,
+        tipo: admin.Tipo,
+        ultimoAcesso: admin.UltimoAcesso
+      };
+    } catch (err) {
+      console.error('Erro detalhado ao validar login:', err); // 🔹 imprimir o erro completo
+      throw new Error('Erro ao validar login: ' + err.message);
     }
+  }
 };
 
-module.exports = Usuario;
+export default Usuario;

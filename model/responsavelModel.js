@@ -10,4 +10,4 @@ const Responsavel = {
     }
 };
 
-module.exports = Responsavel;
+export default Responsavel;

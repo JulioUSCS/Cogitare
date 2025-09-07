@@ -1,83 +1,85 @@
-const mysql = require('mysql2/promise');
-const dbConfig = require('../config/db');
+// model/idosoModel.js
+import pool from '../config/db.js';
 
 const Idoso = {
-    async listar() {
-        const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM Idoso');
-        await connection.end();
-        return rows;
-    },
+  async listar() {
+    const [rows] = await pool.query('SELECT * FROM idoso');
+    return rows;
+  },
 
-    async criar(dados) {
-        const connection = await mysql.createConnection(dbConfig);
-        
-        // Inserir o idoso
-        const [result] = await connection.execute(
-            `INSERT INTO Idoso (IdResponsavel, IdMobilidade, IdNivelAutonomia, Nome, DataNascimento, Sexo, CuidadosMedicos, DescricaoExtra, FotoUrl) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [dados.IdResponsavel, dados.IdMobilidade, dados.IdNivelAutonomia, dados.Nome, dados.DataNascimento, dados.Sexo, dados.CuidadosMedicos, dados.DescricaoExtra, dados.FotoUrl]
-        );
+  async criar(dados) {
+    const [result] = await pool.query(
+      `INSERT INTO idoso (IdResponsavel, IdMobilidade, IdNivelAutonomia, Nome, DataNascimento, Sexo, CuidadosMedicos, DescricaoExtra, FotoUrl) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        dados.IdResponsavel,
+        dados.IdMobilidade,
+        dados.IdNivelAutonomia,
+        dados.Nome,
+        dados.DataNascimento,
+        dados.Sexo,
+        dados.CuidadosMedicos,
+        dados.DescricaoExtra,
+        dados.FotoUrl
+      ]
+    );
 
-        const novoIdIdoso = result.insertId;
+    const novoIdIdoso = result.insertId;
 
-        // Inserir no histórico do administrador
-        await connection.execute(
-            'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
-            [dados.IdAdministrador, `Idoso ${dados.Nome} (ID ${novoIdIdoso}) criado.`]
-        );
+    // Inserir no histórico do administrador
+    await pool.query(
+      'INSERT INTO historicoadministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+      [dados.IdAdministrador, `Idoso ${dados.Nome} (ID ${novoIdIdoso}) criado.`]
+    );
 
-        await connection.end();
-        return novoIdIdoso;
-    },
+    return novoIdIdoso;
+  },
 
-    async atualizar(id, dados) {
-        const connection = await mysql.createConnection(dbConfig);
-        
-        // Atualizar o idoso
-        await connection.execute(
-            `UPDATE Idoso SET 
-                IdResponsavel = ?, IdMobilidade = ?, IdNivelAutonomia = ?, Nome = ?, 
-                DataNascimento = ?, Sexo = ?, CuidadosMedicos = ?, DescricaoExtra = ?, FotoUrl = ?
-             WHERE IdIdoso = ?`,
-            [dados.IdResponsavel, dados.IdMobilidade, dados.IdNivelAutonomia, dados.Nome, dados.DataNascimento, dados.Sexo, dados.CuidadosMedicos, dados.DescricaoExtra, dados.FotoUrl, id]
-        );
+  async atualizar(id, dados) {
+    await pool.query(
+      `UPDATE idoso SET 
+          IdResponsavel = ?, IdMobilidade = ?, IdNivelAutonomia = ?, Nome = ?, 
+          DataNascimento = ?, Sexo = ?, CuidadosMedicos = ?, DescricaoExtra = ?, FotoUrl = ?
+       WHERE IdIdoso = ?`,
+      [
+        dados.IdResponsavel,
+        dados.IdMobilidade,
+        dados.IdNivelAutonomia,
+        dados.Nome,
+        dados.DataNascimento,
+        dados.Sexo,
+        dados.CuidadosMedicos,
+        dados.DescricaoExtra,
+        dados.FotoUrl,
+        id
+      ]
+    );
 
-        // Inserir no histórico do administrador
-        await connection.execute(
-            'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
-            [dados.IdAdministrador, `Idoso ${dados.Nome} (ID ${id}) alterado.`]
-        );
+    // Inserir no histórico do administrador
+    await pool.query(
+      'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+      [dados.IdAdministrador, `Idoso ${dados.Nome} (ID ${id}) alterado.`]
+    );
+  },
 
-        await connection.end();
-    },
+  async excluir(id) {
+    await pool.query('DELETE FROM idoso WHERE IdIdoso = ?', [id]);
+  },
 
-    async excluir(id) {
-        const connection = await mysql.createConnection(dbConfig);
-        await connection.execute('DELETE FROM Idoso WHERE IdIdoso = ?', [id]);
-        await connection.end();
-    },
+  async listarResponsavel() {
+    const [rows] = await pool.query('SELECT IdResponsavel, Nome FROM responsavel ORDER BY Nome');
+    return rows;
+  },
 
-    async listarResponsavel() {
-        const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT IdResponsavel, Nome FROM Responsavel ORDER BY Nome');
-        await connection.end();
-        return rows;
-    },
+  async listarMobilidade() {
+    const [rows] = await pool.query('SELECT * FROM mobilidade ORDER BY Descricao');
+    return rows;
+  },
 
-    async listarMobilidade() {
-        const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM Mobilidade ORDER BY Descricao');
-        await connection.end();
-        return rows;
-    },
-
-    async listarNivelAutonomia() {
-        const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM NivelAutonomia ORDER BY Descricao');
-        await connection.end();
-        return rows;
-    }
+  async listarNivelAutonomia() {
+    const [rows] = await pool.query('SELECT * FROM nivelautonomia ORDER BY Descricao');
+    return rows;
+  }
 };
 
-module.exports = Idoso;
+export default Idoso;

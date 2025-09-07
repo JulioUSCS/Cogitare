@@ -79,82 +79,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td class="foto-cell">
-                <img src="/images/idoso1.jpg" alt="Foto do Idoso" class="foto-idoso" />
-              </td>
-              <td class="nome-cell">
-                <strong>José Silva</strong>
-              </td>
-              <td class="idade-cell">
-                75 anos
-              </td>
-              <td class="sexo-cell">
-                Masculino
-              </td>
-              <td class="condicoes-cell">
-                Gosta de ler e assistir TV
-              </td>
-              <td class="status-cell">
-                <span class="status-badge ativo">Ativo</span>
-              </td>
-              <td class="acoes-cell">
-                <button class="btn-ver-responsavel">Ver Responsável</button>
-                <button class="btn-editar">Editar</button>
-                <button class="btn-excluir">Excluir</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="foto-cell">
-                <img src="/images/idoso2.jpg" alt="Foto do Idoso" class="foto-idoso" />
-              </td>
-              <td class="nome-cell">
-                <strong>Rosa Santos</strong>
-              </td>
-              <td class="idade-cell">
-                80 anos
-              </td>
-              <td class="sexo-cell">
-                Feminino
-              </td>
-              <td class="condicoes-cell">
-                Precisa de auxílio para locomoção
-              </td>
-              <td class="status-cell">
-                <span class="status-badge ativo">Ativo</span>
-              </td>
-              <td class="acoes-cell">
-                <button class="btn-ver-responsavel">Ver Responsável</button>
-                <button class="btn-editar">Editar</button>
-                <button class="btn-excluir">Excluir</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="foto-cell">
-                <img src="/images/idoso3.jpg" alt="Foto do Idoso" class="foto-idoso" />
-              </td>
-              <td class="nome-cell">
-                <strong>Pedro Costa</strong>
-              </td>
-              <td class="idade-cell">
-                69 anos
-              </td>
-              <td class="sexo-cell">
-                Masculino
-              </td>
-              <td class="condicoes-cell">
-                Independente, gosta de caminhar
-              </td>
-              <td class="status-cell">
-                <span class="status-badge ativo">Ativo</span>
-              </td>
-              <td class="acoes-cell">
-                <button class="btn-ver-responsavel">Ver Responsável</button>
-                <button class="btn-editar">Editar</button>
-                <button class="btn-excluir">Excluir</button>
-              </td>
-            </tr>
-            <!-- Adicione mais linhas para outros idosos -->
+            <!-- Linhas de idosos serão inseridas dinamicamente pelo JS -->
           </tbody>
         </table>
       </section>
@@ -162,57 +87,65 @@
   </div>
 
   <!-- Modal para formulário -->
-<div id="modalOverlay" class="modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
-  <form id="formIdoso" class="form-inserir-idoso">
-    <button class="btn-fechar-modal" id="btnCloseModal" aria-label="Fechar formulário">&times;</button>
-    <h2 id="modalTitle">Adicionar Novo Idoso</h2>
+  <div id="modalOverlay" class="modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="modalTitle"
+    aria-modal="true">
+    <form id="formIdoso" class="form-inserir-idoso">
+      <button class="btn-fechar-modal" id="btnCloseModal" aria-label="Fechar formulário">&times;</button>
+      <h2 id="modalTitle">Adicionar Novo Idoso</h2>
 
-    <label for="idResponsavel">Responsável:</label>
-    <select id="idResponsavel" name="idResponsavel" required>
-      <!-- Opções dinâmicas -->
-    </select>
+      <label for="idResponsavel">Responsável:</label>
+      <select id="idResponsavel" name="idResponsavel" required>
+        <!-- Opções dinâmicas -->
+      </select>
 
-    <label for="idMobilidade">Mobilidade:</label>
-    <select id="idMobilidade" name="idMobilidade" required>
-      <!-- Opções dinâmicas -->
-    </select>
+      <label for="idMobilidade">Mobilidade:</label>
+      <select id="idMobilidade" name="idMobilidade" required>
+        <!-- Opções dinâmicas -->
+      </select>
 
-    <label for="idNivelAutonomia">Nível de Autonomia:</label>
-    <select id="idNivelAutonomia" name="idNivelAutonomia" required>
-      <!-- Opções dinâmicas -->
-    </select>
+      <label for="idNivelAutonomia">Nível de Autonomia:</label>
+      <select id="idNivelAutonomia" name="idNivelAutonomia" required>
+        <!-- Opções dinâmicas -->
+      </select>
 
-    <label for="nome">Nome:</label>
-    <input type="text" id="nome" name="nome" maxlength="100" required />
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" maxlength="100" required />
 
-    <label for="dataNascimento">Data de Nascimento:</label>
-    <input type="date" id="dataNascimento" name="dataNascimento" required />
+      <label for="dataNascimento">Data de Nascimento:</label>
+      <input type="date" id="dataNascimento" name="dataNascimento" required />
 
-    <label for="sexo">Sexo:</label>
-    <select id="sexo" name="sexo" required>
-      <option value="">Selecione</option>
-      <option value="Masculino">Masculino</option>
-      <option value="Feminino">Feminino</option>
-      <option value="Outro">Outro</option>
-    </select>
+      <label for="sexo">Sexo:</label>
+      <select id="sexo" name="sexo" required>
+        <option value="">Selecione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+        <option value="Outro">Outro</option>
+      </select>
 
-    <label for="cuidadosMedicos">Cuidados Médicos:</label>
-    <textarea id="cuidadosMedicos" name="cuidadosMedicos" rows="3" placeholder="Descreva os cuidados médicos"></textarea>
+      <label for="cuidadosMedicos">Cuidados Médicos:</label>
+      <textarea id="cuidadosMedicos" name="cuidadosMedicos" rows="3"
+        placeholder="Descreva os cuidados médicos"></textarea>
 
-    <label for="descricaoExtra">Descrição Extra:</label>
-    <textarea id="descricaoExtra" name="descricaoExtra" rows="3" placeholder="Informações adicionais"></textarea>
+      <label for="descricaoExtra">Descrição Extra:</label>
+      <textarea id="descricaoExtra" name="descricaoExtra" rows="3" placeholder="Informações adicionais"></textarea>
 
-    <label for="fotoUrl">URL da Foto:</label>
-    <input type="url" id="fotoUrl" name="fotoUrl" placeholder="https://exemplo.com/foto.jpg" />
+      <label for="fotoUrl">URL da Foto:</label>
+      <input type="url" id="fotoUrl" name="fotoUrl" placeholder="https://exemplo.com/foto.jpg" />
 
-    <button type="submit">Salvar Idoso</button>
-  </form>
-</div>
+      <button type="submit">Salvar Idoso</button>
+    </form>
+  </div>
 
 
   <script src="/js/sidebar.js"></script>
   <script src="/js/idoso.js"></script>
-  <script>lucide.createIcons();</script>
+  <script>
+    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarIdosos(); // chama a função assim que a página terminar de carregar
+    });
+  </script>
+
 </body>
 
 </html>

@@ -21,40 +21,56 @@ document.addEventListener('DOMContentLoaded', () => {
     function carregarIdosos() {
         fetch('/api/idosos')
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar idosos: ' + response.statusText);
-                }
+                if (!response.ok) throw new Error('Erro ao buscar idosos');
                 return response.json();
             })
             .then(idosos => {
-                cardGrid.innerHTML = '';
+                const tabelaBody = document.querySelector('.idosos-table tbody');
+                tabelaBody.innerHTML = '';
+
                 if (idosos.length === 0) {
-                    cardGrid.innerHTML = '<p>Nenhum idoso cadastrado.</p>';
+                    tabelaBody.innerHTML = `
+                <tr>
+                  <td colspan="7" style="text-align: center;">Nenhum idoso cadastrado.</td>
+                </tr>`;
                     return;
                 }
+
                 idosos.forEach(idoso => {
-                    const card = document.createElement('div');
-                    card.classList.add('card');
-                    card.innerHTML = `
-                        <img src="${idoso.FotoUrl || '/images/default-idoso.jpg'}" alt="Foto de ${idoso.Nome}" />
-                        <div class="card-info">
-                            <h3>${idoso.Nome || 'Nome não informado'}</h3>
-                            <p>Idade: ${calcularIdade(idoso.DataNascimento)} anos</p>
-                            <p>Descrição Extra: ${idoso.DescricaoExtra || 'Não informado'}</p>
-                            <a href="/view/responsavel.html?id=${idoso.IdResponsavel}" class="link-responsavel">Ver Responsável</a>
-                            <button class="btn-editar" data-idoso='${JSON.stringify(idoso)}'>Editar</button>
-                            <button class="btn-excluir" data-id="${idoso.IdIdoso}">Excluir</button>
-                        </div>
-                    `;
-                    cardGrid.appendChild(card);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td class="foto-cell">
+                  <img src="${idoso.FotoUrl || '/images/default-idoso.jpg'}" alt="Foto de ${idoso.Nome}" class="foto-idoso" />
+                </td>
+                <td class="nome-cell"><strong>${idoso.Nome}</strong></td>
+                <td class="idade-cell">${calcularIdade(idoso.DataNascimento)} anos</td>
+                <td class="sexo-cell">${idoso.Sexo}</td>
+                <td class="condicoes-cell">
+                  <strong>Cuidados:</strong> ${idoso.CuidadosMedicos || 'Nenhum'}<br>
+                  <strong>Descrição:</strong> ${idoso.DescricaoExtra || 'Nenhuma'}
+                </td>
+                <td class="status-cell">
+                  <span class="status-badge ativo">Ativo</span>
+                </td>
+                <td class="acoes-cell">
+                  <button class="btn-ver-responsavel" data-id="${idoso.IdResponsavel}">Ver Responsável</button>
+                  <button class="btn-editar" data-idoso='${JSON.stringify(idoso)}'>Editar</button>
+                  <button class="btn-excluir" data-id="${idoso.IdIdoso}">Excluir</button>
+                </td>
+              `;
+                    tabelaBody.appendChild(tr);
                 });
 
                 configurarBotoesEditar();
-                configurarBotoesExcluir();  // <- aqui
+                configurarBotoesExcluir();
             })
             .catch(error => {
-                cardGrid.innerHTML = `<p>Erro ao carregar os dados dos idosos.</p>`;
                 console.error(error);
+                const tabelaBody = document.querySelector('.idosos-table tbody');
+                tabelaBody.innerHTML = `
+              <tr>
+                <td colspan="7" style="text-align: center; color: red;">Erro ao carregar os dados dos idosos.</td>
+              </tr>`;
             });
     }
 
@@ -189,12 +205,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', () => {
             const termo = searchInput.value.toLowerCase();
-            document.querySelectorAll('.card-grid .card').forEach(card => {
-                const nome = card.querySelector('h3').textContent.toLowerCase();
-                card.style.display = nome.includes(termo) ? 'block' : 'none';
+            document.querySelectorAll('.idosos-table tbody tr').forEach(tr => {
+                const nome = tr.querySelector('.nome-cell').textContent.toLowerCase();
+                tr.style.display = nome.includes(termo) ? '' : 'none';
             });
         });
     }
+
 
     const btnAbrir = document.getElementById("btnToggleForm");
     const btnFechar = document.getElementById("btnCloseModal");

@@ -1,6 +1,8 @@
-const express = require('express');
+// routes/usuarioRoute.js
+import express from 'express';
+import usuarioController from '../controller/usuarioController.js';
+
 const router = express.Router();
-const usuarioController = require('../controller/usuarioController');
 
 // Middleware para proteger a rota - só permite acesso se estiver logado
 function autenticar(req, res, next) {
@@ -11,14 +13,15 @@ function autenticar(req, res, next) {
   }
 }
 
+// Rota para obter dados do usuário logado
 router.get('/api/usuario', autenticar, (req, res) => {
   res.json({ nome: req.session.usuario.nome });
 });
 
-// Rota de login (via POST)
+// Rota de login (POST)
 router.post('/login', usuarioController.login);
 
-// Rota de logout (se quiser usar)
+// Rota de logout
 router.get('/logout', usuarioController.logout);
 
-module.exports = router;
+export default router; // ← permite importar como "import usuarioRoute from ..."

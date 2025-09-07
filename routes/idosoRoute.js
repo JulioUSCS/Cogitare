@@ -1,22 +1,26 @@
-const express = require('express');
+// routes/idosoRoute.js
+import express from 'express';
+import idososController from '../controller/idososController.js';
+
 const router = express.Router();
-const idososController = require('../controller/idososController');
 
 // Middleware de autenticação
 function autenticar(req, res, next) {
-    if (req.session.usuario) {
-        return next();
-    }
-    res.status(401).json({ mensagem: 'Não autorizado' });
+  if (req.session.usuario) {
+    return next();
+  }
+  res.status(401).json({ mensagem: 'Não autorizado' });
 }
 
-// Rotas 
+// Rotas CRUD
 router.get('/idosos', autenticar, idososController.listar);
 router.post('/idosos', autenticar, idososController.criar);
 router.put('/idosos/:id', autenticar, idososController.atualizar);
 router.delete('/idosos/:id', autenticar, idososController.excluir);
+
+// Rotas auxiliares
 router.get('/mobilidades', autenticar, idososController.listarMobilidade);
 router.get('/niveis-autonomia', autenticar, idososController.listarNivelAutonomia);
 router.get('/responsaveis', autenticar, idososController.listarResponsavel);  
 
-module.exports = router;
+export default router; // ← permite importar como "import idososRoute from ..."

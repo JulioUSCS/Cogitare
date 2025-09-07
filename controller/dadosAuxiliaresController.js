@@ -32,4 +32,4 @@ const dadosAuxiliaresController = {
     }
 };
 
-module.exports = dadosAuxiliaresController;
+export default dadosAuxiliaresController;
