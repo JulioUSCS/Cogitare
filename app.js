@@ -1,18 +1,26 @@
+// app.js
 import express from 'express';
 import path from 'path';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+
 dotenv.config();
 
+// Corrigindo __dirname no ESModules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Importando rotas
 import usuarioRoute from './routes/usuarioRoute.js';
 import historicoRoute from './routes/historicoRoute.js';
 import idososRoute from './routes/idosoRoute.js';
+import responsavelRoute from './routes/responsavelRoute.js';
 
-const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Sessão
+// Configuração da sessão
 app.use(session({
   secret: process.env.KEY,
   resave: false,
@@ -33,44 +41,11 @@ app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
 app.use('/imagens', express.static(path.join(__dirname, 'public', 'imagens')));
 app.use('/view', express.static(path.join(__dirname, 'view')));
 
-// Middleware de autenticação
-app.use((req, res, next) => {
-  const publicPaths = ['/', '/login', '/view/login.html'];
-
-  const isPublicPath = publicPaths.some(publicPath => req.path === publicPath || (publicPath !== '/' && req.path.startsWith(publicPath + '/'))) ||
-    req.path.startsWith('/css/') ||
-    req.path.startsWith('/js/') ||
-    req.path.startsWith('/imagens/') ||
-    req.path === '/favicon.ico';
-
-  if (isPublicPath) return next();
-
-  if (!req.session.usuario) {
-    if (req.xhr || (req.headers.accept && req.headers.accept.includes('json')) || req.originalUrl.startsWith('/api/')) {
-      return res.status(401).json({ sucesso: false, mensagem: 'Não autorizado. Faça login.' });
-    } else {
-      return res.redirect('/view/login.html?naoAutorizado=true');
-    }
-  }
-
-  if (Date.now() - req.session.usuario.loginTime > 30 * 60 * 1000) {
-    req.session.destroy(err => {
-      if (err) console.error('Erro ao destruir sessão:', err);
-      if (req.xhr || (req.headers.accept && req.headers.accept.includes('json')) || req.originalUrl.startsWith('/api/')) {
-        return res.status(401).json({ sucesso: false, mensagem: 'Sessão expirada. Faça login novamente.' });
-      } else {
-        return res.redirect('/view/login.html?sessaoExpirada=true');
-      }
-    });
-  } else {
-    next();
-  }
-});
-
 // Rotas
 app.use('/', usuarioRoute);
 app.use('/api', historicoRoute);
 app.use('/api', idososRoute);
+app.use('/api', responsavelRoute);
 
 // Página inicial
 app.get('/', (req, res) => {

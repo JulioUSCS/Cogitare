@@ -57,7 +57,7 @@ const Idoso = {
 
     // Inserir no histórico do administrador
     await pool.query(
-      'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+      'INSERT INTO historicoadministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
       [dados.IdAdministrador, `Idoso ${dados.Nome} (ID ${id}) alterado.`]
     );
   },

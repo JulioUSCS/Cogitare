@@ -14,7 +14,7 @@ const Historico = {
           HA.StatusFinal,
           HA.Observacoes
         FROM
-          HistoricoAtendimento AS HA
+          historicoatendimento AS HA
         INNER JOIN
           Atendimento AS A ON HA.IdAtendimento = A.IdAtendimento
         INNER JOIN

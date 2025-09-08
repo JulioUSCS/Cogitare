@@ -32,7 +32,7 @@ const usuarioController = {
 
       if (idAdm) {
         await pool.query(
-          'INSERT INTO HistoricoAdministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
+          'INSERT INTO historicoadministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
           [idAdm, 'Logout']
         );
       }
