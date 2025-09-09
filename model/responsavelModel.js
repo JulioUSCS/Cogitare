@@ -1,4 +1,3 @@
-// model/responsavelModel.js
 import pool from '../config/db.js';
 
 const Responsavel = {
@@ -24,13 +23,12 @@ const Responsavel = {
         dados.FotoUrl || null
       ]
     );
-
     return result.insertId;
   },
 
   async atualizar(id, dados) {
     await pool.query(
-      `UPDATE responsavel SET 
+      `UPDATE responsavel SET
          IdEndereco = ?, Cpf = ?, Nome = ?, Email = ?, Telefone = ?, DataNascimento = ?, FotoUrl = ?
        WHERE IdResponsavel = ?`,
       [

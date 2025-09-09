@@ -17,6 +17,8 @@ import historicoRoute from './routes/historicoRoute.js';
 import idososRoute from './routes/idosoRoute.js';
 import responsavelRoute from './routes/responsavelRoute.js';
 
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -45,7 +47,7 @@ app.use('/view', express.static(path.join(__dirname, 'view')));
 app.use('/', usuarioRoute);
 app.use('/api', historicoRoute);
 app.use('/api', idososRoute);
-app.use('/api', responsavelRoute);
+app.use('/api', responsavelRoute); 
 
 // Página inicial
 app.get('/', (req, res) => {
@@ -60,3 +62,6 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+
+

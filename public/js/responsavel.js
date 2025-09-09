@@ -5,22 +5,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function carregarResponsaveis() {
     try {
-      const res = await fetch('/api/responsaveis', {
-        method: 'GET', // 👈 especifica que é GET
-        headers: { 'Content-Type': 'application/json' }
-      });
-  
+      // 🚀 agora usa o endpoint novo
+      const res = await fetch('/api/resp', { method: 'GET' });
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const dados = await res.json();
-      console.log(dados); // verifica os campos retornados
-  
+      console.log("Dados CRUD:", dados); // debug
+
       tabelaBody.innerHTML = '';
-  
+
       if (!dados || dados.length === 0) {
         tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center">Nenhum responsável cadastrado.</td></tr>`;
         return;
       }
-  
+
       dados.forEach((item) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -39,15 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         tabelaBody.appendChild(tr);
       });
-  
+
       configurarBotoes();
     } catch (err) {
       console.error('Erro ao carregar responsáveis:', err);
       tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red">Erro: ${err.message}</td></tr>`;
     }
   }
-  
-
 
   function configurarBotoes() {
     document.querySelectorAll('.btn-editar').forEach(botao => {
@@ -69,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = botao.getAttribute('data-id');
         if (confirm('Deseja realmente excluir este responsável e os idosos associados?')) {
           try {
-            const res = await fetch(`/api/responsaveis/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/resp/${id}`, { method: 'DELETE' }); // 🚀 novo endpoint
             const data = await res.json();
 
             if (!res.ok) throw new Error(data.erro || 'Erro ao excluir');
@@ -98,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        const url = idEdit ? `/api/responsaveis/${idEdit}` : '/api/responsaveis';
+        const url = idEdit ? `/api/resp/${idEdit}` : '/api/resp'; // 🚀 novo endpoint
         const method = idEdit ? 'PUT' : 'POST';
 
         const resp = await fetch(url, {
