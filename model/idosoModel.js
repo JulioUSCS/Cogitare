@@ -4,7 +4,6 @@ import pool from '../config/db.js';
 const Idoso = {
   async listar() {
     const [rows] = await pool.query('SELECT * FROM idoso');
-    console.log(rows);
     return rows;
 
   },
