@@ -2,19 +2,19 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cogitare - Cuidadores</title>
-    <link rel="stylesheet" href="/css/cuidador.css" />
-    <link rel="stylesheet" href="/css/sidebar.css" />
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cogitare - Cuidadores</title>
+  <link rel="stylesheet" href="/css/cuidador.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="dashboard-container">
-        <!--SIDEBAR-->
+  <div class="dashboard-container">
+    <!-- SIDEBAR -->
     <nav class="sidebar">
       <div class="sidebar-top-wrapper">
         <div class="sidebar-top">
@@ -35,7 +35,7 @@
         <ul>
           <li><a href="/view/index.html" class="tooltip"><i data-lucide="layout-dashboard"></i><span
                 class="link hide">Painel</span><span class="tooltip__content">Painel</span></a></li>
-          <li><a href="/view/cuidador.html" class="tooltip"><i data-lucide="users"></i><span
+          <li><a href="/view/cuidador.html" class="tooltip active"><i data-lucide="users"></i><span
                 class="link hide">Cuidadores</span><span class="tooltip__content">Cuidadores</span></a></li>
           <li><a href="/view/responsavel.html" class="tooltip"><i data-lucide="users"></i><span
                 class="link hide">Responsáveis</span><span class="tooltip__content">Responsáveis</span></a></li>
@@ -54,53 +54,88 @@
     </nav>
     <!-- SIDEBAR -->
 
-        <main class="main-content">
-            <header class="header">
-                <h1>Lista de Cuidadores</h1>
-                <input type="text" placeholder="Buscar cuidador..." class="search-input" />
-            </header>
+    <main class="main-content">
+        <header class="header">
+            <div class="header-top">
+              <h1>Lista de Cuidadores</h1>
+              <input type="text" placeholder="Buscar cuidador..." class="search-input" />
+            </div>
+            <button id="btnToggleForm" class="btn-add">+ Novo Cuidador</button>
+          </header>
+          
+      
+        <!-- Tabela de Cuidadores -->
+        <section class="table-container">
+          <table class="cuidadores-table">
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Idade</th>
+                <th>Biografia</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="8" style="text-align:center;">Carregando cuidadores...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
+      
+  </div>
 
-            <section class="table-container">
-                <table class="cuidadores-table">
-                    <thead>
-                        <tr>
-                            <th>Foto</th>
-                            <th>Nome</th>
-                            <th>Especialidades</th>
-                            <th>Experiência</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="foto-cell">
-                                <img src="/images/cuidador1.jpg" alt="Foto Cuidador" class="foto-cuidador" />
-                            </td>
-                            <td class="nome-cell">
-                                <strong>Maria Souza</strong>
-                            </td>
-                            <td class="especialidades-cell">
-                                Alzheimer, Pós-cirúrgico
-                            </td>
-                            <td class="experiencia-cell">
-                                4 anos
-                            </td>
-                            <td class="status-cell">
-                                <span class="status-badge ativo">Ativo</span>
-                            </td>
-                            <td class="acoes-cell">
-                                <button class="btn-ver">Ver Perfil</button>
-                            </td>
-                        </tr>
-                        <!-- Adicione mais linhas para outros cuidadores -->
-                    </tbody>
-                </table>
-            </section>
-        </main>
+  <!-- MODAL FORM -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2 id="formTitle">Cadastrar Cuidador</h2>
+      <form id="formCuidador">
+        <input type="text" name="nome" placeholder="Nome completo" required />
+        <input type="email" name="email" placeholder="E-mail" required />
+        <input type="text" name="telefone" placeholder="Telefone" required />
+        <input type="date" name="dataNascimento" required />
+        <input type="url" name="fotoUrl" placeholder="URL da foto" />
+        <textarea name="biografia" placeholder="Biografia"></textarea>
+
+        <label>Fumante:</label>
+        <select name="fumante">
+          <option value="Não">Não</option>
+          <option value="Sim">Sim</option>
+        </select>
+
+        <label>Tem filhos:</label>
+        <select name="temFilhos">
+          <option value="Não">Não</option>
+          <option value="Sim">Sim</option>
+        </select>
+
+        <label>Possui CNH:</label>
+        <select name="possuiCNH">
+          <option value="Não">Não</option>
+          <option value="Sim">Sim</option>
+        </select>
+
+        <label>Tem carro:</label>
+        <select name="temCarro">
+          <option value="Não">Não</option>
+          <option value="Sim">Sim</option>
+        </select>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-save">Salvar</button>
+          <button type="button" id="btnCloseModal" class="btn-cancel">Cancelar</button>
+        </div>
+      </form>
     </div>
-    <script>lucide.createIcons();</script>
-    <script src="/js/sidebar.js"></script>
-</body>
+  </div>
 
+  <script>lucide.createIcons();</script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/cuidador.js"></script>
+</body>
 </html>
