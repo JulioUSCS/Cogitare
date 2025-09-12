@@ -7,6 +7,7 @@
   <title>Cogitare - Cuidadores</title>
   <link rel="stylesheet" href="/css/cuidador.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -55,51 +56,58 @@
     <!-- SIDEBAR -->
 
     <main class="main-content">
-        <header class="header">
-            <div class="header-top">
-              <h1>Lista de Cuidadores</h1>
-              <input type="text" placeholder="Buscar cuidador..." class="search-input" />
-            </div>
-            <button id="btnToggleForm" class="btn-add">+ Novo Cuidador</button>
-          </header>
-          
-      
-        <!-- Tabela de Cuidadores -->
-        <section class="table-container">
-          <table class="cuidadores-table">
-            <thead>
-              <tr>
-                <th>Foto</th>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Telefone</th>
-                <th>Idade</th>
-                <th>Biografia</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="8" style="text-align:center;">Carregando cuidadores...</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-      </main>
-      
+      <header class="header">
+        <div class="header-top">
+          <h1>Lista de Cuidadores</h1>
+          <input type="text" placeholder="Buscar cuidador..." class="search-input" />
+        </div>
+        <button id="btnToggleForm" class="btn-add">+ Novo Cuidador</button>
+      </header>
+
+
+      <!-- Tabela de Cuidadores -->
+      <section class="table-container">
+        <table class="cuidadores-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Telefone</th>
+              <th>Idade</th>
+              <th>Biografia</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="8" style="text-align:center;">Carregando cuidadores...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
   </div>
 
   <!-- MODAL FORM -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-      <h2 id="formTitle">Cadastrar Cuidador</h2>
-      <form id="formCuidador">
+
+      <form id="formCuidador" class="modal-content">
+        <h2 id="formTitle">Cadastrar Cuidador</h2>
+        <label>Nome:</label>
         <input type="text" name="nome" placeholder="Nome completo" required />
+        <label>Email:</label>
         <input type="email" name="email" placeholder="E-mail" required />
+        <label>Telefone:</label>
         <input type="text" name="telefone" placeholder="Telefone" required />
+        <label>Data de nascimento:</label>
         <input type="date" name="dataNascimento" required />
+        <label>Foto:</label>
         <input type="url" name="fotoUrl" placeholder="URL da foto" />
+        <label>Biografia:</label>
         <textarea name="biografia" placeholder="Biografia"></textarea>
 
         <label>Fumante:</label>
@@ -127,8 +135,7 @@
         </select>
 
         <div class="form-actions">
-          <button type="submit" class="btn-save">Salvar</button>
-          <button type="button" id="btnCloseModal" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Salvar cuidador</button>
         </div>
       </form>
     </div>
@@ -138,4 +145,5 @@
   <script src="/js/sidebar.js"></script>
   <script src="/js/cuidador.js"></script>
 </body>
+
 </html>

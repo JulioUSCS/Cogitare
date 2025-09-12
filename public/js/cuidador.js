@@ -136,13 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 let response;
                 if (idEditando) {
-                    response = await fetch(`/api/cuidadores/${idEditando}`, {
+                    response = await fetch(`/api/cuidador/${idEditando}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(dados)
                     });
                 } else {
-                    response = await fetch('/api/cuidadores', {
+                    response = await fetch('/api/cuidador', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(dados)

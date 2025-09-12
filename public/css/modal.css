@@ -1,105 +1,123 @@
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
+/* ==========================================================================
+   ESTILOS GERAIS DO MODAL E OVERLAY
+   ========================================================================== */
 
-.modal-overlay.active {
-  display: flex;
-}
-
-.form-inserir-idoso {
-  background: #fff;
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  max-width: 480px;
-  width: 90%;
-  position: relative;
-  font-family: 'Work Sans', sans-serif;
-  overflow-y: auto;
-  max-height: 90vh;
-}
-
-.btn-fechar-modal {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: transparent;
-  border: none;
-  font-size: 1.8rem;
-  font-weight: bold;
-  line-height: 1;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.2s ease;
-}
-
-.btn-fechar-modal:hover {
-  color: #000;
-}
-
-.form-inserir-idoso h2 {
-  margin-bottom: 1rem;
-  font-weight: 600;
-  font-size: 1.5rem;
-  text-align: center;
-}
-
-/* Inputs e selects */
-.form-inserir-idoso label {
-  display: block;
-  margin-top: 0.75rem;
-  margin-bottom: 0.3rem;
-  font-weight: 500;
-}
-
-.form-inserir-idoso input[type="text"],
-.form-inserir-idoso input[type="date"],
-.form-inserir-idoso input[type="url"],
-.form-inserir-idoso select,
-.form-inserir-idoso textarea {
-  width: 100%;
-  padding: 0.45rem 0.6rem;
-  border: 1.5px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-family: 'Work Sans', sans-serif;
-  resize: vertical;
-  transition: border-color 0.2s ease;
-}
-
-.form-inserir-idoso input[type="text"]:focus,
-.form-inserir-idoso input[type="date"]:focus,
-.form-inserir-idoso input[type="url"]:focus,
-.form-inserir-idoso select:focus,
-.form-inserir-idoso textarea:focus {
-  outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
-}
-
-/* Botão submit */
-.form-inserir-idoso button[type="submit"] {
-  margin-top: 1.5rem;
-  background-color: #4a90e2;
-  color: white;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 0.7rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-.form-inserir-idoso button[type="submit"]:hover {
-  background-color: #357abd;
-}
+   .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+    display: none; /* Começa escondido */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Ativa a exibição do modal */
+  .modal-overlay.active {
+    display: flex;
+  }
+  
+  /* ==========================================================================
+     ESTILOS DO CONTEÚDO DO MODAL (FORMULÁRIO)
+     ========================================================================== */
+  
+  /* Usaremos a classe .modal-content como padrão para todos os formulários */
+  .modal-content {
+    background: white;
+    padding: 2rem 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-width: 480px;
+    width: 150%;
+    max-height: 90vh;
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for grande */
+    position: relative;
+    z-index: 1001;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1.5rem;
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Botão para fechar o modal (X no canto) */
+  .btn-fechar-modal {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+  }
+  
+  .btn-fechar-modal:hover {
+    color: #a26fff; /* Cor de destaque ao passar o mouse */
+  }
+  
+  /* ==========================================================================
+     ESTILOS DOS CAMPOS DO FORMULÁRIO (INPUTS, LABELS, ETC.)
+     ========================================================================== */
+  
+  .modal-content label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .modal-content input[type="text"],
+  .modal-content input[type="email"],
+  .modal-content input[type="url"],
+  .modal-content input[type="date"],
+  .modal-content input[type="number"],
+  .modal-content select,
+  .modal-content textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    resize: vertical;
+  }
+  
+  .modal-content input:focus,
+  .modal-content select:focus,
+  .modal-content textarea:focus {
+    outline: none;
+    border-color: #a26fff;
+    box-shadow: 0 0 0 3px rgba(162, 111, 255, 0.2);
+  }
+  
+  /* Botão de submit principal do formulário */
+  .modal-content button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(135deg, #a26fff, #7b4fe5);
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .modal-content button[type="submit"]:hover {
+    background: linear-gradient(135deg, #7b4fe5, #a26fff);
+    box-shadow: 0 4px 10px rgba(123, 79, 229, 0.4);
+    transform: translateY(-2px);
+  }
