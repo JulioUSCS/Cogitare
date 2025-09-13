@@ -11,58 +11,45 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
   <div class="dashboard-container">
-    <!--SIDEBAR-->
-    <nav class="sidebar">
-      <div class="sidebar-top-wrapper">
-        <div class="sidebar-top">
-          <a href="#" class="logo__wrapper">
-            <img src="/imagens/logotipoCogitareSemFundo.png" alt="Cogitare" class="logo-small" />
-            <span class="hide company-name">Cogitare</span>
-          </a>
-        </div>
-        <button class="expand-btn" type="button" aria-label="Expandir sidebar">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6.01 2.72L10.36 7.07C10.87 7.58 10.87 8.42 10.36 8.93L6.01 13.28" stroke="currentColor"
-              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="sidebar-links">
-        <ul>
-          <li><a href="/view/index.html" class="tooltip"><i data-lucide="layout-dashboard"></i><span
-                class="link hide">Painel</span><span class="tooltip__content">Painel</span></a></li>
-          <li><a href="/view/cuidador.html" class="tooltip"><i data-lucide="users"></i><span
-                class="link hide">Cuidadores</span><span class="tooltip__content">Cuidadores</span></a></li>
-          <li><a href="/view/responsavel.html" class="tooltip"><i data-lucide="users"></i><span
-                class="link hide">Responsáveis</span><span class="tooltip__content">Responsáveis</span></a></li>
-          <li><a href="/view/idoso.html" class="tooltip"><i data-lucide="users"></i><span
-                class="link hide">Idosos</span><span class="tooltip__content">Idosos</span></a></li>
-          <li><a href="/view/atendimento.html" class="tooltip"><i data-lucide="calendar-check"></i><span
-                class="link hide">Atendimentos</span><span class="tooltip__content">Atendimentos</span></a></li>
-          <li><a href="/view/pagamento.html" class="tooltip"><i data-lucide="wallet"></i><span
-                class="link hide">Pagamentos</span><span class="tooltip__content">Pagamentos</span></a></li>
-          <li><a href="/view/historico.html" class="tooltip"><i data-lucide="history"></i><span
-                class="link hide">Histórico</span><span class="tooltip__content">Histórico</span></a></li>
-          <li><a href="/logout" class="tooltip"><i data-lucide="log-out"></i><span class="link hide">Sair</span><span
-                class="tooltip__content">Sair</span></a></li>
-        </ul>
-      </div>
+    <nav class="navbar" role="navigation" aria-label="Menu principal">
+      <a class="logo" href="/view/index.html">
+        <img src="/imagens/logotipoCogitareSemFundo.png" alt="Cogitare">
+        <span class="logo-text">Cogitare</span>
+      </a>
+  
+      <!-- botão hambúrguer (mobile) -->
+      <button class="nav-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+        <span class="sr-only">Menu</span>
+      </button>
+  
+      <ul id="primary-navigation" class="nav-menu">
+        <li><a href="/view/index.html"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
+        <li><a href="/view/cuidador.html"><i class="fas fa-user-nurse"></i><span>Cuidadores</span></a></li>
+        <li><a href="/view/responsavel.html"><i class="fas fa-users"></i><span>Responsáveis</span></a></li>
+        <li><a href="/view/idoso.html"><i class="fas fa-user-friends"></i><span>Idosos</span></a></li>
+        <li><a href="/view/atendimento.html"><i class="fas fa-calendar-check"></i><span>Atendimentos</span></a></li>
+        <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
+        <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a></li>
+      </ul>
+      
     </nav>
-    <!-- SIDEBAR -->
 
     <main class="main-content">
       <header class="header">
-        <h1>Lista de Idosos</h1>
-        <input type="text" placeholder="Buscar idoso..." class="search-input" aria-label="Buscar idoso" />
+        <div class="header-top">
+          <h1>Lista de Idosos</h1>
+          <input type="text" placeholder="Buscar idoso..." class="search-input" aria-label="Buscar idoso" />
+        </div>
+        <button id="btnToggleForm" class="btn-add">+ Novo Idoso</button>
       </header>
-
-      <!-- Botão para mostrar o formulário -->
-      <button id="btnToggleForm" type="button" style="margin-bottom: 1rem;">Adicionar Idoso</button>
+      
 
       <!-- Tabela de Idosos -->
       <section class="table-container">
@@ -74,7 +61,7 @@
               <th>Idade</th>
               <th>Sexo</th>
               <th>Condições</th>
-              <th>Status</th>
+              <th>Idade</th>
               <th>Ações</th>
             </tr>
           </thead>

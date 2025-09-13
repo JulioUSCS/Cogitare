@@ -1,314 +1,210 @@
-/* RESET E ESTILIZAÇÃO BASE */
+/* =========================
+   RESET & BASE
+========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Work Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Work Sans', sans-serif;
 }
 
 body {
-  background-color: #f5f5f5;
-  color: #333;
-  transition: margin-left 0.3s ease-in-out;
+  background-color: #f9f6e9; /* tom claro de fundo */
+  color: #141416; /* texto principal */
 }
 
-body.collapsed .main-content {
-  margin-left: 5rem;
-}
-
-/* CONTAINER PRINCIPAL */
+/* =========================
+   CONTAINER PRINCIPAL
+========================= */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
 }
 
-/* CONTEÚDO PRINCIPAL */
+/* =========================
+   CONTEÚDO PRINCIPAL
+========================= */
 .main-content {
-  margin-left: 13rem;
-  padding: 40px;
   flex: 1;
+  padding: 2rem 2.5rem;
+  margin: 0 auto;
+  max-width: 1800px;
   transition: margin-left 0.3s ease;
 }
 
-/* CABEÇALHO */
+body.collapsed .main-content {
+  margin-left: 80px;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
 .header {
-  margin-bottom: 30px;
+  margin-bottom: 1.5rem;
 }
 
 .header-top {
   display: flex;
-  justify-content: space-between; /* Título à esquerda, busca à direita */
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem; /* Espaço entre topo e botão */
+  flex-wrap: wrap;
 }
 
 .header h1 {
   font-size: 2rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: #6e449d;
 }
 
-.header .search-input {
-  max-width: 320px;
-}
-
-
-/* INPUT DE BUSCA */
 .search-input {
-  padding: 0.75rem 1rem;
-  border: 1px solid #ccc;
+  max-width: 300px;
+  padding: 0.6rem 1rem;
   border-radius: 12px;
-  font-size: 1rem;
+  border: 1px solid #bdca84; 
   outline: none;
   background-color: #fff;
-  color: #333;
-  width: 100%;
-  max-width: 320px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.search-input::placeholder {
-  color: #aaa;
-  font-weight: 400;
-}
-
-.search-input:focus {
-  border-color: #a26fff;
-  box-shadow: 0 0 0 3px rgba(162, 111, 255, 0.2);
-}
-
-/* BOTÃO "ADICIONAR CUIDADOR" */
-#btnToggleForm {
-  background: linear-gradient(135deg, #a26fff, #7b4fe5);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  margin-top: 14px;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(162, 111, 255, 0.3);
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  user-select: none;
-}
-
-#btnToggleForm:hover {
-  background: linear-gradient(135deg, #7b4fe5, #a26fff);
-  box-shadow: 0 6px 12px rgba(123, 79, 229, 0.5);
-  transform: translateY(-2px);
-}
-
-#btnToggleForm:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 6px rgba(123, 79, 229, 0.4);
-}
-
-/* TABELA DE CUIDADORES */
-.table-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  margin-top: 20px;
-}
-
-.cuidadores-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-.cuidadores-table thead {
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.cuidadores-table th {
-  padding: 16px 12px;
-  text-align: left;
-  font-weight: 600;
-  color: #495057;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cuidadores-table td {
-  padding: 16px 12px;
-  border-bottom: 1px solid #e9ecef;
-  vertical-align: middle;
-}
-
-.cuidadores-table tbody tr:hover {
-  background-color: #f8f9fa;
-  transition: background-color 0.2s ease;
-}
-
-/* Células específicas */
-.foto-cell {
-  width: 80px;
-  text-align: left;
-}
-
-.foto-cuidador {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border: 2px solid #e9ecef;
-  border-radius: 50%;
-}
-
-.nome-cell {
-  font-weight: 600;
-  color: #212529;
-  min-width: 150px;
-}
-
-.email-cell,
-.telefone-cell,
-.idade-cell,
-.biografia-cell {
-  color: #6c757d;
-  min-width: 120px;
-  word-wrap: break-word;
-}
-
-.status-cell {
-  text-align: left;
-  min-width: 120px;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-badge.ativo {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status-badge.inativo {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.acoes-cell {
-  text-align: left;
-  min-width: 120px;
-}
-
-/* BOTÕES DA TABELA */
-.btn-editar, .btn-excluir {
-  background: linear-gradient(135deg, #a26fff, #7b4fe5);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin: 2px;
+  color: #141416;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
 }
 
-.btn-editar:hover, .btn-excluir:hover {
-  background: linear-gradient(135deg, #7b4fe5, #a26fff);
-  box-shadow: 0 2px 8px rgba(123, 79, 229, 0.3);
+.search-input:focus {
+  border-color: #6e449d;
+  box-shadow: 0 0 0 2px rgba(110,68,157,0.15);
+}
+
+/* =========================
+   BOTÃO "NOVO CUIDADOR"
+========================= */
+#btnToggleForm {
+  background-color: #6e449d; /* cor sólida */
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  margin-top: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#btnToggleForm:hover {
+  background-color: #7b5aa0; /* ligeira variação para hover */
+  box-shadow: 0 2px 6px rgba(110,68,157,0.2);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   TABELA DE CUIDADORES - AJUSTE PARA OCUPAR TODO O ESPAÇO
+========================= */
+.table-container {
+  background-color: #ffffff; /* tabela branca */
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* sombra suave */
+  overflow-x: auto;
+  margin-top: 20px;
+  padding: 0; /* removido padding interno para ocupar todo o espaço */
+  width: 100%; /* ocupa todo o espaço do main-content */
+}
+
+.cuidadores-table {
+  width: 100%; /* garante que a tabela ocupe 100% do container */
+  border-collapse: collapse;
+  table-layout: fixed; /* colunas divididas proporcionalmente */
+}
+
+.cuidadores-table th, .cuidadores-table td {
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  word-wrap: break-word; /* evita overflow de texto */
+}
+
+.cuidadores-table thead {
+  background-color: #f9f6e9; /* cabeçalho suave */
+  color: #141416;
+  border-bottom: 1px solid #bdca84;
+}
+
+.cuidadores-table tbody tr {
+  background-color: #ffffff; /* linhas brancas */
+}
+
+/* FOTO DO CUIDADOR - AJUSTE PROPORCIONAL */
+.foto-cuidador {
+  width: 70px;
+  height: 60px;
+  border-radius: 10%;
+  object-fit: cover; /* mantém proporção e corta excessos */
+  border: 2px solid #bdca84;
+  display: block;
+}
+
+
+/* STATUS */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-badge.ativo {
+  background-color: #bdca84;
+  color: #141416;
+}
+
+.status-badge.inativo {
+  background-color: #f5f3e8;
+  color: #6e449d;
+  border: 1px solid #6e449d;
+}
+
+/* BOTÕES DE AÇÃO */
+.btn-editar, .btn-excluir {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  margin: 2px;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+.btn-editar {
+  background: #6e449d;
+}
+
+.btn-editar:hover {
+  background: #7b5aa0;
   transform: translateY(-1px);
 }
 
 .btn-excluir {
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background: #c75a5a;
 }
 
 .btn-excluir:hover {
-  background: linear-gradient(135deg, #c82333, #dc3545);
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+  background: #d77a7a;
 }
 
-/* MODAL */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
-.modal-overlay.active {
-  display: flex;
-}
-
-.modal {
-  background: white;
-  padding: 2rem 2.5rem;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  max-width: 480px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  z-index: 1001;
-}
-
-/* FORMULÁRIO */
-.modal form input,
-.modal form select,
-.modal form textarea {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-bottom: 0.8rem;
-}
-
-.modal form input:focus,
-.modal form select:focus,
-.modal form textarea:focus {
-  outline: none;
-  border-color: #a26fff;
-  box-shadow: 0 0 5px rgba(162,111,255,0.5);
-}
-
-/* BOTÃO FECHAR */
-.btn-fechar-modal {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.2s ease;
-}
-
-.btn-fechar-modal:hover {
-  color: #a26fff;
-}
-
-/* RESPONSIVO */
+/* =========================
+   RESPONSIVO
+========================= */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    padding: 20px;
+    padding: 1.5rem;
   }
 
-  body.collapsed .main-content {
-    margin-left: 5rem;
+  #btnToggleForm {
+    width: 100%;
+    margin-top: 12px;
   }
 
   .table-container {
@@ -319,25 +215,8 @@ body.collapsed .main-content {
     min-width: 600px;
   }
 
-  .cuidadores-table th,
-  .cuidadores-table td {
-    padding: 12px 8px;
-    font-size: 0.85rem;
-  }
-
   .foto-cuidador {
-    width: 40px;
-    height: 40px;
-  }
-
-  .btn-editar, .btn-excluir {
-    padding: 4px 8px;
-    font-size: 0.75rem;
-    margin: 1px;
-  }
-
-  .header-controls {
-    flex-direction: column;
-    align-items: stretch;
+    width: 55px;
+    height: 55px;
   }
 }

@@ -1,114 +1,228 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* Estilos globais */
-body {
+/* ----- Estilos Globais ----- */
+* {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', sans-serif;
-    background-color: #b4b4f3;
-    height: 100vh;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+a {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #6e449d; /* << COR NOVA (Roxo) */
+    margin: 0px;
+    transition: all 0.4s;
+}
+
+a:focus {
+    outline: none !important;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #141416; /* << COR NOVA (Preto) */
+}
+
+/* ----- Layout Principal ----- */
+.container-login {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background: #bdca84; /* << COR NOVA (Verde) */
+}
+
+.wrap-login {
+    width: 960px;
+    background: #f9f6e9; /* << COR NOVA (Branco-Creme) */
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 100px 130px 100px 95px;
+    box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+/* ----- Imagem Lateral ----- */
+.login-pic {
+    width: 316px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-pic img {
+    max-width: 100%;
+}
+
+/* ----- Formulário ----- */
+.login-form {
+    width: 290px;
+}
+
+.login-form-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #141416; /* << COR NOVA (Preto) */
+    line-height: 1.2;
+    text-align: center;
+    width: 100%;
+    display: block;
+    padding-bottom: 54px;
+}
+
+/* ----- Inputs ----- */
+.wrap-input {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+    margin-bottom: 10px;
+}
+
+.input {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #141416; /* << COR NOVA (Preto) */
+    display: block;
+    width: 100%;
+    background: #ddedf4; /* << COR NOVA (Azul Claro) */
+    height: 50px;
+    border-radius: 25px;
+    padding: 0 30px 0 68px;
+    border: none;
+    outline: none;
+}
+
+.focus-input {
+    display: block;
+    position: absolute;
+    border-radius: 25px;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0px 0px 0px 0px;
+    color: rgba(110, 68, 157, 0.6); /* << COR NOVA (Roxo com transparência) */
+}
+
+.input:focus + .focus-input {
+    animation: anim-shadow 0.5s ease-in-out forwards;
+}
+
+@keyframes anim-shadow {
+    to {
+        box-shadow: 0px 0px 60px 25px;
+        opacity: 0;
+    }
+}
+
+.symbol-input {
+    font-size: 15px;
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-
-/* Container central */
-div {
-    background-color: rgb(255, 255, 255);
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    border-radius: 25px;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    max-width: 400px;
-    text-align: center;
-    position: relative;
-    z-index: 1;
+    height: 100%;
+    padding-left: 35px;
+    pointer-events: none;
+    color: #141416; /* << COR NOVA (Preto) */
+    transition: all 0.4s;
 }
 
-/* Cabeçalhos */
-h1, h2 {
-    color: #333;
-    margin-bottom: 20px;
+.input:focus + .focus-input + .symbol-input {
+    color: #6e449d; /* << COR NOVA (Roxo) */
+    padding-left: 28px;
+}
+
+/* ----- Botão ----- */
+.container-login-form-btn {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.login-form-btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
     font-weight: 600;
-}
-
-/* Inputs */
-input[type="text"],
-input[type="password"] {
-    width: 90%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    font-size: 16px;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus {
-    border-color: #2575fc;
-    box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
-    outline: none;
-    position: relative;
-    z-index: 1;
-}
-
-/* Botão */
-button {
-    background-color: #2575fc;
-    color: white;
-    padding: 10px 20px;
+    line-height: 1.5;
+    color: #f9f6e9; /* << COR NOVA (Branco-Creme para o texto) */
+    text-transform: uppercase;
+    width: 100%;
+    height: 50px;
+    border-radius: 25px;
+    background: #6e449d; /* << COR NOVA (Roxo) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 25px;
+    transition: all 0.4s;
     border: none;
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s, transform 0.2s;
 }
 
-button:hover {
-    background-color: #1a5ed0;
-    transform: scale(1.03);
+.login-form-btn:hover {
+    background: #141416; /* << COR NOVA (Preto no hover) */
 }
 
-/* Animação de entrada */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
+/* ----- Links e Texto ----- */
+.text-center {
+    text-align: center;
+}
+.p-t-12 {
+    padding-top: 12px;
+}
+.txt1 {
+    /* A cor já foi definida no seletor 'a' global */
+}
+
+
+/* ----- Responsividade (sem alterações) ----- */
+@media (max-width: 992px) {
+    .wrap-login {
+        padding: 100px 90px 100px 85px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .login-pic {
+        width: 35%;
+    }
+    .login-form {
+        width: 50%;
     }
 }
 
-.logo{
-    width: 200px;
+@media (max-width: 768px) {
+    .wrap-login {
+        padding: 100px 80px 100px 80px;
+    }
+    .login-pic {
+        display: none;
+    }
+    .login-form {
+        width: 100%;
+    }
 }
 
-/* Solução simples para o problema do Kaspersky */
-input[type="password"] {
-    position: relative;
-    z-index: 10;
-    -webkit-text-security: disc;
-    -moz-text-security: disc;
-}
-
-input[type="password"]:focus {
-    z-index: 20;
-    position: relative;
-}
-
-/* Previne detecção inicial do Kaspersky */
-input[type="password"][data-kaspersky="false"] {
-    -webkit-appearance: textfield;
-    -moz-appearance: textfield;
-    appearance: textfield;
-}
-
-input[type="password"][data-kaspersky="false"]:focus {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+@media (max-width: 576px) {
+    .wrap-login {
+        padding: 100px 15px 100px 15px;
+    }
 }

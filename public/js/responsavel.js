@@ -3,6 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalOverlay = document.getElementById('modalOverlay');
   const form = document.getElementById('formResponsavel');
 
+  function calcularIdade(dataNascimento) {
+    if (!dataNascimento) return 'Não informado';
+    const nascimento = new Date(dataNascimento);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--;
+    }
+    return idade;
+  }
+
   async function carregarResponsaveis() {
     try {
       // 🚀 agora usa o endpoint novo
@@ -29,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="nome-cell"><strong>${item.Nome || ''}</strong></td>
           <td class="email-cell">${item.Email || 'Não informado'}</td>
           <td class="telefone-cell">${item.Telefone || 'Não informado'}</td>
-          <td class="status-cell"><span class="status-badge ativo">Ativo</span></td>
+          <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
           <td class="acoes-cell">
             <button class="btn-editar" data-resp='${JSON.stringify(item)}'>Editar</button>
             <button class="btn-excluir" data-id='${item.IdResponsavel}'>Excluir</button>

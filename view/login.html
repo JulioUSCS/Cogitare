@@ -5,26 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cogitare - Login Administrador</title>
-    <link rel="stylesheet" href="/css/login.css">
-    <script src="/js/login.js"></script>
+    <link rel="stylesheet" href="/css/Login.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
 </head>
 
 <body>
-    <div>
-        <h1>Bem-vindo(a)</h1>
-        <img src="/imagens/logotipoCogitareSemFundo.png" alt="Logotipo Cogitare" class="logo">
-        <form onsubmit="verificaUsuario(event)">
-            <label for="usuario">Usuário</label><br>
-            <input type="text" id="usuario" name="usuario" required><br><br>
+    <div class="container-login">
+        <div class="wrap-login">
+            <div class="login-pic">
+                <img src="/imagens/logotipoCogitareSemFundo.png" alt="Logotipo Cogitare">
+            </div>
 
-            <label for="senha">Senha</label><br>
-            <input type="password" id="senha" name="senha" autocomplete="current-password" data-kaspersky="false" required><br><br>
+            <form class="login-form" onsubmit="verificaUsuario(event)">
+                <span class="login-form-title">
+                    Bem-vindo(a) Cogitare
+                </span>
 
-            <button type="submit">Entrar</button>
-        </form>
+                <div class="wrap-input">
+                    <input class="input" type="text" id="usuario" name="usuario" placeholder="Usuário" required>
+                    <span class="focus-input"></span>
+                    <span class="symbol-input">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                    </span>
+                </div>
 
+                <div class="wrap-input">
+                    <input class="input" type="password" id="senha" name="senha" placeholder="Senha" autocomplete="current-password" required>
+                    <span class="focus-input"></span>
+                    <span class="symbol-input">
+                        <i class="fa fa-lock" aria-hidden="true"></i>
+                    </span>
+                </div>
+
+                <div class="container-login-form-btn">
+                    <button type="submit" class="login-form-btn">
+                        Entrar
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
+    
+    <script src="/js/login.js"></script>
 </body>
 
 </html>

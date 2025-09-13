@@ -36,26 +36,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                idosos.forEach(idoso => {
+                idosos.forEach(item => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                 <td class="foto-cell">
-                  <img src="${idoso.FotoUrl || '/images/default-idoso.jpg'}" alt="Foto de ${idoso.Nome}" class="foto-idoso" />
+                  <img src="${item.FotoUrl || '/images/default-idoso.jpg'}" alt="Foto de ${item.Nome}" class="foto-idoso" />
                 </td>
-                <td class="nome-cell"><strong>${idoso.Nome}</strong></td>
-                <td class="idade-cell">${calcularIdade(idoso.DataNascimento)} anos</td>
-                <td class="sexo-cell">${idoso.Sexo}</td>
+                <td class="nome-cell"><strong>${item.Nome}</strong></td>
+                <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
+                <td class="sexo-cell">${item.Sexo}</td>
                 <td class="condicoes-cell">
-                  <strong>Cuidados:</strong> ${idoso.CuidadosMedicos || 'Nenhum'}<br>
-                  <strong>Descrição:</strong> ${idoso.DescricaoExtra || 'Nenhuma'}
+                  <strong>Cuidados:</strong> ${item.CuidadosMedicos || 'Nenhum'}<br>
+                  <strong>Descrição:</strong> ${item.DescricaoExtra || 'Nenhuma'}
                 </td>
-                <td class="status-cell">
-                  <span class="status-badge ativo">Ativo</span>
-                </td>
+                <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
                 <td class="acoes-cell">
-                  <button class="btn-ver-responsavel" data-id="${idoso.IdResponsavel}">Ver Responsável</button>
-                  <button class="btn-editar" data-idoso='${JSON.stringify(idoso)}'>Editar</button>
-                  <button class="btn-excluir" data-id="${idoso.IdIdoso}">Excluir</button>
+                  <button class="btn-ver-responsavel" data-id="${item.IdResponsavel}">Ver Responsável</button>
+                  <button class="btn-editar" data-idoso='${JSON.stringify(item)}'>Editar</button>
+                  <button class="btn-excluir" data-id="${item.IdIdoso}">Excluir</button>
                 </td>
               `;
                     tabelaBody.appendChild(tr);
