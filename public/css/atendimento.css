@@ -1,111 +1,222 @@
-/* Geral */
+/* =========================
+   RESET & BASE
+========================= */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  font-family: 'Work Sans', sans-serif;
 }
 
 body {
-  font-family: 'Work Sans', sans-serif;
-  background-color: #f4f7fc;
-  color: #333;
+  background-color: #f9f6e9; /* tom claro de fundo */
+  color: #141416; /* texto principal */
 }
 
-/* Header da main */
+/* =========================
+   CONTAINER PRINCIPAL
+========================= */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* =========================
+   CONTEÚDO PRINCIPAL
+========================= */
+.main-content {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  margin: 0 auto;
+  max-width: 1800px;
+  transition: margin-left 0.3s ease;
+}
+
+body.collapsed .main-content {
+  margin-left: 80px;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
 .header {
+  margin-bottom: 1.5rem;
+}
+
+.header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
-  border-bottom: 1px solid #ddd;
-  background-color: #fff;
-  border-radius: 1rem;
-  margin-left: 15rem;
-  transition: margin-left 0.2s ease-in-out;
+  flex-wrap: wrap;
 }
 
 .header h1 {
   font-size: 2rem;
-  font-weight: 600;
-  margin-left: 1rem;
-  transition: margin-left 0.2s ease-in-out;
+  font-weight: 700;
+  color: #6e449d;
 }
 
 .search-input {
-  padding: 0.75rem 1rem;
-  border: 1px solid #ccc;
+  max-width: 300px;
+  padding: 0.6rem 1rem;
   border-radius: 12px;
-  font-size: 1rem;
+  border: 1px solid #bdca84; 
   outline: none;
+  background-color: #fff;
+  color: #141416;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
 }
 
-/* Tabela */
+.search-input:focus {
+  border-color: #6e449d;
+  box-shadow: 0 0 0 2px rgba(110,68,157,0.15);
+}
+
+/* =========================
+   BOTÃO "NOVO CUIDADOR"
+========================= */
+#btnToggleForm {
+  background-color: #6e449d; /* cor sólida */
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  margin-top: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#btnToggleForm:hover {
+  background-color: #7b5aa0; /* ligeira variação para hover */
+  box-shadow: 0 2px 6px rgba(110,68,157,0.2);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   TABELA DE CUIDADORES - AJUSTE PARA OCUPAR TODO O ESPAÇO
+========================= */
 .table-container {
-  padding-top: 2rem;
+  background-color: #ffffff; /* tabela branca */
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* sombra suave */
   overflow-x: auto;
-  margin-left: 15rem; /* afastando do sidebar */
-  transition: margin-left 0.2s ease-in-out;
-
-}
-
-body.collapsed .table-container {
-  margin-left: 5rem; /* espaço para sidebar colapsada */
-}
-
-body.collapsed .header {
-  margin-left: 5rem; /* espaço para sidebar colapsada */
-}
-
-body.collapsed .header h1{
-  margin-left: 1rem; /* espaço para sidebar colapsada */
+  margin-top: 20px;
+  padding: 0; /* removido padding interno para ocupar todo o espaço */
+  width: 100%; /* ocupa todo o espaço do main-content */
 }
 
 .atendimento-table {
-  width: 100%;
+  width: 100%; /* garante que a tabela ocupe 100% do container */
   border-collapse: collapse;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  table-layout: fixed; /* colunas divididas proporcionalmente */
 }
 
-.atendimento-table th,
-.atendimento-table td {
-  padding: 1rem;
+.atendimento-table th, .atendimento-table td {
+  padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.atendimento-table td[data-label]::before {
-  content: attr(data-label) ": ";
-  font-weight: 600;
-  display: none; /* para mobile, pode ativar depois */
-}
-
-.status {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
+  vertical-align: middle;
   font-size: 0.9rem;
+  word-wrap: break-word; /* evita overflow de texto */
 }
 
-.status-concluido {
-  background-color: #d1f7d6;
-  color: #24732d;
+.atendimento-table thead {
+  background-color: #f9f6e9; /* cabeçalho suave */
+  color: #141416;
+  border-bottom: 1px solid #bdca84;
 }
 
-/* Botão de detalhes */
-.btn-detalhes {
-  background-color: #4f46e5;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
+.atendimento-table tbody tr {
+  background-color: #ffffff; /* linhas brancas */
+}
+
+/* FOTO DO CUIDADOR - AJUSTE PROPORCIONAL */
+.foto-cuidador {
+  width: 70px;
+  height: 60px;
+  border-radius: 10%;
+  object-fit: cover; /* mantém proporção e corta excessos */
+  border: 2px solid #bdca84;
+  display: block;
+}
+
+
+/* STATUS */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 500;
-  transition: background-color 0.3s;
+  text-transform: uppercase;
 }
 
-.btn-detalhes:hover {
-  background-color: #4338ca;
+.status-badge.ativo {
+  background-color: #bdca84;
+  color: #141416;
+}
+
+.status-badge.inativo {
+  background-color: #f5f3e8;
+  color: #6e449d;
+  border: 1px solid #6e449d;
+}
+
+/* BOTÕES DE AÇÃO */
+.btn-editar, .btn-excluir {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  margin: 2px;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+.btn-editar {
+  background: #6e449d;
+}
+
+.btn-editar:hover {
+  background: #7b5aa0;
+  transform: translateY(-1px);
+}
+
+.btn-excluir {
+  background: #c75a5a;
+}
+
+.btn-excluir:hover {
+  background: #d77a7a;
+}
+
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+
+  #btnToggleForm {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .atendimento-table {
+    min-width: 600px;
+  }
+
+  .foto-cuidador {
+    width: 55px;
+    height: 55px;
+  }
 }
