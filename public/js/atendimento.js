@@ -18,21 +18,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 atendimentos.forEach(atendimento => {
-                                        const tr = document.createElement('tr');
-                                        tr.innerHTML = `
-                                                <td class="nome-cell"><strong>${atendimento.NomeCuidador || '-'}</strong></td>
-                                                <td class="email-cell">${atendimento.NomeIdoso || '-'}</td>
-                                                <td class="telefone-cell">${atendimento.NomeResponsavel || '-'}</td>
-                                                <td class="idade-cell">${(atendimento.DataInicio)}</td>
-                                                <td class="biografia-cell">${atendimento.DataFim || 'Nenhuma'}</td>
-                                                <td class="status-cell">${atendimento.Status || 'Nenhuma'}</td>
-                                                <td class="local-cell">${atendimento.Local || 'Nenhuma'}</td>
-                                                <td class="valor-cell">${atendimento.Valor || 'Nenhuma'}</td>
-                                                <td class="obs-cell">${atendimento.ObservacaoExtra || 'Nenhuma'}</td>
-                                                <td class="acoes-cell">
-                                                    <button class="btn-excluir" data-id="${atendimento.IdCuidador}">Cancelar</button>
-                                                </td>
-                                            `;
+                    // Função para formatar data/hora para padrão brasileiro dd/mm/yyyy - hh:mm
+                    function formatarDataHora(dataStr) {
+                        if (!dataStr) return '-';
+                        const data = new Date(dataStr);
+                        if (isNaN(data.getTime())) return '-';
+                        const dia = String(data.getDate()).padStart(2, '0');
+                        const mes = String(data.getMonth() + 1).padStart(2, '0');
+                        const ano = data.getFullYear();
+                        const hora = String(data.getHours()).padStart(2, '0');
+                        const min = String(data.getMinutes()).padStart(2, '0');
+                        return `${dia}/${mes}/${ano} - ${hora}:${min}`;
+                    }
+
+                    const dataInicioFormatada = formatarDataHora(atendimento.DataInicio);
+                    const dataFimFormatada = formatarDataHora(atendimento.DataFim);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="nome-cell"><strong>${atendimento.NomeCuidador || '-'}</strong></td>
+                        <td class="email-cell">${atendimento.NomeIdoso || '-'}</td>
+                        <td class="telefone-cell">${atendimento.NomeResponsavel || '-'}</td>
+                        <td class="idade-cell">${dataInicioFormatada}</td>
+                        <td class="biografia-cell">${dataFimFormatada !== '-' ? dataFimFormatada : 'Nenhuma'}</td>
+                        <td class="status-cell">${atendimento.Status || 'Nenhuma'}</td>
+                        <td class="local-cell">${atendimento.Local || 'Nenhuma'}</td>
+                        <td class="valor-cell">${atendimento.Valor || 'Nenhuma'}</td>
+                        <td class="obs-cell">${atendimento.ObservacaoExtra || 'Nenhuma'}</td>
+                        <td class="acoes-cell">
+                            <button class="btn-excluir" data-id="${atendimento.IdCuidador}">Cancelar</button>
+                        </td>
+                        `;
                     tabelaBody.appendChild(tr);
                 });
 
