@@ -17,10 +17,7 @@ import historicoRoute from './routes/historicoRoute.js';
 import idososRoute from './routes/idosoRoute.js';
 import responsavelRoute from './routes/responsavelRoute.js';
 import cuidadorRoute from './routes/cuidadorRoute.js';
-
-
-
-
+import atendimentoRoute from './routes/atendimentoRoute.js';
 
 
 const app = express();
@@ -53,6 +50,7 @@ app.use('/api', historicoRoute);
 app.use('/api', idososRoute);
 app.use('/api', responsavelRoute); 
 app.use('/api', cuidadorRoute);
+app.use('/api', atendimentoRoute);
 
 // Página inicial
 app.get('/', (req, res) => {
