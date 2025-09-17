@@ -19,9 +19,9 @@ import responsavelRoute from './routes/responsavelRoute.js';
 import cuidadorRoute from './routes/cuidadorRoute.js';
 import atendimentoRoute from './routes/atendimentoRoute.js';
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ip = process.env.IP || '';
 
 // Configuração da sessão
 app.use(session({
@@ -38,10 +38,8 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Arquivos estáticos
-app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
-app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
-app.use('/imagens', express.static(path.join(__dirname, 'public', 'imagens')));
+// 🔥 Arquivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/view', express.static(path.join(__dirname, 'view')));
 
 // Rotas
@@ -62,9 +60,6 @@ app.get('/', (req, res) => {
 });
 
 // Servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(PORT, ip, () => {
+  console.log(`🚀 Servidor rodando em http://${ip || 'localhost'}:${PORT}`);
 });
-
-
-
