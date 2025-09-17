@@ -1,129 +1,249 @@
-/* RESET E BASE */
+/* =========================
+   RESET & BASE
+========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Work Sans', sans-serif;
 }
 
 body {
-  font-family: 'Work Sans', sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-  transition: margin-left 0.2s ease-in-out;
+  background-color: #f9f6e9; /* tom claro de fundo */
+  color: #141416; /* texto principal */
 }
 
-body.collapsed .main-content, td, th, tr {
-  transition: margin-left 0.2s ease-in-out;
-  margin-left: 5rem;
-}
-
+/* =========================
+   CONTAINER PRINCIPAL
+========================= */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width: 250px;
-  background-color: #a26fff;
-  color: white;
-  padding: 20px;
-  position: fixed;
-  height: 100vh;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+/* =========================
+   CONTEÚDO PRINCIPAL
+========================= */
+.main-content {
+  flex: 1;
+  padding: calc(var(--nav-height, 56px) + 1rem) 1rem 2rem;
+  margin: 0 auto;
+  max-width: 1800px;
 }
 
-.sidebar .logo {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 40px;
+/* =========================
+   CABEÇALHO
+========================= */
+.header {
+  margin-bottom: 1.5rem;
 }
 
-.sidebar nav ul {
-  list-style: none;
-}
-
-.sidebar nav ul li {
-  margin-bottom: 20px;
-}
-
-.sidebar nav ul li a {
+.header-top {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6e449d;
+}
+
+.search-input {
+  max-width: 300px;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #bdca84; 
+  outline: none;
+  background-color: #fff;
+  color: #141416;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
 }
 
-.sidebar nav ul li a:hover {
-  opacity: 0.8;
-  transform: translateX(5px);
+.search-input:focus {
+  border-color: #6e449d;
+  box-shadow: 0 0 0 2px rgba(110,68,157,0.15);
 }
 
-/* MAIN CONTENT */
-.main-content {
-  margin-left: 250px;
-  padding: 40px;
-  flex: 1;
-}
-
-.main-content header h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
-/* TABELA DE PAGAMENTOS */
-.table-container {
-  overflow-x: auto;
-  background: white;
+/* =========================
+   BOTÃO "NOVO PAGAMENTO"
+========================= */
+#btnToggleForm {
+  background-color: #6e449d; /* cor sólida */
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  margin-top: 10px;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#btnToggleForm:hover {
+  background-color: #7b5aa0; /* ligeira variação para hover */
+  box-shadow: 0 2px 6px rgba(110,68,157,0.2);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   TABELA DE PAGAMENTOS - AJUSTE PARA OCUPAR TODO O ESPAÇO
+========================= */
+.table-container {
+  background-color: #ffffff; /* tabela branca */
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* sombra suave */
+  overflow-x: auto;
+  margin-top: 20px;
 }
 
 .pagamentos-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-.pagamentos-table th,
-.pagamentos-table td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
 }
 
 .pagamentos-table th {
-  background-color: #f0f0f0;
+  background-color: #f8f9fa;
+  color: #495057;
   font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.pagamentos-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
 }
 
 .pagamentos-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: #f8f9fa;
+}
+
+.pagamentos-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Badges de status */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pago {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-pendente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-cancelado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-processando {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+/* =========================
+   BOTÕES DE AÇÃO
+========================= */
+.btn-action {
+  background: none;
+  border: none;
+  color: #6e449d;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  margin: 0 0.25rem;
+  font-size: 1rem;
+}
+
+.btn-action:hover {
+  background-color: #f8f9fa;
+  color: #5a3a8a;
+  transform: scale(1.1);
+}
+
+.btn-action.edit {
+  color: #28a745;
+}
+
+.btn-action.delete {
+  color: #dc3545;
+}
+
+.btn-action.view {
+  color: #17a2b8;
 }
 
 /* RESPONSIVO */
 @media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
   .main-content {
-    margin-left: 0;
-    padding: 20px;
+    padding: calc(var(--nav-height, 56px) + 0.5rem) 0.5rem 1rem;
+  }
+
+  .main-content header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  .table-container {
+    padding: 15px;
+    margin: 0 -0.5rem;
+    border-radius: 0;
   }
 
   .pagamentos-table {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .pagamentos-table th,
+  .pagamentos-table td {
+    padding: 8px 12px;
+  }
+
+  /* Ocultar colunas menos importantes em mobile */
+  .pagamentos-table th:nth-child(6),
+  .pagamentos-table td:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content header h1 {
+    font-size: 1.3rem;
+  }
+
+  .pagamentos-table {
+    font-size: 0.75rem;
+  }
+
+  .pagamentos-table th,
+  .pagamentos-table td {
+    padding: 6px 8px;
+  }
+
+  /* Ocultar mais colunas em telas muito pequenas */
+  .pagamentos-table th:nth-child(2),
+  .pagamentos-table td:nth-child(2),
+  .pagamentos-table th:nth-child(5),
+  .pagamentos-table td:nth-child(5) {
+    display: none;
   }
 }

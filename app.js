@@ -18,6 +18,7 @@ import idososRoute from './routes/idosoRoute.js';
 import responsavelRoute from './routes/responsavelRoute.js';
 import cuidadorRoute from './routes/cuidadorRoute.js';
 import atendimentoRoute from './routes/atendimentoRoute.js';
+import pagamentoRoute from './routes/pagamentoRoute.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,6 +50,7 @@ app.use('/api', idososRoute);
 app.use('/api', responsavelRoute); 
 app.use('/api', cuidadorRoute);
 app.use('/api', atendimentoRoute);
+app.use('/api', pagamentoRoute);
 
 // Página inicial
 app.get('/', (req, res) => {
@@ -61,5 +63,5 @@ app.get('/', (req, res) => {
 
 // Servidor
 app.listen(PORT, ip, () => {
-  console.log(`🚀 Servidor rodando em http://${ip || 'localhost'}:${PORT}`);
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

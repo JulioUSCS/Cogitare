@@ -1,68 +1,174 @@
+// Função para carregar histórico
+async function carregarHistorico() {
+    try {
+        const response = await fetch('/api/historico');
+        const data = await response.json();
+        
+        if (data.success) {
+            exibirHistorico(data.data);
+        } else {
+            console.error('Erro ao carregar histórico:', data.message);
+            exibirErro('Erro ao carregar histórico');
+        }
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+        exibirErro('Erro de conexão');
+    }
+}
 
-document.addEventListener('DOMContentLoaded', async () => {
-            const historicoCardsContainer = document.getElementById('historicoCardsContainer');
+// Função para exibir histórico na tabela
+function exibirHistorico(historico) {
+    const tbody = document.querySelector('.historico-table tbody');
+    
+    if (!tbody) {
+        console.error('Tabela não encontrada');
+        return;
+    }
+    
+    // Limpar conteúdo atual
+    tbody.innerHTML = '';
+    
+    if (historico.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center; color: #666;">
+                    Nenhum registro de histórico encontrado
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    historico.forEach(registro => {
+        const row = document.createElement('tr');
+        const dataFormatada = formatarDataHora(registro.DataHora);
+        
+        row.innerHTML = `
+            <td>${registro.IdHistorico}</td>
+            <td>
+                <span class="tipo-badge tipo-${registro.TipoHistorico.toLowerCase()}">
+                    ${registro.TipoHistorico}
+                </span>
+            </td>
+            <td>${registro.NomeResponsavel || 'N/A'}</td>
+            <td>${registro.NomeCuidador || 'N/A'}</td>
+            <td>${registro.NomeAdministrador || 'N/A'}</td>
+            <td>
+                <span class="acao-badge acao-${getClasseAcao(registro.Operacao)}">
+                    ${registro.Operacao}
+                </span>
+            </td>
+            <td>${dataFormatada}</td>
+            <td>${registro.Observacoes || 'N/A'}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
 
-            try {
-                // Faz a requisição para a rota de API que busca os históricos
-                const response = await fetch('/api/historico-atendimentos');
+// Função para exibir erro
+function exibirErro(mensagem) {
+    const tbody = document.querySelector('.historico-table tbody');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center; color: #dc3545;">
+                    ${mensagem}
+                </td>
+            </tr>
+        `;
+    }
+}
 
-                // Verifica se a resposta não foi bem-sucedida (ex: 401 Unauthorized, 500 Internal Server Error)
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        // Se a sessão expirou ou não está autorizado, redireciona para a página de login
-                        const errorData = await response.json(); // Tenta ler a mensagem de erro do backend
-                        alert(errorData.mensagem || 'Sessão expirada ou não autorizado. Redirecionando para o login...');
-                        window.location.href = '/view/login.html?sessaoExpirada=true';
-                        return; // Sai da função para evitar processamento adicional
-                    }
-                    // Para outros erros HTTP, lança uma exceção
-                    throw new Error(`Erro HTTP: ${response.status} ${response.statusText}`);
-                }
+// Função para formatar data e hora
+function formatarDataHora(dataHora) {
+    if (!dataHora) return 'N/A';
+    
+    const data = new Date(dataHora);
+    return data.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
 
-                // Converte a resposta para JSON
-                const data = await response.json();
+// Função para obter classe CSS baseada na ação
+function getClasseAcao(acao) {
+    if (!acao) return 'outro';
+    
+    const acaoLower = acao.toLowerCase();
+    
+    if (acaoLower.includes('criar') || acaoLower.includes('cadastrar') || acaoLower.includes('adicionar')) {
+        return 'criar';
+    } else if (acaoLower.includes('atualizar') || acaoLower.includes('editar') || acaoLower.includes('modificar')) {
+        return 'atualizar';
+    } else if (acaoLower.includes('excluir') || acaoLower.includes('deletar') || acaoLower.includes('remover')) {
+        return 'excluir';
+    } else if (acaoLower.includes('login') || acaoLower.includes('entrar')) {
+        return 'login';
+    } else if (acaoLower.includes('logout') || acaoLower.includes('sair')) {
+        return 'logout';
+    } else {
+        return 'outro';
+    }
+}
 
-                // Verifica se a operação no backend foi bem-sucedida
-                if (data.sucesso) {
-                    // Verifica se há dados de histórico para exibir
-                    if (data.historicos && data.historicos.length > 0) {
-                        historicoCardsContainer.innerHTML = ''; // Limpa qualquer conteúdo estático ou placeholder
+// Função para buscar histórico
+function buscarHistorico(termo) {
+    const linhas = document.querySelectorAll('.historico-table tbody tr');
+    
+    linhas.forEach(linha => {
+        const texto = linha.textContent.toLowerCase();
+        const termoLower = termo.toLowerCase();
+        
+        if (texto.includes(termoLower)) {
+            linha.style.display = '';
+        } else {
+            linha.style.display = 'none';
+        }
+    });
+}
 
-                        // Itera sobre cada item do histórico e cria um card HTML
-                        data.historicos.forEach(historico => {
-                            const cardDiv = document.createElement('div');
-                            cardDiv.classList.add('card'); // Adiciona a classe CSS 'card'
+// Função para carregar contadores
+async function carregarContadores() {
+    try {
+        // Carregar contadores de cada tipo
+        const [adminRes, cuidadorRes, responsavelRes, atendimentoRes] = await Promise.all([
+            fetch('/api/historico/administrador'),
+            fetch('/api/historico/cuidador'),
+            fetch('/api/historico/responsavel'),
+            fetch('/api/historico/atendimento')
+        ]);
 
-                            // Formata a DataRegistro para exibição no formato brasileiro
-                            const dataObj = new Date(historico.DataRegistro);
-                            const dataFormatada = dataObj instanceof Date && !isNaN(dataObj.getTime())
-                                ? dataObj.toLocaleDateString('pt-BR')
-                                : 'Data inválida';
+        const [adminData, cuidadorData, responsavelData, atendimentoData] = await Promise.all([
+            adminRes.json(),
+            cuidadorRes.json(),
+            responsavelRes.json(),
+            atendimentoRes.json()
+        ]);
 
-                            // Converte o status para uma classe CSS (ex: "Finalizado" -> "finalizado")
-                            const statusClass = historico.StatusFinal ? historico.StatusFinal.toLowerCase().replace(/\s/g, '') : '';
+        // Atualizar contadores
+        document.getElementById('adminCount').textContent = adminData.success ? adminData.data.length : '0';
+        document.getElementById('cuidadorCount').textContent = cuidadorData.success ? cuidadorData.data.length : '0';
+        document.getElementById('responsavelCount').textContent = responsavelData.success ? responsavelData.data.length : '0';
+        document.getElementById('atendimentoCount').textContent = atendimentoData.success ? atendimentoData.data.length : '0';
 
-                            // Popula o HTML interno do card com os dados do histórico
-                            cardDiv.innerHTML = `
-                                <h2>Idoso: ${historico.NomeIdoso || 'N/A'}</h2>
-                                <p>Data: ${dataFormatada}</p>
-                                <p>Status: <span class="status ${statusClass}">${historico.StatusFinal || 'N/A'}</span></p>
-                                ${historico.Observacoes ? `<p>Observações: ${historico.Observacoes}</p>` : ''}
-                            `;
-                            historicoCardsContainer.appendChild(cardDiv); // Adiciona o card ao container
-                        });
-                    } else {
-                        // Exibe uma mensagem se nenhum histórico for encontrado
-                        historicoCardsContainer.innerHTML = '<p>Nenhum histórico de atendimento encontrado.</p>';
-                    }
-                } else {
-                    // Exibe uma mensagem de erro se o backend indicar falha
-                    console.error('Erro ao carregar histórico (resposta do servidor):', data.mensagem);
-                    historicoCardsContainer.innerHTML = `<p>Ocorreu um erro ao carregar o histórico: ${data.mensagem}</p>`;
-                }
-            } catch (error) {
-                // Captura e exibe erros de rede ou processamento
-                console.error('Erro de rede ou ao processar resposta:', error);
-                historicoCardsContainer.innerHTML = '<p>Não foi possível conectar ao servidor ou processar os dados do histórico.</p>';
-            }
+    } catch (error) {
+        console.error('Erro ao carregar contadores:', error);
+    }
+}
+
+// Carregar histórico quando a página carregar
+document.addEventListener('DOMContentLoaded', () => {
+    carregarHistorico();
+    carregarContadores();
+    
+    // Adicionar evento de busca
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            buscarHistorico(e.target.value);
         });
+    }
+});

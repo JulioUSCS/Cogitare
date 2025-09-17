@@ -1,9 +1,16 @@
 // Toggle simples e acessível
 (function(){
   const btn = document.querySelector('.nav-toggle');
-  const menu = document.getElementById('primary-navigation');
+  const menu = document.querySelector('.nav-menu');
 
-  btn.addEventListener('click', () => {
+  if (!btn || !menu) {
+    console.warn('Elementos do menu não encontrados');
+    return;
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const opened = menu.classList.toggle('open');
     btn.setAttribute('aria-expanded', opened ? 'true' : 'false');
   });

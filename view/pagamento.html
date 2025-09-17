@@ -1,106 +1,121 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cogitare - Pagamentos</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/pagamento.css" />
-    <link rel="stylesheet" href="/css/sidebar.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cogitare - Pagamentos</title>
+  <link rel="stylesheet" href="/css/pagamento.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <div class="dashboard-container">
-        <!--SIDEBAR-->
-        <nav class="sidebar">
-            <div class="sidebar-top-wrapper">
-                <div class="sidebar-top">
-                    <a href="#" class="logo__wrapper">
-                        <img src="/imagens/logotipoCogitareSemFundo.png" alt="Cogitare" class="logo-small">
-                        <span class="hide company-name">Cogitare</span>
-                    </a>
-                </div>
-                <button class="expand-btn" type="button">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6.01 2.72L10.36 7.07C10.87 7.58 10.87 8.42 10.36 8.93L6.01 13.28"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
+  <div class="dashboard-container">
+    <nav class="navbar" role="navigation" aria-label="Menu principal">
+      <a class="logo" href="/view/index.html">
+        <img src="/imagens/logotipoCogitareSemFundo.png" alt="Cogitare">
+        <span class="logo-text">Cogitare</span>
+      </a>
+  
+      <!-- botão hambúrguer (mobile) -->
+      <button class="nav-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+        <span class="sr-only">Menu</span>
+      </button>
+  
+      <ul id="primary-navigation" class="nav-menu">
+        <li><a href="/view/index.html"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
+        <li><a href="/view/cuidador.html"><i class="fas fa-user-nurse"></i><span>Cuidadores</span></a></li>
+        <li><a href="/view/responsavel.html"><i class="fas fa-users"></i><span>Responsáveis</span></a></li>
+        <li><a href="/view/idoso.html"><i class="fas fa-user-friends"></i><span>Idosos</span></a></li>
+        <li><a href="/view/atendimento.html"><i class="fas fa-calendar-check"></i><span>Atendimentos</span></a></li>
+        <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
+        <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a></li>
+      </ul>
+      
+    </nav>
 
-            <div class="sidebar-links">
-                <ul>
-                    <li><a href="/view/index.html" class="tooltip"><i data-lucide="layout-dashboard"></i><span
-                                class="link hide">Painel</span><span class="tooltip__content">Painel</span></a></li>
-                    <li><a href="/view/cuidador.html" class="tooltip"><i data-lucide="users"></i><span
-                                class="link hide">Cuidadores</span><span class="tooltip__content">Cuidadores</span></a>
-                    </li>
-                    <li><a href="/view/responsavel.html" class="tooltip"><i data-lucide="users"></i><span
-                                class="link hide">Responsáveis</span><span
-                                class="tooltip__content">Responsáveis</span></a></li>
-                    <li><a href="/view/idoso.html" class="tooltip"><i data-lucide="users"></i><span
-                                class="link hide">Idosos</span><span class="tooltip__content">Idosos</span></a></li>
-                    <li><a href="/view/atendimento.html" class="tooltip"><i data-lucide="calendar-check"></i><span
-                                class="link hide">Atendimentos</span><span
-                                class="tooltip__content">Atendimentos</span></a></li>
-                    <li><a href="/view/pagamento.html" class="tooltip"><i data-lucide="wallet"></i><span
-                                class="link hide">Pagamentos</span><span class="tooltip__content">Pagamentos</span></a>
-                    </li>
-                    <li><a href="/view/historico.html" class="tooltip"><i data-lucide="history"></i><span
-                                class="link hide">Histórico</span><span class="tooltip__content">Histórico</span></a>
-                    </li>
-                    <li><a href="/logout" class="tooltip"><i data-lucide="log-out"></i><span
-                                class="link hide">Sair</span><span class="tooltip__content">Sair</span></a></li>
-                </ul>
-            </div>
-        </nav>
-        <!-- SIDEBAR -->
-        <main class="main-content">
-            <header>
-                <h1>Pagamentos</h1>
-            </header>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-top">
+          <h1>Lista de Pagamentos</h1>
+          <input type="text" placeholder="Buscar pagamento..." class="search-input" />
+        </div>
+        <button id="btnToggleForm" class="btn-add">+ Novo Pagamento</button>
+      </header>
 
-            <div class="table-container">
-                <table class="pagamentos-table">
-                    <thead>
-                        <tr>
-                            <th>ID Pagamento</th>
-                            <th>ID Atendimento</th>
-                            <th>Método de Pagamento</th>
-                            <th>Status</th>
-                            <th>Data</th>
-                            <th>Código Transação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Exemplo de linha -->
-                        <tr>
-                            <td>1</td>
-                            <td>102</td>
-                            <td>Cartão de Crédito</td>
-                            <td>Pago</td>
-                            <td>2025-05-26</td>
-                            <td>TRX98273ABC</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>103</td>
-                            <td>PIX</td>
-                            <td>Pendente</td>
-                            <td>2025-05-26</td>
-                            <td>TRX92811XYZ</td>
-                        </tr>
-                        <!-- Adicione mais linhas dinamicamente -->
-                    </tbody>
-                </table>
-            </div>
-        </main>
+
+      <!-- Tabela de Pagamentos -->
+      <section class="table-container">
+        <table class="pagamentos-table">
+          <thead>
+            <tr>
+              <th>ID Pagamento</th>
+              <th>ID Atendimento</th>
+              <th>Método de Pagamento</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Código Transação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="7" style="text-align:center;">Carregando pagamentos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- MODAL FORM -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+
+      <form id="formPagamento" class="modal-content">
+        <h2 id="formTitle">Cadastrar Pagamento</h2>
+        <label>ID Atendimento:</label>
+        <input type="number" name="idAtendimento" placeholder="ID do atendimento" required />
+        <label>Método de Pagamento:</label>
+        <select name="metodoPagamento" required>
+          <option value="">Selecione o método</option>
+          <option value="PIX">PIX</option>
+          <option value="Cartão de Crédito">Cartão de Crédito</option>
+          <option value="Cartão de Débito">Cartão de Débito</option>
+          <option value="Boleto">Boleto</option>
+          <option value="Dinheiro">Dinheiro</option>
+        </select>
+        <label>Status:</label>
+        <select name="statusPagamento" required>
+          <option value="">Selecione o status</option>
+          <option value="Pendente">Pendente</option>
+          <option value="Pago">Pago</option>
+          <option value="Processando">Processando</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+        <label>Código da Transação:</label>
+        <input type="text" name="codigoTransacao" placeholder="Código da transação" />
+        
+        <div class="modal-buttons">
+          <button type="button" id="btnCancel" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Salvar</button>
+        </div>
+      </form>
+
     </div>
-    <script src="/js/sidebar.js"></script>
-    <script>lucide.createIcons();</script>
+  </div>
+
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/pagamento.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 
 </html>

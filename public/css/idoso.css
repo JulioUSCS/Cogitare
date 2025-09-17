@@ -26,14 +26,9 @@ body {
 ========================= */
 .main-content {
   flex: 1;
-  padding: 2rem 2.5rem;
+  padding: calc(var(--nav-height, 56px) + 1rem) 1rem 2rem;
   margin: 0 auto;
   max-width: 1800px;
-  transition: margin-left 0.3s ease;
-}
-
-body.collapsed .main-content {
-  margin-left: 80px;
 }
 
 /* =========================
@@ -218,8 +213,7 @@ body.collapsed .main-content {
 ========================= */
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 0;
-    padding: 1.5rem;
+    padding: calc(var(--nav-height, 56px) + 0.5rem) 0.5rem 1rem;
   }
 
   #btnToggleForm {

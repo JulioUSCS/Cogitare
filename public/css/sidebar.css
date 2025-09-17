@@ -7,7 +7,13 @@
 }
 
 *{box-sizing: border-box;}
-html,body{height:100%; margin:0; font-family:"Work Sans",system-ui,Segoe UI,Roboto,arial; background:var(--background);}
+html,body{
+  height:100%; 
+  margin:0; 
+  font-family:"Work Sans",system-ui,Segoe UI,Roboto,arial; 
+  background:var(--background);
+  overflow-x: hidden;
+}
 
 /* NAVBAR */
 .navbar{
@@ -80,7 +86,12 @@ html,body{height:100%; margin:0; font-family:"Work Sans",system-ui,Segoe UI,Robo
 }
 
 /* garante que o conteúdo não fique embaixo da navbar */
-.main-content{padding: calc(var(--nav-height) + 1rem) 1rem 2rem;}
+.main-content{
+  padding: calc(var(--nav-height) + 1rem) 1rem 2rem;
+  min-height: calc(100vh - var(--nav-height));
+  width: 100%;
+  box-sizing: border-box;
+}
 
 /* RESPONSIVO: mobile */
 @media (max-width: 768px){
@@ -88,8 +99,8 @@ html,body{height:100%; margin:0; font-family:"Work Sans",system-ui,Segoe UI,Robo
 
   /* transformamos o menu em um painel dropdown */
   .nav-menu{
-    position:absolute;
-    top:100%;
+    position:fixed;
+    top: 56px; /* altura da navbar */
     left:0;
     right:0;
     background:var(--primary);
@@ -98,17 +109,34 @@ html,body{height:100%; margin:0; font-family:"Work Sans",system-ui,Segoe UI,Robo
     gap:0;
     padding:.5rem 0;
     display:none; /* fechado por padrão */
+    z-index:1001;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    width: 100vw;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
   }
 
-  .nav-menu.open{ display:flex; } /* classe controlada por JS */
+  .nav-menu.open{ 
+    display:flex !important; /* classe controlada por JS */
+  }
 
   .nav-menu li a{
     padding:.85rem 1rem;
     width:100%;
+    font-size: 1rem;
   }
 
   /* se quiser que os ícones fiquem à esquerda mais fortes */
-  .nav-menu li a i{ min-width:20px; text-align:center; }
+  .nav-menu li a i{ 
+    min-width:20px; 
+    text-align:center; 
+    font-size: 1.1rem;
+  }
+
+  /* Ajustar padding do conteúdo principal em mobile */
+  .main-content {
+    padding: calc(var(--nav-height) + 0.5rem) 0.5rem 1rem;
+  }
 }
 
 /* opcional: rolagem se o menu tiver muitos itens (não deixa ultrapassar viewport) */

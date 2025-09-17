@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cogitare - Histórico</title>
+  <title>Cogitare - Histórico Atendimentos</title>
   <link rel="stylesheet" href="/css/historico.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
   <link rel="stylesheet" href="/css/modal.css" />
@@ -44,70 +44,27 @@
     <main class="main-content">
       <header class="header">
         <div class="header-top">
-          <h1>Histórico Geral</h1>
-          <input type="text" placeholder="Buscar no histórico..." class="search-input" />
+          <h1>Histórico de Atendimentos</h1>
+          <input type="text" placeholder="Buscar status..." class="search-input" />
+        </div>
+        <div class="header-actions">
+          <a href="/view/historico.html" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar ao Histórico Geral
+          </a>
         </div>
       </header>
 
-      <!-- Cards de Navegação -->
-      <section class="historico-cards">
-        <div class="historico-card" onclick="window.location.href='/view/historico-admin.html'">
-          <div class="card-icon">
-            <i class="fas fa-user-shield"></i>
-          </div>
-          <div class="card-content">
-            <h3>Administradores</h3>
-            <p>Histórico de operações dos administradores</p>
-            <span class="card-count" id="adminCount">-</span>
-          </div>
-        </div>
-
-        <div class="historico-card" onclick="window.location.href='/view/historico-cuidador.html'">
-          <div class="card-icon">
-            <i class="fas fa-user-nurse"></i>
-          </div>
-          <div class="card-content">
-            <h3>Cuidadores</h3>
-            <p>Histórico de operações dos cuidadores</p>
-            <span class="card-count" id="cuidadorCount">-</span>
-          </div>
-        </div>
-
-        <div class="historico-card" onclick="window.location.href='/view/historico-responsavel.html'">
-          <div class="card-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="card-content">
-            <h3>Responsáveis</h3>
-            <p>Histórico de operações dos responsáveis</p>
-            <span class="card-count" id="responsavelCount">-</span>
-          </div>
-        </div>
-
-        <div class="historico-card" onclick="window.location.href='/view/historico-atendimento.html'">
-          <div class="card-icon">
-            <i class="fas fa-calendar-check"></i>
-          </div>
-          <div class="card-content">
-            <h3>Atendimentos</h3>
-            <p>Histórico de status dos atendimentos</p>
-            <span class="card-count" id="atendimentoCount">-</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Resumo Geral -->
+      <!-- Tabela de Histórico de Atendimentos -->
       <section class="table-container">
-        <h2>Resumo Geral (Últimos 10 registros)</h2>
         <table class="historico-table">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Tipo</th>
+              <th>Atendimento</th>
               <th>Responsável</th>
               <th>Cuidador</th>
-              <th>Administrador</th>
-              <th>Operação</th>
+              <th>Idoso</th>
+              <th>Status</th>
               <th>Data/Hora</th>
               <th>Observações</th>
             </tr>
@@ -119,12 +76,28 @@
           </tbody>
         </table>
       </section>
+
+      <!-- Paginação -->
+      <div class="pagination-container">
+        <div class="pagination-info">
+          <span id="paginationInfo">Mostrando 0 de 0 registros</span>
+        </div>
+        <div class="pagination-controls">
+          <button id="btnPrev" class="btn-pagination" disabled>
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+          <span id="pageNumbers" class="page-numbers"></span>
+          <button id="btnNext" class="btn-pagination">
+            Próximo <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
     </main>
 
   </div>
 
   <script src="/js/sidebar.js"></script>
-  <script src="/js/historico.js"></script>
+  <script src="/js/historico-atendimento.js"></script>
   <script>lucide.createIcons();</script>
 </body>
 
