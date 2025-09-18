@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cogitare - Avaliações</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/avaliacao.css">
+    <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="Menu principal">
+        <a class="logo" href="/view/index.html">
+            <img src="/imagens/logotipoCogitareSemFundo.png" alt="Cogitare">
+            <span class="logo-text">Cogitare</span>
+        </a>
+
+        <button class="nav-toggle" aria-controls="nav-menu" aria-expanded="false" aria-label="Abrir menu">
+            <i class="fas fa-bars"></i>
+            <span class="sr-only">Menu</span>
+        </button>
+
+        <ul class="nav-menu">
+            <li><a href="/view/index.html"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
+            <li><a href="/view/cuidador.html"><i class="fas fa-user-nurse"></i><span>Cuidadores</span></a></li>
+            <li><a href="/view/responsavel.html"><i class="fas fa-users"></i><span>Responsáveis</span></a></li>
+            <li><a href="/view/idoso.html"><i class="fas fa-user-friends"></i><span>Idosos</span></a></li>
+            <li><a href="/view/atendimento.html"><i class="fas fa-calendar-check"></i><span>Atendimentos</span></a></li>
+            <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
+      <li><a href="/view/avaliacao.html"><i class="fas fa-star"></i><span>Avaliações</span></a></li>
+      <li><a href="/view/chat.html"><i class="fas fa-comments"></i><span>Chat</span></a></li>
+      <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
+            <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-star"></i> Sistema de Avaliações</h1>
+            <p>Gerencie as avaliações de cuidadores e acompanhe a qualidade dos serviços</p>
+        </div>
+
+        <!-- Estatísticas Gerais -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalAvaliacoes">0</h3>
+                    <p>Total de Avaliações</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="mediaGeral">0.0</h3>
+                    <p>Média Geral</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-thumbs-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="avaliacoesPositivas">0</h3>
+                    <p>Avaliações Positivas</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-thumbs-down"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="avaliacoesNegativas">0</h3>
+                    <p>Avaliações Negativas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros e Busca -->
+        <div class="filters-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por cuidador, responsável ou comentário...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                <button class="filter-btn" data-filter="5">5 estrelas</button>
+                <button class="filter-btn" data-filter="4">4 estrelas</button>
+                <button class="filter-btn" data-filter="3">3 estrelas</button>
+                <button class="filter-btn" data-filter="2">2 estrelas</button>
+                <button class="filter-btn" data-filter="1">1 estrela</button>
+            </div>
+        </div>
+
+        <!-- Lista de Avaliações -->
+        <div class="avaliacoes-container">
+            <div class="avaliacoes-header">
+                <h2>Avaliações Recentes</h2>
+                <button class="btn btn-primary" onclick="abrirModalNovaAvaliacao()">
+                    <i class="fas fa-plus"></i> Nova Avaliação
+                </button>
+            </div>
+
+            <div class="avaliacoes-list" id="avaliacoesList">
+                <!-- As avaliações serão carregadas aqui via JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para Nova Avaliação -->
+    <div id="modalNovaAvaliacao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-star"></i> Nova Avaliação</h2>
+                <span class="close" onclick="fecharModalNovaAvaliacao()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formNovaAvaliacao">
+                    <div class="form-group">
+                        <label for="atendimentoSelect">Atendimento:</label>
+                        <select id="atendimentoSelect" name="IdAtendimento" required>
+                            <option value="">Selecione um atendimento...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nota:</label>
+                        <div class="rating-input">
+                            <input type="radio" id="star5" name="Nota" value="5">
+                            <label for="star5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star4" name="Nota" value="4">
+                            <label for="star4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star3" name="Nota" value="3">
+                            <label for="star3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star2" name="Nota" value="2">
+                            <label for="star2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star1" name="Nota" value="1">
+                            <label for="star1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comentario">Comentário:</label>
+                        <textarea id="comentario" name="Comentario" rows="4" 
+                                  placeholder="Deixe seu comentário sobre o atendimento..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="fecharModalNovaAvaliacao()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Avaliação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Avaliação -->
+    <div id="modalEditarAvaliacao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Editar Avaliação</h2>
+                <span class="close" onclick="fecharModalEditarAvaliacao()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarAvaliacao">
+                    <input type="hidden" id="editIdAvaliacao" name="IdAvaliacao">
+                    
+                    <div class="form-group">
+                        <label>Nota:</label>
+                        <div class="rating-input">
+                            <input type="radio" id="editStar5" name="Nota" value="5">
+                            <label for="editStar5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="editStar4" name="Nota" value="4">
+                            <label for="editStar4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="editStar3" name="Nota" value="3">
+                            <label for="editStar3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="editStar2" name="Nota" value="2">
+                            <label for="editStar2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="editStar1" name="Nota" value="1">
+                            <label for="editStar1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editComentario">Comentário:</label>
+                        <textarea id="editComentario" name="Comentario" rows="4" 
+                                  placeholder="Deixe seu comentário sobre o atendimento..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="fecharModalEditarAvaliacao()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Atualizar Avaliação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/avaliacao.js"></script>
+</body>
+
+</html>

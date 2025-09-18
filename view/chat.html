@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cogitare - Suporte</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="Menu principal">
+        <a class="logo" href="/view/index.html">
+            <img src="/imagens/logotipoCogitareSemFundo.png" alt="Cogitare">
+            <span class="logo-text">Cogitare</span>
+        </a>
+
+        <button class="nav-toggle" aria-controls="nav-menu" aria-expanded="false" aria-label="Abrir menu">
+            <i class="fas fa-bars"></i>
+            <span class="sr-only">Menu</span>
+        </button>
+
+        <ul class="nav-menu">
+            <li><a href="/view/index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="/view/cuidador.html"><i class="fas fa-user-nurse"></i><span>Cuidadores</span></a></li>
+            <li><a href="/view/responsavel.html"><i class="fas fa-users"></i><span>Responsáveis</span></a></li>
+            <li><a href="/view/idoso.html"><i class="fas fa-user-friends"></i><span>Idosos</span></a></li>
+            <li><a href="/view/atendimento.html"><i class="fas fa-calendar-check"></i><span>Atendimentos</span></a></li>
+            <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
+            <li><a href="/view/avaliacao.html"><i class="fas fa-star"></i><span>Avaliações</span></a></li>
+            <li><a href="/view/chat.html"><i class="fas fa-headset"></i><span>Suporte</span></a></li>
+            <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
+            <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="chat-container">
+            <!-- Sidebar de conversas -->
+            <div class="chat-sidebar">
+                <div class="chat-header">
+                    <h2><i class="fas fa-headset"></i> Tickets de Suporte</h2>
+                    <button class="btn-new-chat" onclick="abrirModalNovoTicket()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="chat-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span id="totalTickets">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="ticketsAbertos">0</span>
+                    </div>
+                    <div class="stat-item unread">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="ticketsAltaPrioridade">0</span>
+                    </div>
+                </div>
+
+                <!-- Lista de tickets -->
+                <div class="conversations-list" id="ticketsList">
+                    <!-- Tickets serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Área principal do chat -->
+            <div class="chat-main">
+                <!-- Chat vazio -->
+                <div class="chat-empty" id="chatEmpty">
+                    <div class="empty-content">
+                        <i class="fas fa-headset"></i>
+                        <h3>Selecione um ticket</h3>
+                        <p>Escolha um ticket de suporte da lista ao lado para visualizar a conversa</p>
+                    </div>
+                </div>
+
+                <!-- Chat ativo -->
+                <div class="chat-active" id="chatActive" style="display: none;">
+                    <!-- Cabeçalho do chat -->
+                    <div class="chat-header-active">
+                        <div class="chat-user-info">
+                            <img id="chatUserAvatar" src="/imagens/default-avatar.png" alt="Avatar">
+                            <div class="user-details">
+                                <h3 id="chatUserName">Ticket de Suporte</h3>
+                                <span id="chatUserStatus" class="status-online">Aberto</span>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="btn-action" onclick="fecharTicket()" title="Fechar ticket">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Área de mensagens -->
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Mensagens serão carregadas aqui -->
+                    </div>
+
+                    <!-- Área de input -->
+                    <div class="chat-input-area">
+                        <div class="chat-input-container">
+                            <textarea id="messageInput" placeholder="Digite sua resposta..." rows="1"></textarea>
+                            <button class="btn-send" onclick="enviarMensagemSuporte()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para novo ticket -->
+    <div id="modalNovoTicket" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> Novo Ticket de Suporte</h2>
+                <span class="close" onclick="fecharModalNovoTicket()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoriaSelect">Categoria:</label>
+                    <select id="categoriaSelect" name="categoria" required>
+                        <option value="">Escolha uma categoria...</option>
+                        <option value="Geral">Geral</option>
+                        <option value="Atendimento">Atendimento</option>
+                        <option value="Pagamento">Pagamento</option>
+                        <option value="Técnico">Técnico</option>
+                        <option value="Sugestão">Sugestão</option>
+                        <option value="Reclamação">Reclamação</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prioridadeSelect">Prioridade:</label>
+                    <select id="prioridadeSelect" name="prioridade">
+                        <option value="Normal">Normal</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Urgente">Urgente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assuntoInput">Assunto:</label>
+                    <input type="text" id="assuntoInput" name="assunto" placeholder="Descreva brevemente o problema..." required>
+                </div>
+                <div class="form-group">
+                    <label for="descricaoInput">Descrição:</label>
+                    <textarea id="descricaoInput" name="descricao" placeholder="Descreva detalhadamente o problema ou dúvida..." rows="4" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalNovoTicket()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="criarNovoTicket()">
+                        <i class="fas fa-headset"></i> Criar Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de notificações -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content notification-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-bell"></i> Notificações</h2>
+                <span class="close" onclick="fecharModalNotificacoes()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="notifications-list" id="notificationsList">
+                    <!-- Notificações serão carregadas aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+
+</html>

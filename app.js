@@ -19,6 +19,9 @@ import responsavelRoute from './routes/responsavelRoute.js';
 import cuidadorRoute from './routes/cuidadorRoute.js';
 import atendimentoRoute from './routes/atendimentoRoute.js';
 import pagamentoRoute from './routes/pagamentoRoute.js';
+import avaliacaoRoute from './routes/avaliacaoRoute.js';
+import dashboardRoute from './routes/dashboardRoute.js';
+import chatRoute from './routes/chatRoute.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,6 +54,9 @@ app.use('/api', responsavelRoute);
 app.use('/api', cuidadorRoute);
 app.use('/api', atendimentoRoute);
 app.use('/api', pagamentoRoute);
+app.use('/api', avaliacaoRoute);
+app.use('/api', dashboardRoute);
+app.use('/api', chatRoute);
 
 // Página inicial
 app.get('/', (req, res) => {

@@ -6,13 +6,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Cogitare - Painel Admin</title>
   <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-
-  </style>
 </head>
 
 <body>
@@ -36,6 +35,8 @@
       <li><a href="/view/idoso.html"><i class="fas fa-user-friends"></i><span>Idosos</span></a></li>
       <li><a href="/view/atendimento.html"><i class="fas fa-calendar-check"></i><span>Atendimentos</span></a></li>
       <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
+      <li><a href="/view/avaliacao.html"><i class="fas fa-star"></i><span>Avaliações</span></a></li>
+      <li><a href="/view/chat.html"><i class="fas fa-comments"></i><span>Chat</span></a></li>
       <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
       <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a></li>
     </ul>
@@ -43,12 +44,207 @@
   </nav>
 
   <main class="main-content">
-    <h1>Página de teste</h1>
-    <p>Conteúdo… role para testar o menu mobile.</p>
-    <p style="height:1200px">Espaço extra para rolagem</p>
+    <div class="page-header">
+      <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+      <p>Visão geral do sistema Cogitare</p>
+    </div>
+
+    <!-- Cards de Estatísticas Principais -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-user-nurse"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="totalCuidadores">0</h3>
+          <p>Total de Cuidadores</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="totalResponsaveis">0</h3>
+          <p>Total de Responsáveis</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-user-friends"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="totalIdosos">0</h3>
+          <p>Total de Idosos</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="totalAtendimentos">0</h3>
+          <p>Atendimentos Concluídos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Financeiros -->
+    <div class="stats-grid">
+      <div class="stat-card financial">
+        <div class="stat-icon">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="receitaTotal">R$ 0,00</h3>
+          <p>Receita Total</p>
+        </div>
+      </div>
+      <div class="stat-card financial">
+        <div class="stat-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="valorMedioAtendimento">R$ 0,00</h3>
+          <p>Valor Médio por Atendimento</p>
+        </div>
+      </div>
+      <div class="stat-card financial">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="pagamentosRealizados">0</h3>
+          <p>Pagamentos Realizados</p>
+        </div>
+      </div>
+      <div class="stat-card financial">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h3 id="pagamentosPendentes">0</h3>
+          <p>Pagamentos Pendentes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-container">
+      <div class="chart-section">
+        <div class="chart-header">
+          <h2><i class="fas fa-chart-bar"></i> Atendimentos por Mês</h2>
+        </div>
+        <div class="chart-container">
+          <canvas id="atendimentosMesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-header">
+          <h2><i class="fas fa-chart-pie"></i> Distribuição por Status</h2>
+        </div>
+        <div class="chart-container">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-container">
+      <div class="chart-section">
+        <div class="chart-header">
+          <h2><i class="fas fa-star"></i> Distribuição de Avaliações</h2>
+        </div>
+        <div class="chart-container">
+          <canvas id="avaliacoesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-header">
+          <h2><i class="fas fa-chart-line"></i> Atendimentos por Dia (30 dias)</h2>
+        </div>
+        <div class="chart-container">
+          <canvas id="atendimentosDiaChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabelas de Dados -->
+    <div class="tables-container">
+      <div class="table-section">
+        <div class="table-header">
+          <h2><i class="fas fa-trophy"></i> Cuidadores Mais Ativos</h2>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Atendimentos</th>
+                <th>Média Avaliação</th>
+                <th>Receita Gerada</th>
+              </tr>
+            </thead>
+            <tbody id="cuidadoresAtivosTable">
+              <!-- Dados carregados via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h2><i class="fas fa-heart"></i> Distribuição por Nível de Autonomia</h2>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nível de Autonomia</th>
+                <th>Total de Idosos</th>
+              </tr>
+            </thead>
+            <tbody id="autonomiaTable">
+              <!-- Dados carregados via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicadores de Crescimento -->
+    <div class="growth-section">
+      <div class="growth-header">
+        <h2><i class="fas fa-trending-up"></i> Indicadores de Crescimento</h2>
+      </div>
+      <div class="growth-cards">
+        <div class="growth-card">
+          <div class="growth-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="growth-content">
+            <h3 id="crescimentoAtendimentos">0%</h3>
+            <p>Crescimento em Atendimentos</p>
+            <span class="growth-period">vs mês anterior</span>
+          </div>
+        </div>
+        <div class="growth-card">
+          <div class="growth-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="growth-content">
+            <h3 id="crescimentoReceita">0%</h3>
+            <p>Crescimento em Receita</p>
+            <span class="growth-period">vs mês anterior</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="/js/sidebar.js"></script>
+  <script src="/js/dashboard.js"></script>
 
 </body>
 
