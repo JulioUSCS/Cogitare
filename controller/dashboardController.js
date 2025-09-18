@@ -5,29 +5,32 @@ class DashboardController {
     // Buscar todas as métricas do dashboard
     async buscarMetricasCompletas(req, res) {
         try {
-            // Buscar todas as métricas em paralelo
-            const [
-                estatisticasGerais,
-                estatisticasFinanceiras,
-                atendimentosPorMes,
-                cuidadoresMaisAtivos,
-                distribuicaoAutonomia,
-                distribuicaoMobilidade,
-                distribuicaoAvaliacoes,
-                atendimentosPorStatus,
-                atendimentosPorDia,
-                especialidadesMaisProcuradas,
-                dadosCrescimento
-            ] = await Promise.all([
+            // Buscar métricas em lotes para evitar sobrecarga de conexões
+            console.log('Iniciando carregamento de métricas do dashboard...');
+            
+            // Lote 1: Estatísticas básicas
+            const [estatisticasGerais, estatisticasFinanceiras] = await Promise.all([
                 dashboardModel.buscarEstatisticasGerais(),
-                dashboardModel.buscarEstatisticasFinanceiras(),
+                dashboardModel.buscarEstatisticasFinanceiras()
+            ]);
+            
+            // Lote 2: Dados de atendimentos
+            const [atendimentosPorMes, atendimentosPorStatus, atendimentosPorDia] = await Promise.all([
                 dashboardModel.buscarAtendimentosPorMes(),
+                dashboardModel.buscarAtendimentosPorStatus(),
+                dashboardModel.buscarAtendimentosPorDia()
+            ]);
+            
+            // Lote 3: Dados de cuidadores e distribuições
+            const [cuidadoresMaisAtivos, distribuicaoAutonomia, distribuicaoMobilidade] = await Promise.all([
                 dashboardModel.buscarCuidadoresMaisAtivos(),
                 dashboardModel.buscarDistribuicaoAutonomia(),
-                dashboardModel.buscarDistribuicaoMobilidade(),
+                dashboardModel.buscarDistribuicaoMobilidade()
+            ]);
+            
+            // Lote 4: Dados de avaliações e especialidades
+            const [distribuicaoAvaliacoes, especialidadesMaisProcuradas, dadosCrescimento] = await Promise.all([
                 dashboardModel.buscarDistribuicaoAvaliacoes(),
-                dashboardModel.buscarAtendimentosPorStatus(),
-                dashboardModel.buscarAtendimentosPorDia(),
                 dashboardModel.buscarEspecialidadesMaisProcuradas(),
                 dashboardModel.buscarDadosCrescimento()
             ]);
@@ -43,10 +46,17 @@ class DashboardController {
             const falhas = resultados.filter(resultado => !resultado.success);
             if (falhas.length > 0) {
                 console.error('Algumas consultas falharam:', falhas);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Erro ao carregar algumas métricas do dashboard'
-                });
+                
+                // Se muitas consultas falharam, retornar erro
+                if (falhas.length > resultados.length / 2) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Erro ao carregar métricas do dashboard. Tente novamente em alguns instantes.'
+                    });
+                }
+                
+                // Se poucas consultas falharam, continuar com dados parciais
+                console.log('Continuando com dados parciais...');
             }
 
             // Retornar todas as métricas organizadas

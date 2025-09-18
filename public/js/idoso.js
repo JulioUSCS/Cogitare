@@ -24,11 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Erro ao buscar idosos');
                 return response.json();
             })
-            .then(idosos => {
+            .then(result => {
+                // Verificar se a resposta tem o formato { success: true, data: [...] }
+                const idosos = result.success ? result.data : result;
                 const tabelaBody = document.querySelector('.idosos-table tbody');
                 tabelaBody.innerHTML = '';
 
-                if (idosos.length === 0) {
+                if (!idosos || idosos.length === 0) {
                     tabelaBody.innerHTML = `
                 <tr>
                   <td colspan="7" style="text-align: center;">Nenhum idoso cadastrado.</td>
@@ -74,6 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function popularSelect(selectElement, data, textoCampo, valorCampo) {
         selectElement.innerHTML = '<option value="">Selecione</option>';
+        
+        if (!data || !Array.isArray(data)) {
+            console.warn('Dados inválidos para popularSelect:', data);
+            return;
+        }
+        
         data.forEach(item => {
             const option = document.createElement('option');
             option.value = item[valorCampo];
@@ -85,7 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Buscar responsáveis
     fetch('/api/responsaveis')
         .then(res => res.json())
-        .then(data => popularSelect(selectResponsavel, data, 'Nome', 'IdResponsavel'))
+        .then(result => {
+            const data = result.success ? result.data : result;
+            popularSelect(selectResponsavel, data, 'Nome', 'IdResponsavel');
+        })
         .catch(err => {
             console.error(err);
             selectResponsavel.innerHTML = '<option value="">Erro ao carregar responsáveis</option>';
@@ -94,7 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Buscar mobilidades
     fetch('/api/mobilidades')
         .then(res => res.json())
-        .then(data => popularSelect(selectMobilidade, data, 'Descricao', 'IdMobilidade'))
+        .then(result => {
+            const data = result.success ? result.data : result;
+            popularSelect(selectMobilidade, data, 'Descricao', 'IdMobilidade');
+        })
         .catch(err => {
             console.error(err);
             selectMobilidade.innerHTML = '<option value="">Erro ao carregar mobilidades</option>';
@@ -103,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Buscar níveis de autonomia
     fetch('/api/niveis-autonomia')
         .then(res => res.json())
-        .then(data => popularSelect(selectNivelAutonomia, data, 'Descricao', 'IdNivelAutonomia'))
+        .then(result => {
+            const data = result.success ? result.data : result;
+            popularSelect(selectNivelAutonomia, data, 'Descricao', 'IdNivelAutonomia');
+        })
         .catch(err => {
             console.error(err);
             selectNivelAutonomia.innerHTML = '<option value="">Erro ao carregar níveis</option>';

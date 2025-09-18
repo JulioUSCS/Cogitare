@@ -5,11 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Erro ao buscar atendimentos');
                 return response.json();
             })
-            .then(atendimentos => {
+            .then(result => {
+                // Verificar se a resposta tem o formato { success: true, data: [...] }
+                const atendimentos = result.success ? result.data : result;
+                
                 const tabelaBody = document.querySelector('.atendimento-table tbody');
                 tabelaBody.innerHTML = '';
 
-                if (atendimentos.length === 0) {
+                if (!atendimentos || atendimentos.length === 0) {
                     tabelaBody.innerHTML = `
                         <tr>
                           <td colspan="10" style="text-align: center;">Nenhum atendimento cadastrado.</td>

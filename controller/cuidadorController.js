@@ -4,9 +4,9 @@ class CuidadorController {
     static async listar(req, res) {
         try {
             const cuidadores = await CuidadorModel.listar();
-            res.json(cuidadores);
+            res.json({ success: true, data: cuidadores });
         } catch (err) {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({ success: false, message: err.message });
         }
     }
 

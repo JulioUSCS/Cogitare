@@ -22,6 +22,8 @@ import pagamentoRoute from './routes/pagamentoRoute.js';
 import avaliacaoRoute from './routes/avaliacaoRoute.js';
 import dashboardRoute from './routes/dashboardRoute.js';
 import chatRoute from './routes/chatRoute.js';
+import financeiroRoute from './routes/financeiroRoute.js';
+import cache from './utils/cache.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +59,7 @@ app.use('/api', pagamentoRoute);
 app.use('/api', avaliacaoRoute);
 app.use('/api', dashboardRoute);
 app.use('/api', chatRoute);
+app.use('/api', financeiroRoute);
 
 // Página inicial
 app.get('/', (req, res) => {
@@ -68,6 +71,13 @@ app.get('/', (req, res) => {
 });
 
 // Servidor
+// Limpeza automática de cache a cada 5 minutos
+setInterval(() => {
+  cache.cleanup();
+  console.log('🧹 Cache limpo automaticamente');
+}, 5 * 60 * 1000);
+
 app.listen(PORT, ip, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+  console.log(`📊 Cache ativo para otimização de performance`);
 });

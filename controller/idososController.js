@@ -5,10 +5,10 @@ const idososController = {
   async listar(req, res) {
     try {
       const idosos = await Idoso.listar();
-      res.json(idosos);
+      res.json({ success: true, data: idosos });
     } catch (error) {
       console.error('Erro ao listar idosos:', error);
-      res.status(500).json({ erro: 'Erro ao listar idosos' });
+      res.status(500).json({ success: false, message: 'Erro ao listar idosos' });
     }
   },
 
@@ -55,30 +55,30 @@ const idososController = {
   async listarMobilidade(req, res) {
     try {
       const mobilidade = await Idoso.listarMobilidade();
-      res.json(mobilidade);
+      res.json({ success: true, data: mobilidade });
     } catch (error) {
       console.error('Erro ao listar mobilidade:', error);
-      res.status(500).json({ erro: 'Erro ao listar mobilidade' });
+      res.status(500).json({ success: false, message: 'Erro ao listar mobilidade' });
     }
   },
 
   async listarNivelAutonomia(req, res) {
     try {
       const niveis = await Idoso.listarNivelAutonomia();
-      res.json(niveis);
+      res.json({ success: true, data: niveis });
     } catch (error) {
       console.error('Erro ao listar nível de autonomia:', error);
-      res.status(500).json({ erro: 'Erro ao listar nível de autonomia' });
+      res.status(500).json({ success: false, message: 'Erro ao listar nível de autonomia' });
     }
   },
 
   async listarResponsavel(req, res) {
     try {
       const responsaveis = await Idoso.listarResponsavel();
-      res.json(responsaveis);
+      res.json({ success: true, data: responsaveis });
     } catch (error) {
       console.error('Erro ao listar responsáveis:', error);
-      res.status(500).json({ erro: 'Erro ao listar responsáveis' });
+      res.status(500).json({ success: false, message: 'Erro ao listar responsáveis' });
     }
   }
 };

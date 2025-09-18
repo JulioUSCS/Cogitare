@@ -3,10 +3,10 @@ import Responsavel from '../model/responsavelModel.js';
 const listarTodos = async (req, res) => {
   try {
     const rows = await Responsavel.listar();
-    res.json(rows);
+    res.json({ success: true, data: rows });
   } catch (error) {
     console.error("Erro ao listar responsáveis:", error);
-    res.status(500).json({ erro: "Erro ao buscar responsáveis" });
+    res.status(500).json({ success: false, message: "Erro ao buscar responsáveis" });
   }
 };
 
@@ -14,10 +14,10 @@ const listarParaSelect = async (req, res) => {
   try {
     const rows = await Responsavel.listar();
     const selectRows = rows.map(r => ({ IdResponsavel: r.IdResponsavel, Nome: r.Nome }));
-    res.json(selectRows);
+    res.json({ success: true, data: selectRows });
   } catch (error) {
     console.error("Erro ao listar responsáveis (select):", error);
-    res.status(500).json({ erro: "Erro ao buscar responsáveis" });
+    res.status(500).json({ success: false, message: "Erro ao buscar responsáveis" });
   }
 };
 

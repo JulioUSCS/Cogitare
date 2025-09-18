@@ -21,11 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Erro ao buscar cuidadores');
                 return response.json();
             })
-            .then(cuidadores => {
+            .then(result => {
+                // Verificar se a resposta tem o formato { success: true, data: [...] }
+                const cuidadores = result.success ? result.data : result;
+                
                 const tabelaBody = document.querySelector('.cuidadores-table tbody');
                 tabelaBody.innerHTML = '';
 
-                if (cuidadores.length === 0) {
+                if (!cuidadores || cuidadores.length === 0) {
                     tabelaBody.innerHTML = `
                         <tr>
                           <td colspan="8" style="text-align: center;">Nenhum cuidador cadastrado.</td>
@@ -62,11 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 configurarBotoesExcluir();
             })
             .catch(error => {
-                console.error(error);
+                console.error('Erro ao carregar cuidadores:', error);
                 const tabelaBody = document.querySelector('.cuidadores-table tbody');
                 tabelaBody.innerHTML = `
                   <tr>
-                    <td colspan="8" style="text-align: center; color: red;">Erro ao carregar os dados dos cuidadores.</td>
+                    <td colspan="8" style="text-align: center; color: red;">Erro ao carregar os dados dos cuidadores: ${error.message}</td>
                   </tr>`;
             });
     }

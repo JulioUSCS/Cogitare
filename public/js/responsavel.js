@@ -21,8 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/resp', { method: 'GET' });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const dados = await res.json();
-      console.log("Dados CRUD:", dados); // debug
+      const result = await res.json();
+      console.log("Dados CRUD:", result); // debug
+      
+      // Verificar se a resposta tem o formato { success: true, data: [...] }
+      const dados = result.success ? result.data : result;
 
       tabelaBody.innerHTML = '';
 

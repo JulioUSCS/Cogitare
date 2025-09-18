@@ -13,8 +13,10 @@ async function carregarEstatisticas() {
         
         if (data.success) {
             const stats = data.data;
+            console.log('Estatísticas recebidas:', stats);
+            
             document.getElementById('totalAvaliacoes').textContent = stats.TotalAvaliacoes || 0;
-            document.getElementById('mediaGeral').textContent = (stats.MediaGeral || 0).toFixed(1);
+            document.getElementById('mediaGeral').textContent = (parseFloat(stats.MediaGeral) || 0).toFixed(1);
             document.getElementById('avaliacoesPositivas').textContent = stats.AvaliacoesPositivas || 0;
             document.getElementById('avaliacoesNegativas').textContent = stats.AvaliacoesNegativas || 0;
         } else {

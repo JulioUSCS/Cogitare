@@ -4,9 +4,9 @@ class AtendimentoController {
     static async listar(req, res) {
         try {
             const atendimentos = await AtendimentoModel.listar();
-            res.json(atendimentos);
+            res.json({ success: true, data: atendimentos });
         } catch (err) {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({ success: false, message: err.message });
         }
     }
 

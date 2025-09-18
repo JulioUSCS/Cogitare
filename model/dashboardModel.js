@@ -1,9 +1,17 @@
 // model/dashboardModel.js
 import db from '../config/db.js';
+import cache from '../utils/cache.js';
 
 class DashboardModel {
     // Buscar estatísticas gerais do sistema
     async buscarEstatisticasGerais() {
+        // Verificar cache primeiro
+        const cacheKey = 'estatisticas_gerais';
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
         const query = `
             SELECT 
                 (SELECT COUNT(*) FROM cuidador) as TotalCuidadores,
@@ -18,7 +26,12 @@ class DashboardModel {
         
         try {
             const [rows] = await db.execute(query);
-            return { success: true, data: rows[0] };
+            const result = { success: true, data: rows[0] };
+            
+            // Cache por 2 minutos
+            cache.set(cacheKey, result, 2 * 60 * 1000);
+            
+            return result;
         } catch (error) {
             console.error('Erro ao buscar estatísticas gerais:', error);
             return { success: false, message: 'Erro ao buscar estatísticas gerais' };
