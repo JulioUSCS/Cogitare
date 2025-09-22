@@ -45,4 +45,7 @@ router.get('/financeiro/cuidadores-rentaveis', financeiroController.buscarCuidad
 router.get('/financeiro/metas', financeiroController.buscarMetasFinanceiras);
 router.put('/financeiro/metas/atualizar', financeiroController.atualizarProgressoMetas);
 
+// ========== ROTAS DE AUTOMAÇÃO ==========
+router.post('/financeiro/receita-automatica', financeiroController.criarReceitaAutomatica);
+
 export default router;

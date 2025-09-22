@@ -1,5 +1,34 @@
 // public/js/financeiro.js
 
+// ========== TOOLTIPS DE CÁLCULO ==========
+
+// Função para alternar tooltips
+function toggleTooltip(tipo) {
+    // Fechar todos os outros tooltips
+    const allTooltips = document.querySelectorAll('.tooltip');
+    allTooltips.forEach(tooltip => {
+        if (tooltip.id !== `tooltip-${tipo}`) {
+            tooltip.classList.remove('show');
+        }
+    });
+    
+    // Alternar o tooltip atual
+    const tooltip = document.getElementById(`tooltip-${tipo}`);
+    if (tooltip) {
+        tooltip.classList.toggle('show');
+    }
+}
+
+// Fechar tooltips ao clicar fora
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.help-btn') && !event.target.closest('.tooltip')) {
+        const allTooltips = document.querySelectorAll('.tooltip');
+        allTooltips.forEach(tooltip => {
+            tooltip.classList.remove('show');
+        });
+    }
+});
+
 // Variáveis globais
 let receitasChart = null;
 let despesasChart = null;
@@ -273,10 +302,31 @@ async function carregarDadosParaFormularios() {
 
 // Atualizar cards de estatísticas
 function atualizarCardsEstatisticas(dados) {
-    document.getElementById('totalReceitas').textContent = formatarMoeda(dados.TotalReceitas || 0);
+    // Atualizar cards existentes
+    document.getElementById('totalReceitas').textContent = formatarMoeda(dados.ReceitaTotalEfetiva || 0);
     document.getElementById('totalDespesas').textContent = formatarMoeda(dados.TotalDespesas || 0);
     document.getElementById('lucroLiquido').textContent = formatarMoeda(dados.LucroLiquido || 0);
     document.getElementById('margemLucro').textContent = `${(dados.MargemLucro || 0).toFixed(1)}%`;
+    
+    // Atualizar novos cards de vendas
+    document.getElementById('totalVendas').textContent = formatarMoeda(dados.TotalVendas || 0);
+    document.getElementById('valorAReceber').textContent = formatarMoeda(dados.ValorAReceber || 0);
+    document.getElementById('valorRecebido').textContent = formatarMoeda(dados.ValorRecebido || 0);
+    
+    // Adicionar informações extras se disponíveis
+    if (dados.ReceitaAtendimentosConcluidos !== undefined) {
+        const diferenca = (dados.ReceitaAtendimentosConcluidos || 0) - (dados.ReceitaTotalEfetiva || 0);
+        if (diferenca > 0) {
+            console.log(`💰 Receita de atendimentos concluídos: ${formatarMoeda(dados.ReceitaAtendimentosConcluidos)}`);
+            console.log(`💸 Receita efetivamente recebida: ${formatarMoeda(dados.ReceitaTotalEfetiva)}`);
+            console.log(`⚠️ Diferença (pendente): ${formatarMoeda(diferenca)}`);
+        }
+    }
+    
+    // Log das novas métricas de vendas
+    console.log(`🛒 Total de Vendas: ${formatarMoeda(dados.TotalVendas || 0)}`);
+    console.log(`⏰ Valor a Receber: ${formatarMoeda(dados.ValorAReceber || 0)}`);
+    console.log(`✅ Valor Recebido: ${formatarMoeda(dados.ValorRecebido || 0)}`);
     
     // Atualizar cores baseadas no lucro
     const lucroElement = document.getElementById('lucroLiquido');
@@ -288,6 +338,24 @@ function atualizarCardsEstatisticas(dados) {
     } else {
         lucroElement.style.color = '#e74c3c';
         margemElement.style.color = '#e74c3c';
+    }
+    
+    // Atualizar cores dos cards de vendas baseadas nos valores
+    const valorAReceberElement = document.getElementById('valorAReceber');
+    const valorRecebidoElement = document.getElementById('valorRecebido');
+    
+    // Se há valor a receber, destacar em laranja
+    if (dados.ValorAReceber > 0) {
+        valorAReceberElement.style.color = '#e67e22';
+    } else {
+        valorAReceberElement.style.color = '#2c3e50';
+    }
+    
+    // Se há valor recebido, destacar em verde
+    if (dados.ValorRecebido > 0) {
+        valorRecebidoElement.style.color = '#27ae60';
+    } else {
+        valorRecebidoElement.style.color = '#2c3e50';
     }
 }
 
@@ -686,7 +754,14 @@ function atualizarSelectAtendimentos(atendimentos) {
     atendimentos.forEach(atendimento => {
         const option = document.createElement('option');
         option.value = atendimento.IdAtendimento;
-        option.textContent = `${atendimento.Descricao} - ${formatarData(atendimento.DataAtendimento)}`;
+        
+        // Usar campos corretos da tabela atendimento
+        const descricao = atendimento.ObservacaoExtra || `Atendimento #${atendimento.IdAtendimento}`;
+        const data = formatarData(atendimento.DataInicio);
+        const status = atendimento.Status || 'N/A';
+        const valor = formatarMoeda(atendimento.Valor || 0);
+        
+        option.textContent = `${descricao} - ${data} (${status}) - ${valor}`;
         select.appendChild(option);
     });
 }

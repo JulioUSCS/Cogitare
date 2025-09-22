@@ -320,18 +320,30 @@ class FinanceiroController {
             const resultado = await financeiroModel.buscarEstatisticasFinanceiras(inicio, fim);
 
             if (resultado.success) {
-                // Calcular lucro líquido
-                const totalReceitas = parseFloat(resultado.data.TotalReceitas) || 0;
+                // Calcular lucro líquido usando receita efetiva
+                const receitaEfetiva = parseFloat(resultado.data.ReceitaTotalEfetiva) || 0;
                 const totalDespesas = parseFloat(resultado.data.TotalDespesas) || 0;
-                const lucroLiquido = totalReceitas - totalDespesas;
-                const margemLucro = totalReceitas > 0 ? ((lucroLiquido / totalReceitas) * 100) : 0;
+                const lucroLiquido = receitaEfetiva - totalDespesas;
+                const margemLucro = receitaEfetiva > 0 ? ((lucroLiquido / receitaEfetiva) * 100) : 0;
+
+                // Calcular métricas de vendas
+                const totalVendas = parseFloat(resultado.data.TotalVendas) || 0;
+                const valorAReceber = parseFloat(resultado.data.ValorAReceber) || 0;
+                const valorRecebido = parseFloat(resultado.data.ValorRecebido) || 0;
 
                 res.json({
                     success: true,
                     data: {
                         ...resultado.data,
                         LucroLiquido: lucroLiquido,
-                        MargemLucro: margemLucro
+                        MargemLucro: margemLucro,
+                        // Manter compatibilidade com nomes antigos
+                        TotalReceitas: receitaEfetiva,
+                        QtdReceitas: resultado.data.QtdReceitasEfetivas,
+                        // Novas métricas de vendas
+                        TotalVendas: totalVendas,
+                        ValorAReceber: valorAReceber,
+                        ValorRecebido: valorRecebido
                     }
                 });
             } else {
@@ -481,6 +493,43 @@ class FinanceiroController {
             }
         } catch (error) {
             console.error('Erro no controller atualizarProgressoMetas:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Erro interno do servidor'
+            });
+        }
+    }
+
+    // ========== AUTOMAÇÃO DE RECEITAS ==========
+    
+    // Criar receita automaticamente
+    async criarReceitaAutomatica(req, res) {
+        try {
+            const { IdAtendimento } = req.body;
+
+            if (!IdAtendimento) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID do atendimento é obrigatório'
+                });
+            }
+
+            const resultado = await financeiroModel.criarReceitaAutomatica(IdAtendimento);
+
+            if (resultado.success) {
+                res.status(201).json({
+                    success: true,
+                    message: resultado.message,
+                    data: { id: resultado.id }
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: resultado.message
+                });
+            }
+        } catch (error) {
+            console.error('Erro no controller criarReceitaAutomatica:', error);
             res.status(500).json({
                 success: false,
                 message: 'Erro interno do servidor'

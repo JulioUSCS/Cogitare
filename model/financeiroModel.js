@@ -8,12 +8,42 @@ class FinanceiroModel {
     async criarReceita(receita) {
         const { IdAtendimento, IdResponsavel, Valor, FormaPagamento, Observacoes } = receita;
         
-        const query = `
-            INSERT INTO receita (IdAtendimento, IdResponsavel, Valor, FormaPagamento, Observacoes)
-            VALUES (?, ?, ?, ?, ?)
-        `;
-        
         try {
+            // 🔒 PROTEÇÃO: Se a receita está vinculada a um atendimento, verificar se ele está concluído
+            if (IdAtendimento) {
+                const [atendimentoRows] = await db.execute(`
+                    SELECT Status FROM atendimento WHERE IdAtendimento = ?
+                `, [IdAtendimento]);
+                
+                if (atendimentoRows.length === 0) {
+                    return { success: false, message: 'Atendimento não encontrado' };
+                }
+                
+                const atendimento = atendimentoRows[0];
+                
+                // 🔒 PROTEÇÃO: Verificar se o atendimento está concluído
+                if (atendimento.Status !== 'Concluído') {
+                    return { 
+                        success: false, 
+                        message: `Não é possível criar receita para atendimento com status '${atendimento.Status}'. Apenas atendimentos 'Concluído' podem ter receitas.` 
+                    };
+                }
+                
+                // 🔒 PROTEÇÃO: Verificar se já existe receita para este atendimento
+                const [receitaExistente] = await db.execute(`
+                    SELECT IdReceita FROM receita WHERE IdAtendimento = ?
+                `, [IdAtendimento]);
+                
+                if (receitaExistente.length > 0) {
+                    return { success: false, message: 'Já existe uma receita para este atendimento' };
+                }
+            }
+            
+            const query = `
+                INSERT INTO receita (IdAtendimento, IdResponsavel, Valor, FormaPagamento, Observacoes)
+                VALUES (?, ?, ?, ?, ?)
+            `;
+            
             const [result] = await db.execute(query, [IdAtendimento, IdResponsavel, Valor, FormaPagamento, Observacoes]);
             return { success: true, id: result.insertId };
         } catch (error) {
@@ -258,37 +288,69 @@ class FinanceiroModel {
     async buscarEstatisticasFinanceiras(dataInicio, dataFim) {
         const query = `
             SELECT 
-                (SELECT COALESCE(SUM(Valor), 0) FROM receita 
-                 WHERE DATE(DataRecebimento) BETWEEN ? AND ? AND Status = 'Pago') as TotalReceitas,
+                -- ========== MÉTRICAS DE VENDAS ==========
+                -- Total de vendas (todos os atendimentos)
+                (SELECT COALESCE(SUM(Valor), 0) FROM atendimento) as TotalVendas,
                 
+                -- Valor a receber (atendimentos não concluídos)
+                (SELECT COALESCE(SUM(Valor), 0) FROM atendimento 
+                 WHERE Status != 'Concluído') as ValorAReceber,
+                
+                -- Valor já recebido (atendimentos concluídos)
+                (SELECT COALESCE(SUM(Valor), 0) FROM atendimento 
+                 WHERE Status = 'Concluído') as ValorRecebido,
+                
+                -- ========== MÉTRICAS DE RECEITA ==========
+                -- Receita total de todos os atendimentos concluídos
+                (SELECT COALESCE(SUM(Valor), 0) FROM atendimento 
+                 WHERE Status = 'Concluído') as ReceitaAtendimentosConcluidos,
+                
+                -- Receitas efetivamente recebidas (tabela receita)
+                (SELECT COALESCE(SUM(Valor), 0) FROM receita 
+                 WHERE Status = 'Pago') as ReceitaTotalEfetiva,
+                
+                -- ========== MÉTRICAS DE DESPESAS ==========
+                -- Despesas do período
                 (SELECT COALESCE(SUM(Valor), 0) FROM despesa 
                  WHERE DATE(DataDespesa) BETWEEN ? AND ? AND Status = 'Pago') as TotalDespesas,
                 
-                (SELECT COALESCE(SUM(ValorTotal), 0) FROM comissao 
-                 WHERE DATE(DataCalculo) BETWEEN ? AND ? AND Status = 'Pago') as TotalComissoes,
+                -- Comissões baseadas em atendimentos concluídos
+                (SELECT COALESCE(SUM(com.ValorTotal), 0) FROM comissao com
+                 INNER JOIN atendimento at ON com.IdAtendimento = at.IdAtendimento
+                 WHERE at.Status = 'Concluído' AND com.Status = 'Pago') as TotalComissoes,
                 
-                (SELECT COALESCE(SUM(ValorDevido), 0) FROM inadimplencia 
-                 WHERE Status = 'Em Atraso') as TotalInadimplencia,
+                -- Inadimplência (atendimentos sem pagamento)
+                (SELECT COALESCE(SUM(at.Valor), 0) FROM atendimento at
+                 LEFT JOIN pagamento p ON at.IdAtendimento = p.IdAtendimento
+                 WHERE at.Status = 'Concluído' 
+                 AND (p.IdPagamento IS NULL OR p.StatusPagamento != 'Pago')) as TotalInadimplencia,
+                
+                -- ========== QUANTIDADES ==========
+                -- Quantidades de atendimentos por status
+                (SELECT COUNT(*) FROM atendimento 
+                 WHERE Status = 'Concluído') as QtdAtendimentosConcluidos,
+                
+                (SELECT COUNT(*) FROM atendimento 
+                 WHERE Status != 'Concluído') as QtdAtendimentosPendentes,
+                
+                (SELECT COUNT(*) FROM atendimento) as QtdTotalAtendimentos,
                 
                 (SELECT COUNT(*) FROM receita 
-                 WHERE DATE(DataRecebimento) BETWEEN ? AND ? AND Status = 'Pago') as QtdReceitas,
+                 WHERE Status = 'Pago') as QtdReceitasEfetivas,
                 
                 (SELECT COUNT(*) FROM despesa 
                  WHERE DATE(DataDespesa) BETWEEN ? AND ? AND Status = 'Pago') as QtdDespesas,
                 
-                (SELECT COUNT(*) FROM inadimplencia 
-                 WHERE Status = 'Em Atraso') as QtdInadimplencia
+                (SELECT COUNT(*) FROM atendimento at
+                 LEFT JOIN pagamento p ON at.IdAtendimento = p.IdAtendimento
+                 WHERE at.Status = 'Concluído' 
+                 AND (p.IdPagamento IS NULL OR p.StatusPagamento != 'Pago')) as QtdInadimplencia
         `;
         
         try {
             const [rows] = await db.execute(query, [
-                dataInicio, dataFim, // TotalReceitas
                 dataInicio, dataFim, // TotalDespesas  
-                dataInicio, dataFim, // TotalComissoes
-                // TotalInadimplencia (sem parâmetros)
-                dataInicio, dataFim, // QtdReceitas
                 dataInicio, dataFim, // QtdDespesas
-                // QtdInadimplencia (sem parâmetros)
             ]);
             return { success: true, data: rows[0] };
         } catch (error) {
@@ -301,13 +363,13 @@ class FinanceiroModel {
     async buscarReceitasPorMes() {
         const query = `
             SELECT 
-                DATE_FORMAT(DataRecebimento, '%Y-%m') as Mes,
+                DATE_FORMAT(DataInicio, '%Y-%m') as Mes,
                 SUM(Valor) as TotalReceitas,
                 COUNT(*) as QtdReceitas
-            FROM receita 
-            WHERE DataRecebimento >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-            AND Status = 'Pago'
-            GROUP BY DATE_FORMAT(DataRecebimento, '%Y-%m')
+            FROM atendimento 
+            WHERE DataInicio >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+            AND Status = 'Concluído'
+            GROUP BY DATE_FORMAT(DataInicio, '%Y-%m')
             ORDER BY Mes ASC
         `;
         
@@ -350,14 +412,14 @@ class FinanceiroModel {
                 c.IdCuidador,
                 c.Nome,
                 COUNT(a.IdAtendimento) as QtdAtendimentos,
-                SUM(a.Valor) as TotalReceitas,
-                AVG(a.Valor) as MediaAtendimento,
-                SUM(com.ValorTotal) as TotalComissoes
+                COALESCE(SUM(a.Valor), 0) as TotalReceitas,
+                COALESCE(AVG(a.Valor), 0) as MediaAtendimento,
+                COALESCE(SUM(com.ValorTotal), 0) as TotalComissoes
             FROM cuidador c
-            LEFT JOIN atendimento a ON c.IdCuidador = a.IdCuidador
+            LEFT JOIN atendimento a ON c.IdCuidador = a.IdCuidador 
+                AND DATE(a.DataInicio) BETWEEN ? AND ?
+                AND a.Status = 'Concluído'
             LEFT JOIN comissao com ON a.IdAtendimento = com.IdAtendimento
-            WHERE DATE(a.DataInicio) BETWEEN ? AND ?
-            AND a.Status = 'Concluído'
             GROUP BY c.IdCuidador, c.Nome
             ORDER BY TotalReceitas DESC
             LIMIT 10
@@ -369,6 +431,63 @@ class FinanceiroModel {
         } catch (error) {
             console.error('Erro ao buscar cuidadores mais rentáveis:', error);
             return { success: false, message: 'Erro ao buscar cuidadores mais rentáveis' };
+        }
+    }
+
+    // ========== AUTOMAÇÃO DE RECEITAS ==========
+    
+    // Criar receita automaticamente quando atendimento for concluído
+    async criarReceitaAutomatica(IdAtendimento) {
+        try {
+            // 🔒 PROTEÇÃO: Buscar dados do atendimento com validação rigorosa
+            const [atendimentoRows] = await db.execute(`
+                SELECT IdAtendimento, IdResponsavel, Valor, DataInicio, Status
+                FROM atendimento 
+                WHERE IdAtendimento = ?
+            `, [IdAtendimento]);
+            
+            if (atendimentoRows.length === 0) {
+                return { success: false, message: 'Atendimento não encontrado' };
+            }
+            
+            const atendimento = atendimentoRows[0];
+            
+            // 🔒 PROTEÇÃO: Verificar se o atendimento está realmente concluído
+            if (atendimento.Status !== 'Concluído') {
+                return { 
+                    success: false, 
+                    message: `Não é possível criar receita para atendimento com status '${atendimento.Status}'. Apenas atendimentos 'Concluído' podem gerar receitas automaticamente.` 
+                };
+            }
+            
+            // 🔒 PROTEÇÃO: Verificar se já existe receita para este atendimento
+            const [receitaExistente] = await db.execute(`
+                SELECT IdReceita FROM receita WHERE IdAtendimento = ?
+            `, [IdAtendimento]);
+            
+            if (receitaExistente.length > 0) {
+                return { success: false, message: 'Receita já existe para este atendimento' };
+            }
+            
+            // 🔒 PROTEÇÃO: Verificar se o valor do atendimento é válido
+            if (!atendimento.Valor || parseFloat(atendimento.Valor) <= 0) {
+                return { success: false, message: 'Valor do atendimento inválido para gerar receita' };
+            }
+            
+            // Criar receita automaticamente (apenas se passou em todas as validações)
+            const [result] = await db.execute(`
+                INSERT INTO receita (IdAtendimento, IdResponsavel, Valor, Status, FormaPagamento, Observacoes, DataRecebimento)
+                VALUES (?, ?, ?, 'Pago', 'Automático', 'Receita gerada automaticamente pelo sistema', NOW())
+            `, [IdAtendimento, atendimento.IdResponsavel, atendimento.Valor]);
+            
+            return { 
+                success: true, 
+                message: 'Receita criada automaticamente com sucesso', 
+                id: result.insertId 
+            };
+        } catch (error) {
+            console.error('Erro ao criar receita automática:', error);
+            return { success: false, message: 'Erro ao criar receita automática' };
         }
     }
 

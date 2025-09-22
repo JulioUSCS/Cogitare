@@ -1,4 +1,6 @@
 import AtendimentoModel from '../model/atendimentoModel.js';
+import financeiroModel from '../model/financeiroModel.js';
+import PagamentoModel from '../model/pagamentoModel.js';
 
 class AtendimentoController {
     static async listar(req, res) {
@@ -26,6 +28,65 @@ class AtendimentoController {
             res.json(msg);
         } catch (err) {
             res.status(500).json({ error: err.message });
+        }
+    }
+
+    static async atualizarStatus(req, res) {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            if (!status) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Status é obrigatório'
+                });
+            }
+
+            // Atualizar status do atendimento
+            const resultado = await AtendimentoModel.atualizarStatus(id, status);
+
+            // Se o status for "Concluído", criar receita e pagamento automaticamente
+            if (status === 'Concluído') {
+                try {
+                    // Criar receita automaticamente
+                    const receitaResult = await financeiroModel.criarReceitaAutomatica(id);
+                    if (receitaResult.success) {
+                        resultado.receitaCriada = true;
+                        resultado.receitaMessage = receitaResult.message;
+                    } else {
+                        resultado.receitaCriada = false;
+                        resultado.receitaMessage = receitaResult.message;
+                    }
+                } catch (receitaError) {
+                    console.warn('Erro ao criar receita automática:', receitaError);
+                    resultado.receitaCriada = false;
+                    resultado.receitaMessage = 'Erro ao criar receita automática';
+                }
+
+                try {
+                    // Criar pagamento automaticamente
+                    const pagamentoResult = await PagamentoModel.criarPagamentoAutomatico(id);
+                    if (pagamentoResult.success) {
+                        resultado.pagamentoCriado = true;
+                        resultado.pagamentoMessage = pagamentoResult.message;
+                    } else {
+                        resultado.pagamentoCriado = false;
+                        resultado.pagamentoMessage = pagamentoResult.message;
+                    }
+                } catch (pagamentoError) {
+                    console.warn('Erro ao criar pagamento automático:', pagamentoError);
+                    resultado.pagamentoCriado = false;
+                    resultado.pagamentoMessage = 'Erro ao criar pagamento automático';
+                }
+            }
+
+            res.json(resultado);
+        } catch (err) {
+            res.status(500).json({ 
+                success: false, 
+                message: err.message 
+            });
         }
     }
 }

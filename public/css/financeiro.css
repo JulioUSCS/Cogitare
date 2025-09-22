@@ -83,6 +83,7 @@
     align-items: center;
     gap: 1rem;
     transition: transform 0.2s ease;
+    position: relative;
 }
 
 .stat-card:hover {
@@ -114,6 +115,19 @@
 
 .stat-card.margem .stat-icon {
     background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+/* Novos cards de vendas */
+.stat-card.vendas .stat-icon {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+}
+
+.stat-card.a-receber .stat-icon {
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+}
+
+.stat-card.recebido .stat-icon {
+    background: linear-gradient(135deg, #16a085, #1abc9c);
 }
 
 .stat-content h3 {
@@ -622,5 +636,139 @@
     .sem-dados-actions .btn {
         width: 100%;
         max-width: 300px;
+    }
+}
+
+/* ========== TOOLTIPS DE CÁLCULO ========== */
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.help-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.help-btn:hover {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.help-btn i {
+    font-size: 0.9rem;
+}
+
+.tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.tooltip.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.tooltip-content {
+    padding: 1rem;
+}
+
+.tooltip-content h4 {
+    margin: 0 0 0.75rem 0;
+    color: #2c3e50;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tooltip-content p {
+    margin: 0 0 0.5rem 0;
+    color: #495057;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.calculation-example {
+    background: #f8f9fa;
+    border-left: 3px solid #007bff;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.calculation-example p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.85rem;
+}
+
+.calculation-example code {
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #495057;
+    display: block;
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.tooltip-content em {
+    font-style: italic;
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+/* Responsividade para tooltips */
+@media (max-width: 768px) {
+    .stat-card {
+        position: relative;
+    }
+    
+    .tooltip {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .tooltip.show {
+        transform: translate(-50%, -50%);
+    }
+    
+    .tooltip-content {
+        padding: 1.5rem;
     }
 }

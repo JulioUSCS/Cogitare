@@ -300,33 +300,57 @@ function atualizarTabelaAutonomia() {
 
 // Função para atualizar indicadores de crescimento
 function atualizarIndicadoresCrescimento() {
-    const data = dashboardData.dadosCrescimento || [];
-    
-    if (data.length >= 2) {
-        const atendimentos = data[0];
-        const receita = data[1];
+    try {
+        const data = dashboardData.dadosCrescimento || [];
         
-        const crescimentoAtendimentos = calcularCrescimento(atendimentos.MesAtual, atendimentos.MesAnterior);
-        const crescimentoReceita = calcularCrescimento(receita.MesAtual, receita.MesAnterior);
-        
-        document.getElementById('crescimentoAtendimentos').textContent = `${crescimentoAtendimentos}%`;
-        document.getElementById('crescimentoReceita').textContent = `${crescimentoReceita}%`;
-        
-        // Aplicar cores baseadas no crescimento
-        const elementoAtendimentos = document.getElementById('crescimentoAtendimentos');
-        const elementoReceita = document.getElementById('crescimentoReceita');
-        
-        elementoAtendimentos.className = getClasseCrescimento(crescimentoAtendimentos);
-        elementoReceita.className = getClasseCrescimento(crescimentoReceita);
+        if (data.length >= 2) {
+            const atendimentos = data[0];
+            const receita = data[1];
+            
+            console.log('Dados de crescimento:', { atendimentos, receita });
+            
+            const crescimentoAtendimentos = calcularCrescimento(atendimentos.MesAtual, atendimentos.MesAnterior);
+            const crescimentoReceita = calcularCrescimento(receita.MesAtual, receita.MesAnterior);
+            
+            console.log(`Crescimento calculado - Atendimentos: ${crescimentoAtendimentos}%, Receita: ${crescimentoReceita}%`);
+            
+            // Atualizar elementos se existirem
+            const elementoAtendimentos = document.getElementById('crescimentoAtendimentos');
+            const elementoReceita = document.getElementById('crescimentoReceita');
+            
+            if (elementoAtendimentos) {
+                elementoAtendimentos.textContent = `${crescimentoAtendimentos}%`;
+                elementoAtendimentos.className = getClasseCrescimento(crescimentoAtendimentos);
+            }
+            
+            if (elementoReceita) {
+                elementoReceita.textContent = `${crescimentoReceita}%`;
+                elementoReceita.className = getClasseCrescimento(crescimentoReceita);
+            }
+        } else {
+            console.warn('Dados de crescimento insuficientes:', data);
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar indicadores de crescimento:', error);
     }
 }
 
 // Função para calcular crescimento percentual
 function calcularCrescimento(atual, anterior) {
-    if (anterior === 0) {
-        return atual > 0 ? 100 : 0;
+    // Converter para números para evitar problemas com strings
+    const atualNum = parseFloat(atual) || 0;
+    const anteriorNum = parseFloat(anterior) || 0;
+    
+    // Se não há dados anteriores, tratar como novo crescimento
+    if (anteriorNum === 0) {
+        return atualNum > 0 ? 100 : 0;
     }
-    return Math.round(((atual - anterior) / anterior) * 100);
+    
+    // Calcular crescimento percentual
+    const crescimento = ((atualNum - anteriorNum) / anteriorNum) * 100;
+    
+    // Limitar a 999% para evitar valores muito altos
+    return Math.round(Math.min(Math.max(crescimento, -999), 999));
 }
 
 // Função para obter classe CSS baseada no crescimento

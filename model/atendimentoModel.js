@@ -17,14 +17,32 @@ class AtendimentoModel {
     }
     //busca um atendimento especifico
     static async buscarPorId(id) {
-        const [rows] = await pool.query('SELECT * FROM atendimento WHERE IdCuidador = ?', [id]);
+        const [rows] = await pool.query('SELECT * FROM atendimento WHERE IdAtendimento = ?', [id]);
         return rows[0];
     }
 
     //cancela um atendimento existente
     static async excluir(id) {
-        await pool.query('DELETE FROM atendimento WHERE IdCuidador = ?', [id]);
-        return { message: 'Cuidador removido com sucesso' };
+        await pool.query('DELETE FROM atendimento WHERE IdAtendimento = ?', [id]);
+        return { message: 'Atendimento removido com sucesso' };
+    }
+
+    //atualiza o status de um atendimento
+    static async atualizarStatus(id, status) {
+        const [result] = await pool.query(
+            'UPDATE atendimento SET Status = ? WHERE IdAtendimento = ?', 
+            [status, id]
+        );
+        
+        if (result.affectedRows === 0) {
+            throw new Error('Atendimento não encontrado');
+        }
+        
+        return { 
+            success: true, 
+            message: `Status do atendimento atualizado para: ${status}`,
+            affectedRows: result.affectedRows
+        };
     }
 }
 

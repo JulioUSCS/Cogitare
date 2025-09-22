@@ -77,8 +77,40 @@
                         <i class="fas fa-arrow-up"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="totalReceitas">R$ 0,00</h3>
+                        <div class="stat-header">
+                            <h3 id="totalReceitas">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('receita')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
                         <p>Total de Receitas</p>
+                        <div id="tooltip-receita" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>💰 O que é uma Receita?</h4>
+                                <p><strong>Receita = Dinheiro que ENTROU no seu negócio</strong></p>
+                                <p>É o pagamento que você <strong>realmente recebeu</strong> pelos serviços prestados (cuidar de idosos, consultorias, etc.)</p>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Como é calculado:</strong></p>
+                                    <p><strong>Receita Total Efetiva:</strong> Soma de todas as receitas que realmente entraram no caixa (tabela receita com Status = 'Pago')</p>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula SQL:</strong></p>
+                                    <code>SELECT SUM(Valor) FROM receita WHERE Status = 'Pago'</code>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo prático:</strong></p>
+                                    <p>• Atendimento 1: R$ 150,00 → Pago ✅</p>
+                                    <p>• Atendimento 2: R$ 250,00 → Pago ✅</p>
+                                    <p>• Atendimento 3: R$ 200,00 → Pendente ❌</p>
+                                    <p><strong>Receita Total: R$ 400,00</strong> (só os pagos!)</p>
+                                </div>
+                                
+                                <p><em>💡 Dica: Receita ≠ Atendimento. Receita é o dinheiro que realmente entrou no seu bolso!</em></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card despesa">
@@ -86,8 +118,30 @@
                         <i class="fas fa-arrow-down"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="totalDespesas">R$ 0,00</h3>
+                        <div class="stat-header">
+                            <h3 id="totalDespesas">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('despesa')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
                         <p>Total de Despesas</p>
+                        <div id="tooltip-despesa" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>💸 Como é calculado:</h4>
+                                <p><strong>Total de Despesas:</strong> Soma de todas as despesas pagas no período selecionado</p>
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula:</strong></p>
+                                    <code>SELECT SUM(Valor) FROM despesa WHERE Status = 'Pago' AND DataDespesa BETWEEN ? AND ?</code>
+                                </div>
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo:</strong></p>
+                                    <p>Despesa 1: R$ 50,00 ✅</p>
+                                    <p>Despesa 2: R$ 30,00 ✅</p>
+                                    <p>Despesa 3: R$ 20,00 ✅</p>
+                                    <p><strong>Total: R$ 100,00</strong></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card lucro">
@@ -95,8 +149,30 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="lucroLiquido">R$ 0,00</h3>
+                        <div class="stat-header">
+                            <h3 id="lucroLiquido">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('lucro')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
                         <p>Lucro Líquido</p>
+                        <div id="tooltip-lucro" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>📈 Como é calculado:</h4>
+                                <p><strong>Lucro Líquido:</strong> Diferença entre receitas efetivas e despesas do período</p>
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula:</strong></p>
+                                    <code>Lucro = ReceitaTotalEfetiva - TotalDespesas</code>
+                                </div>
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo:</strong></p>
+                                    <p>Receita Efetiva: R$ 400,00</p>
+                                    <p>Total Despesas: R$ 100,00</p>
+                                    <p><strong>Lucro: R$ 300,00</strong></p>
+                                </div>
+                                <p><em>💰 Verde = Lucro | ❌ Vermelho = Prejuízo</em></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card margem">
@@ -104,8 +180,157 @@
                         <i class="fas fa-percentage"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="margemLucro">0%</h3>
+                        <div class="stat-header">
+                            <h3 id="margemLucro">0%</h3>
+                            <button class="help-btn" onclick="toggleTooltip('margem')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
                         <p>Margem de Lucro</p>
+                        <div id="tooltip-margem" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>📊 Como é calculado:</h4>
+                                <p><strong>Margem de Lucro:</strong> Percentual do lucro em relação às receitas</p>
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula:</strong></p>
+                                    <code>Margem = (Lucro Líquido ÷ Receita Efetiva) × 100</code>
+                                </div>
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo:</strong></p>
+                                    <p>Lucro Líquido: R$ 300,00</p>
+                                    <p>Receita Efetiva: R$ 400,00</p>
+                                    <p><strong>Margem: (300 ÷ 400) × 100 = 75%</strong></p>
+                                </div>
+                                <p><em>📈 Quanto maior, melhor! Mostra eficiência do negócio</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ========== NOVOS CARDS DE VENDAS ========== -->
+                <div class="stat-card vendas">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <h3 id="totalVendas">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('vendas')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
+                        <p>Total de Vendas</p>
+                        <div id="tooltip-vendas" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>🛒 O que são Vendas?</h4>
+                                <p><strong>Vendas = Todos os atendimentos contratados</strong></p>
+                                <p>É a soma de TODOS os atendimentos (concluídos, em andamento, agendados) - representa o potencial total do seu negócio</p>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Como é calculado:</strong></p>
+                                    <p><strong>Total de Vendas:</strong> Soma de todos os valores dos atendimentos, independente do status</p>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula SQL:</strong></p>
+                                    <code>SELECT SUM(Valor) FROM atendimento</code>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo prático:</strong></p>
+                                    <p>• Atendimento 1: R$ 150,00 → Concluído ✅</p>
+                                    <p>• Atendimento 2: R$ 250,00 → Em andamento 🔄</p>
+                                    <p>• Atendimento 3: R$ 200,00 → Agendado 📅</p>
+                                    <p><strong>Total de Vendas: R$ 600,00</strong></p>
+                                </div>
+                                
+                                <p><em>💡 Dica: Vendas ≠ Receita. Vendas são o potencial, receita é o que já entrou!</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card a-receber">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <h3 id="valorAReceber">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('a-receber')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
+                        <p>Valor a Receber</p>
+                        <div id="tooltip-a-receber" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>⏰ O que é Valor a Receber?</h4>
+                                <p><strong>Valor a Receber = Dinheiro que ainda vai entrar</strong></p>
+                                <p>É a soma dos atendimentos que ainda não foram concluídos (em andamento, agendados, etc.)</p>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Como é calculado:</strong></p>
+                                    <p><strong>Valor a Receber:</strong> Soma dos atendimentos com status diferente de 'Concluído'</p>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula SQL:</strong></p>
+                                    <code>SELECT SUM(Valor) FROM atendimento WHERE Status != 'Concluído'</code>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo prático:</strong></p>
+                                    <p>• Atendimento 2: R$ 250,00 → Em andamento 🔄</p>
+                                    <p>• Atendimento 3: R$ 200,00 → Agendado 📅</p>
+                                    <p>• Atendimento 4: R$ 180,00 → Agendado 📅</p>
+                                    <p><strong>Valor a Receber: R$ 630,00</strong></p>
+                                </div>
+                                
+                                <p><em>💡 Dica: Este é o dinheiro que ainda vai entrar no seu caixa!</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card recebido">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <h3 id="valorRecebido">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('recebido')" title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
+                        <p>Valor Recebido</p>
+                        <div id="tooltip-recebido" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>✅ O que é Valor Recebido?</h4>
+                                <p><strong>Valor Recebido = Atendimentos já concluídos</strong></p>
+                                <p>É a soma dos atendimentos que já foram finalizados e podem gerar receita</p>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Como é calculado:</strong></p>
+                                    <p><strong>Valor Recebido:</strong> Soma dos atendimentos com status 'Concluído'</p>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula SQL:</strong></p>
+                                    <code>SELECT SUM(Valor) FROM atendimento WHERE Status = 'Concluído'</code>
+                                </div>
+                                
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo prático:</strong></p>
+                                    <p>• Atendimento 1: R$ 150,00 → Concluído ✅</p>
+                                    <p>• Atendimento 5: R$ 300,00 → Concluído ✅</p>
+                                    <p>• Atendimento 6: R$ 200,00 → Concluído ✅</p>
+                                    <p><strong>Valor Recebido: R$ 650,00</strong></p>
+                                </div>
+                                
+                                <p><em>💡 Dica: Estes atendimentos já podem gerar receita no caixa!</em></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

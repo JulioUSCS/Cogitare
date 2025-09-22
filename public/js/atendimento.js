@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td class="valor-cell">${atendimento.Valor || 'Nenhuma'}</td>
                         <td class="obs-cell">${atendimento.ObservacaoExtra || 'Nenhuma'}</td>
                         <td class="acoes-cell">
-                            <button class="btn-excluir" data-id="${atendimento.IdCuidador}">Cancelar</button>
+                            <button class="btn-excluir" data-id="${atendimento.IdAtendimento}">Cancelar</button>
                         </td>
                         `;
                     tabelaBody.appendChild(tr);
