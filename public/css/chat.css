@@ -1,5 +1,11 @@
 /* CSS para Suporte */
 
+.chat-page-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 .chat-container {
     display: flex;
     height: calc(100vh - 80px);
@@ -643,6 +649,10 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .chat-page-container {
+        padding: 1rem;
+    }
+    
     .chat-container {
         height: calc(100vh - 60px);
         flex-direction: column;

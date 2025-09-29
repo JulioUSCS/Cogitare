@@ -27,8 +27,12 @@ body {
 .main-content {
   flex: 1;
   padding: calc(var(--nav-height, 56px) + 1rem) 1rem 2rem;
+}
+
+.historico-container {
+  padding: 2rem;
+  max-width: 1400px;
   margin: 0 auto;
-  max-width: 1800px;
 }
 
 /* =========================
@@ -389,6 +393,10 @@ body {
 @media (max-width: 768px) {
   .main-content {
     padding: calc(var(--nav-height, 56px) + 0.5rem) 0.5rem 1rem;
+  }
+
+  .historico-container {
+    padding: 1rem;
   }
 
   .header h1 {

@@ -1,5 +1,11 @@
 /* CSS para Dashboard */
 
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 .page-header {
     margin-bottom: 2rem;
 }
@@ -360,6 +366,10 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
     .stats-grid {
         grid-template-columns: 1fr;
     }

@@ -1,5 +1,11 @@
 /* CSS para página de avaliações */
 
+.avaliacao-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 .page-header {
     margin-bottom: 2rem;
 }
@@ -479,6 +485,10 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .avaliacao-container {
+        padding: 1rem;
+    }
+    
     .stats-container {
         grid-template-columns: 1fr;
     }
