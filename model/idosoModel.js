@@ -64,7 +64,68 @@ const Idoso = {
   },
 
   async excluir(id) {
-    await pool.query('DELETE FROM idoso WHERE IdIdoso = ?', [id]);
+    const connection = await pool.getConnection();
+    
+    try {
+      await connection.beginTransaction();
+      
+      // 1. Buscar todos os atendimentos deste idoso
+      const [atendimentos] = await connection.query(
+        'SELECT IdAtendimento FROM atendimento WHERE IdIdoso = ?',
+        [id]
+      );
+      
+      // 2. Excluir avaliações dos atendimentos
+      if (atendimentos.length > 0) {
+        const idsAtendimentos = atendimentos.map(a => a.IdAtendimento);
+        await connection.query(
+          `DELETE FROM avaliacao WHERE IdAtendimento IN (${idsAtendimentos.join(',')})`,
+          []
+        );
+        
+        // 3. Excluir comissões dos atendimentos
+        await connection.query(
+          `DELETE FROM comissao WHERE IdAtendimento IN (${idsAtendimentos.join(',')})`,
+          []
+        );
+        
+        // 4. Excluir receitas dos atendimentos
+        await connection.query(
+          `DELETE FROM receita WHERE IdAtendimento IN (${idsAtendimentos.join(',')})`,
+          []
+        );
+        
+        // 5. Excluir pagamentos dos atendimentos
+        await connection.query(
+          `DELETE FROM pagamento WHERE IdAtendimento IN (${idsAtendimentos.join(',')})`,
+          []
+        );
+        
+        // 6. Excluir histórico dos atendimentos
+        await connection.query(
+          `DELETE FROM historicoatendimento WHERE IdAtendimento IN (${idsAtendimentos.join(',')})`,
+          []
+        );
+      }
+      
+      // 7. Excluir doenças e restrições alimentares do idoso (CASCADE já cuidará disso, mas por segurança)
+      await connection.query('DELETE FROM idosodoenca WHERE IdIdoso = ?', [id]);
+      await connection.query('DELETE FROM idosorestricaoalimentar WHERE IdIdoso = ?', [id]);
+      
+      // 8. Excluir atendimentos (CASCADE funcionará agora)
+      await connection.query('DELETE FROM atendimento WHERE IdIdoso = ?', [id]);
+      
+      // 9. Finalmente, excluir o idoso
+      await connection.query('DELETE FROM idoso WHERE IdIdoso = ?', [id]);
+      
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      console.error('Erro ao excluir idoso:', error);
+      throw new Error('Não foi possível excluir o idoso. Por favor, tente novamente.');
+    } finally {
+      connection.release();
+    }
   },
 
   async listarResponsavel() {

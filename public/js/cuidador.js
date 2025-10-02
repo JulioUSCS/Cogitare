@@ -37,10 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 cuidadores.forEach(cuidador => {
+                    // Usar imagem padrão local se não houver foto
+                    const avatarPadrao = '/avatar/cuidador.png';
+                    const fotoUrl = cuidador.FotoUrl && cuidador.FotoUrl.trim() !== '' ? cuidador.FotoUrl : avatarPadrao;
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td class="foto-cell">
-                          <img src="${cuidador.FotoUrl || '/images/default-cuidador.jpg'}" alt="Foto de ${cuidador.Nome}" class="foto-cuidador" />
+                          <img src="${fotoUrl}" alt="Foto de ${cuidador.Nome}" class="foto-cuidador" />
                         </td>
                         <td class="nome-cell"><strong>${cuidador.Nome}</strong></td>
                         <td class="email-cell">${cuidador.Email || '-'}</td>
@@ -101,15 +105,37 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-excluir').forEach(botao => {
             botao.addEventListener('click', async () => {
                 const id = botao.getAttribute('data-id');
-                if (confirm('Deseja realmente excluir este cuidador?')) {
+                const nomeCuidador = botao.closest('tr').querySelector('.nome-cell').textContent.trim();
+                
+                // Mensagem de aviso detalhada
+                const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
+                    `Você está prestes a excluir o cuidador: ${nomeCuidador}\n\n` +
+                    `Esta ação poderá excluir PERMANENTEMENTE:\n` +
+                    `• Todos os atendimentos realizados por este cuidador\n` +
+                    `• Todas as avaliações recebidas\n` +
+                    `• Histórico de comissões\n` +
+                    `• Certificados e especialidades cadastradas\n` +
+                    `• Disponibilidade e serviços oferecidos\n\n` +
+                    `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
+                    `Deseja realmente continuar?`;
+                
+                if (confirm(mensagemAviso)) {
                     try {
-                        const response = await fetch(`/api/cuidadores/${id}`, {
+                        const response = await fetch(`/api/cuidador/${id}`, {
                             method: 'DELETE'
                         });
-                        if (!response.ok) throw new Error('Erro ao excluir');
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            alert(`❌ Erro ao excluir:\n\n${data.error || data.erro || 'Erro desconhecido. Tente novamente.'}`);
+                            return;
+                        }
+                        
+                        alert(`✅ Sucesso!\n\n${nomeCuidador} foi excluído permanentemente.`);
                         carregarCuidadores();
                     } catch (error) {
-                        alert('Erro ao excluir cuidador. Tente novamente.');
+                        alert('❌ Erro de conexão ao excluir cuidador. Verifique sua conexão e tente novamente.');
                         console.error(error);
                     }
                 }

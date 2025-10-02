@@ -35,10 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       dados.forEach((item) => {
+        // Usar imagem padrão local se não houver foto
+        const avatarPadrao = '/avatar/cuidador.png';
+        const fotoUrl = item.FotoUrl && item.FotoUrl.trim() !== '' ? item.FotoUrl : avatarPadrao;
+        
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="foto-cell">
-            <img src="${item.FotoUrl || '/imagens/logotipoCogitareSemFundo.png'}" 
+            <img src="${fotoUrl}" 
                  alt="Foto de ${item.Nome}" class="foto-responsavel" />
           </td>
           <td class="nome-cell"><strong>${item.Nome || ''}</strong></td>
@@ -78,17 +82,36 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-excluir').forEach(botao => {
       botao.onclick = async () => {
         const id = botao.getAttribute('data-id');
-        if (confirm('Deseja realmente excluir este responsável e os idosos associados?')) {
+        const nomeResponsavel = botao.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
+        
+        // Mensagem de aviso detalhada
+        const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
+            `Você está prestes a excluir o responsável: ${nomeResponsavel}\n\n` +
+            `Esta ação irá excluir PERMANENTEMENTE:\n` +
+            `• O responsável\n` +
+            `• TODOS OS IDOSOS associados a este responsável\n` +
+            `• Todos os atendimentos dos idosos\n` +
+            `• Todas as avaliações relacionadas\n` +
+            `• Todos os pagamentos e receitas\n` +
+            `• Histórico completo de todos os registros\n\n` +
+            `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
+            `Deseja realmente continuar?`;
+        
+        if (confirm(mensagemAviso)) {
           try {
-            const res = await fetch(`/api/resp/${id}`, { method: 'DELETE' }); // 🚀 novo endpoint
+            const res = await fetch(`/api/resp/${id}`, { method: 'DELETE' });
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.erro || 'Erro ao excluir');
+            if (!res.ok) {
+              alert(`❌ Erro ao excluir:\n\n${data.erro || 'Erro desconhecido. Tente novamente.'}`);
+              return;
+            }
 
+            alert(`✅ Sucesso!\n\n${nomeResponsavel} e todos os registros relacionados foram excluídos permanentemente.`);
             carregarResponsaveis();
-            alert('Excluído com sucesso!');
           } catch (e) {
-            alert(e.message || 'Erro ao excluir responsável.');
+            alert('❌ Erro de conexão ao excluir responsável. Verifique sua conexão e tente novamente.');
+            console.error(e);
           }
         }
       };

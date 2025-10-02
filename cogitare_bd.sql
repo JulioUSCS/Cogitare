@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql-cogitare.alwaysdata.net
--- Generation Time: Sep 18, 2025 at 05:57 PM
--- Server version: 10.11.13-MariaDB
+-- Generation Time: Oct 02, 2025 at 08:36 PM
+-- Server version: 10.11.14-MariaDB
 -- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -32,36 +32,19 @@ CREATE TABLE `administrador` (
   `Usuario` varchar(100) NOT NULL,
   `Senha` varchar(255) DEFAULT NULL,
   `Tipo` varchar(100) NOT NULL,
-  `UltimoAcesso` datetime DEFAULT current_timestamp()
+  `Nome` varchar(100) DEFAULT NULL,
+  `Email` varchar(100) DEFAULT NULL,
+  `Ativo` tinyint(1) DEFAULT 1,
+  `UltimoAcesso` datetime DEFAULT current_timestamp(),
+  `DataCriacao` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `administrador`
 --
 
-INSERT INTO `administrador` (`IdAdministrador`, `Usuario`, `Senha`, `Tipo`, `UltimoAcesso`) VALUES
-(1, 'admin', '$2b$10$E4iPvOcs5u5ArXQu/UroaelhW58CuzI85xAEDVaEhqb9QCuTeUh1S', 'Admistrador', '2025-09-18 17:54:32');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `adminsuporte`
---
-
-CREATE TABLE `adminsuporte` (
-  `IdAdmin` int(11) NOT NULL,
-  `Nome` varchar(100) NOT NULL,
-  `Email` varchar(100) NOT NULL,
-  `Ativo` tinyint(1) DEFAULT 1,
-  `DataCriacao` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `adminsuporte`
---
-
-INSERT INTO `adminsuporte` (`IdAdmin`, `Nome`, `Email`, `Ativo`, `DataCriacao`) VALUES
-(1, 'Administrador', 'admin@cogitare.com', 1, '2025-09-18 14:56:27');
+INSERT INTO `administrador` (`IdAdministrador`, `Usuario`, `Senha`, `Tipo`, `Nome`, `Email`, `Ativo`, `UltimoAcesso`, `DataCriacao`) VALUES
+(1, 'admin', '$2b$10$E4iPvOcs5u5ArXQu/UroaelhW58CuzI85xAEDVaEhqb9QCuTeUh1S', 'Administrador', 'Administrador', 'admin@cogitare.com', 1, '2025-10-02 20:29:27', '2025-09-18 14:56:27');
 
 -- --------------------------------------------------------
 
@@ -88,18 +71,14 @@ CREATE TABLE `atendimento` (
 --
 
 INSERT INTO `atendimento` (`IdAtendimento`, `IdResponsavel`, `IdCuidador`, `IdIdoso`, `DataInicio`, `DataFim`, `Status`, `Local`, `Valor`, `ObservacaoExtra`, `DataCriacao`) VALUES
-(2, 4, 2, 7, '2025-09-17 14:00:00', '2025-09-17 18:00:00', 'Agendado', 'Rua Bandeira Paulista, 789 - Moema, São Paulo - CEP: 04532-000 (Apto 12)', 180.00, 'Primeira consulta agendada.', '2025-09-16 13:51:54'),
-(3, 6, 3, 6, '2025-09-18 09:00:00', '2025-09-18 13:00:00', 'Em andamento', 'Alameda Santos, 456 - Jardins, São Paulo - CEP: 01418-000 (Casa 2)', 220.00, 'Necessário monitoramento constante.', '2025-09-16 13:51:54'),
+(2, 4, 2, 7, '2025-09-17 14:00:00', '2025-09-17 18:00:00', 'Concluído', 'Rua Bandeira Paulista, 789 - Moema, São Paulo - CEP: 04532-000 (Apto 12)', 180.00, 'Primeira consulta agendada.', '2025-09-16 13:51:54'),
 (4, 8, 4, 8, '2025-09-20 08:00:00', '2025-09-20 12:00:00', 'Concluído', 'Rua Harmonia, 456 - Vila Madalena', 200.00, 'Atendimento de 4 horas para cuidados básicos', '2025-09-19 10:00:00'),
 (5, 9, 5, 9, '2025-09-21 14:00:00', '2025-09-21 18:00:00', 'Concluído', 'Alameda Santos, 789 - Jardins', 180.00, 'Sessão de fisioterapia e acompanhamento', '2025-09-20 09:00:00'),
 (6, 10, 6, 10, '2025-09-22 09:00:00', '2025-09-22 17:00:00', 'Concluído', 'Rua Bandeira Paulista, 321 - Moema', 320.00, 'Acompanhamento de 8 horas para paciente com Alzheimer', '2025-09-21 11:00:00'),
-(7, 11, 7, 11, '2025-09-23 10:00:00', '2025-09-23 14:00:00', 'Concluído', 'Rua dos Pinheiros, 654 - Pinheiros', 160.00, 'Cuidados básicos e companhia', '2025-09-22 08:00:00'),
 (8, 12, 4, 12, '2025-09-24 08:00:00', '2025-09-24 20:00:00', 'Concluído', 'Rua Bandeira Paulista, 987 - Itaim Bibi', 480.00, 'Atendimento de 12 horas para paciente com Parkinson', '2025-09-23 10:00:00'),
 (9, 13, 5, 13, '2025-09-25 15:00:00', '2025-09-25 19:00:00', 'Concluído', 'Rua Funchal, 147 - Vila Olímpia', 200.00, 'Fisioterapia e cuidados cardíacos', '2025-09-24 12:00:00'),
 (10, 14, 6, 14, '2025-09-26 11:00:00', '2025-09-26 15:00:00', 'Concluído', 'Rua dos Três Irmãos, 258 - Brooklin', 180.00, 'Acompanhamento psicológico e cuidados básicos', '2025-09-25 09:00:00'),
-(11, 15, 7, 15, '2025-09-27 09:00:00', '2025-09-27 13:00:00', 'Concluído', 'Rua Bandeira Paulista, 369 - Vila Nova Conceição', 200.00, 'Supervisão de medicação e cuidados gerais', '2025-09-26 14:00:00'),
-(12, 8, 4, 8, '2025-09-28 08:00:00', '2025-09-28 12:00:00', 'Agendado', 'Rua Harmonia, 456 - Vila Madalena', 200.00, 'Retorno para acompanhamento', '2025-09-27 16:00:00'),
-(13, 9, 5, 9, '2025-09-29 14:00:00', '2025-09-29 18:00:00', 'Agendado', 'Alameda Santos, 789 - Jardins', 180.00, 'Continuidade da fisioterapia', '2025-09-28 10:00:00');
+(12, 8, 4, 8, '2025-09-28 08:00:00', '2025-09-28 12:00:00', 'Concluído', 'Rua Harmonia, 456 - Vila Madalena', 200.00, 'Retorno para acompanhamento', '2025-09-27 16:00:00');
 
 -- --------------------------------------------------------
 
@@ -123,13 +102,10 @@ CREATE TABLE `avaliacao` (
 
 INSERT INTO `avaliacao` (`IdAvaliacao`, `IdResponsavel`, `IdCuidador`, `IdAtendimento`, `Nota`, `Comentario`, `DataAvaliacao`) VALUES
 (1, 8, 4, 4, 5, 'Excelente atendimento! Lucia foi muito cuidadosa e atenciosa com minha mãe.', '2025-09-20 13:00:00'),
-(2, 9, 5, 5, 4, 'Muito bom profissional. Paulo ajudou muito meu pai com a fisioterapia.', '2025-09-21 19:00:00'),
 (3, 10, 6, 6, 5, 'Cristina tem muita paciência e conhecimento. Recomendo!', '2025-09-22 18:00:00'),
-(4, 11, 7, 7, 4, 'Marcos é um cuidador dedicado e responsável.', '2025-09-23 15:00:00'),
 (5, 12, 4, 8, 5, 'Lucia novamente superou nossas expectativas. Muito profissional!', '2025-09-24 21:00:00'),
-(6, 13, 5, 9, 4, 'Paulo é muito competente na fisioterapia.', '2025-09-25 20:00:00'),
-(7, 14, 6, 10, 5, 'Cristina tem um dom especial para lidar com idosos.', '2025-09-26 16:00:00'),
-(8, 15, 7, 11, 4, 'Marcos é cuidadoso e atencioso com os detalhes.', '2025-09-27 14:00:00');
+(6, 13, 5, 9, 5, 'Paulo é muito competente na fisioterapia.', '2025-09-25 20:00:00'),
+(7, 14, 6, 10, 5, 'Cristina tem um dom especial para lidar com idosos.', '2025-09-26 16:00:00');
 
 -- --------------------------------------------------------
 
@@ -199,7 +175,7 @@ INSERT INTO `chat` (`IdChat`, `IdCuidador`, `IdResponsavel`, `DataCriacao`, `Sta
 (5, NULL, 9, '2025-09-21 16:00:00', 'Ativo', 'Pagamento', 'Alta', 'Problema com pagamento do atendimento', 9, 'responsavel', 'Em Andamento'),
 (6, 6, NULL, '2025-09-22 17:00:00', 'Ativo', 'Técnico', 'Normal', 'Dificuldade para acessar o sistema', 6, 'cuidador', 'Fechado'),
 (7, NULL, 11, '2025-09-23 18:00:00', 'Ativo', 'Geral', 'Normal', 'Sugestão de melhoria no sistema', 11, 'responsavel', 'Aberto'),
-(8, 7, NULL, '2025-09-24 19:00:00', 'Ativo', 'Atendimento', 'Alta', 'Emergência com paciente', 7, 'cuidador', 'Em Andamento');
+(9, NULL, NULL, '2025-09-22 18:06:43', 'Ativo', 'Reclamação', 'Normal', 'sadas', 1, 'cuidador', 'Fechado');
 
 -- --------------------------------------------------------
 
@@ -228,15 +204,12 @@ CREATE TABLE `comissao` (
 
 INSERT INTO `comissao` (`IdComissao`, `IdCuidador`, `IdAtendimento`, `ValorBase`, `PercentualComissao`, `ValorComissao`, `Bonificacao`, `ValorTotal`, `DataCalculo`, `DataPagamento`, `Status`, `Observacoes`) VALUES
 (1, 2, 2, 180.00, 70.00, 126.00, 0.00, 126.00, '2025-09-18 17:16:56', NULL, 'Pendente', 'Comissão do atendimento ID 2'),
-(2, 3, 3, 220.00, 70.00, 154.00, 0.00, 154.00, '2025-09-18 17:16:56', NULL, 'Pendente', 'Comissão do atendimento ID 3'),
 (3, 4, 4, 200.00, 70.00, 140.00, 0.00, 140.00, '2025-09-20 12:30:00', NULL, 'Pago', 'Comissão do atendimento ID 4'),
 (4, 5, 5, 180.00, 70.00, 126.00, 0.00, 126.00, '2025-09-21 18:15:00', NULL, 'Pago', 'Comissão do atendimento ID 5'),
 (5, 6, 6, 320.00, 70.00, 224.00, 0.00, 224.00, '2025-09-22 17:30:00', NULL, 'Pago', 'Comissão do atendimento ID 6'),
-(6, 7, 7, 160.00, 70.00, 112.00, 0.00, 112.00, '2025-09-23 14:15:00', NULL, 'Pago', 'Comissão do atendimento ID 7'),
 (7, 4, 8, 480.00, 70.00, 336.00, 0.00, 336.00, '2025-09-24 20:30:00', NULL, 'Pago', 'Comissão do atendimento ID 8'),
 (8, 5, 9, 200.00, 70.00, 140.00, 0.00, 140.00, '2025-09-25 19:00:00', NULL, 'Pago', 'Comissão do atendimento ID 9'),
-(9, 6, 10, 180.00, 70.00, 126.00, 0.00, 126.00, '2025-09-26 15:20:00', NULL, 'Pago', 'Comissão do atendimento ID 10'),
-(10, 7, 11, 200.00, 70.00, 140.00, 0.00, 140.00, '2025-09-27 13:10:00', NULL, 'Pago', 'Comissão do atendimento ID 11');
+(9, 6, 10, 180.00, 70.00, 126.00, 0.00, 126.00, '2025-09-26 15:20:00', NULL, 'Pago', 'Comissão do atendimento ID 10');
 
 -- --------------------------------------------------------
 
@@ -291,13 +264,12 @@ CREATE TABLE `cuidador` (
 --
 
 INSERT INTO `cuidador` (`IdCuidador`, `IdEndereco`, `Cpf`, `Nome`, `Email`, `Telefone`, `Senha`, `DataNascimento`, `FotoUrl`, `Biografia`, `Fumante`, `TemFilhos`, `PossuiCNH`, `TemCarro`) VALUES
-(1, 1, NULL, 'Carlos Oliveira', 'carlos.oliveira@email.com', '(11) 88888-1111', NULL, '1985-03-25', '', 'Cuidador experiente com 5 anos de experiência', 'Não', 'Sim', 'Não', 'Sim'),
-(2, 2, NULL, 'Fernanda Lima', 'fernanda.lima@email.com', '(11) 88888-2222', NULL, '1990-07-12', '', 'Especialista em cuidados com idosos.', 'Não', 'Sim', 'Sim', 'Não'),
-(3, 3, '999.000.111-22', 'Roberto Alves', 'roberto.alves@email.com', '(11) 88888-3333', '$2b$10$example', '1988-11-30', NULL, 'Enfermeiro com especialização em geriatria', 'Não', 'Sim', 'Sim', 'Sim'),
-(4, 12, '11122233344', 'Lucia Mendes', 'lucia.mendes@email.com', '(11) 88888-4444', '$2b$10$example', '1983-06-20', NULL, 'Enfermeira com 8 anos de experiência em cuidados geriátricos', 'Não', 'Sim', 'Sim', 'Sim'),
-(5, 13, '22233344455', 'Paulo Roberto', 'paulo.roberto@email.com', '(11) 88888-5555', '$2b$10$example', '1987-01-15', NULL, 'Fisioterapeuta especializado em reabilitação de idosos', 'Não', 'Não', 'Sim', 'Não'),
-(6, 14, '33344455566', 'Cristina Santos', 'cristina.santos@email.com', '(11) 88888-6666', '$2b$10$example', '1981-11-08', NULL, 'Psicóloga com experiência em demência e Alzheimer', 'Não', 'Sim', 'Sim', 'Sim'),
-(7, 15, '44455566677', 'Marcos Antonio', 'marcos.antonio@email.com', '(11) 88888-7777', '$2b$10$example', '1979-09-25', NULL, 'Cuidador experiente com certificação em primeiros socorros', 'Não', 'Sim', 'Não', 'Não');
+(1, NULL, NULL, 'Carlos Oliveira', 'carlos.oliveira@email.com', '(11) 88888-1112', NULL, '1985-03-24', '/avatar/cuidador.png', 'Cuidador experiente com 5 anos de experiência', 'Não', 'Sim', 'Não', 'Sim'),
+(2, 2, NULL, 'Fernanda Lima', 'fernanda.lima@email.com', '(11) 88888-2222', NULL, '1990-07-12', '/avatar/cuidador.png', 'Especialista em cuidados com idosos.', 'Não', 'Sim', 'Sim', 'Não'),
+(3, 3, '999.000.111-22', 'Roberto Alves', 'roberto.alves@email.com', '(11) 88888-3333', '$2b$10$example', '1988-11-30', '/avatar/cuidador.png', 'Enfermeiro com especialização em geriatria', 'Não', 'Sim', 'Sim', 'Sim'),
+(4, 12, '11122233344', 'Lucia Mendes', 'lucia.mendes@email.com', '(11) 88888-4444', '$2b$10$example', '1983-06-20', '/avatar/cuidador.png', 'Enfermeira com 8 anos de experiência em cuidados geriátricos', 'Não', 'Sim', 'Sim', 'Sim'),
+(5, 13, '22233344455', 'Paulo Roberto', 'paulo.roberto@email.com', '(11) 88888-5555', '$2b$10$example', '1987-01-15', '/avatar/cuidador.png', 'Fisioterapeuta especializado em reabilitação de idosos', 'Não', 'Não', 'Sim', 'Não'),
+(6, 14, '33344455566', 'Cristina Santos', 'cristina.santos@email.com', '(11) 88888-6666', '$2b$10$example', '1981-11-08', '/avatar/cuidador.png', 'Psicóloga com experiência em demência e Alzheimer', 'Não', 'Sim', 'Sim', 'Sim');
 
 -- --------------------------------------------------------
 
@@ -458,7 +430,16 @@ INSERT INTO `endereco` (`IdEndereco`, `Cidade`, `Bairro`, `Rua`, `Numero`, `Comp
 (12, 'São Paulo', 'Higienópolis', 'Rua da Consolação', '741', 'Apto 56', '01302-000'),
 (13, 'São Paulo', 'Perdizes', 'Rua Cardeal Arcoverde', '852', 'Casa 3', '05008-000'),
 (14, 'São Paulo', 'Vila Madalena', 'Rua Harmonia', '963', 'Apto 78', '05435-002'),
-(15, 'São Paulo', 'Jardins', 'Alameda Santos', '159', 'Casa 9', '01418-002');
+(15, 'São Paulo', 'Jardins', 'Alameda Santos', '159', 'Casa 9', '01418-002'),
+(16, 'maua', 'vil Falchi', 'rua orlando tasca', '277', 'apro 26C', '09350276'),
+(17, 'maua', 'vila falchi', 'rua orlando tasca', '277', 'apto 26C', '09350276'),
+(18, 'maua', 'vil Falchi', 'rua orlando tasca ', '277', 'apto 38c', '09350276'),
+(19, 'maua', 'vila falchi', 'rua orlando tasca', '277', 'APTO 28c', '09350276'),
+(20, 'maua', 'bocaina', 'ruA ORLANDFS DAS', '277', 'ASD', '09350276'),
+(21, 'São Paulo', 'Centro', 'Rua das Flores', '123', 'Apto 45', '01234567'),
+(22, 'São Paulo', 'Centro', 'Rua das Flores', '123', 'Apto 45', '01234567'),
+(23, 'dasasd', 'fsdadas', 'sdfadas', '123', 'dsaasd', '09350276'),
+(24, 'dfsfdsffd', 'sdfdfsfdssd', 'dsfdsfds', '678', 'fdsdsffdsfds', '09350276');
 
 -- --------------------------------------------------------
 
@@ -765,7 +746,69 @@ INSERT INTO `historicoadministrador` (`IdHistoricoAdm`, `IdAdministrador`, `Oper
 (238, 1, 'Login', '2025-09-18 17:53:00'),
 (239, 1, 'Login', '2025-09-18 17:53:00'),
 (240, 1, 'Login', '2025-09-18 17:53:00'),
-(241, 1, 'Login', '2025-09-18 17:54:32');
+(241, 1, 'Login', '2025-09-18 17:54:32'),
+(242, 1, 'Login', '2025-09-18 18:08:41'),
+(243, 1, 'Login', '2025-09-18 18:46:53'),
+(244, 1, 'Login', '2025-09-19 16:09:34'),
+(245, 1, 'Login', '2025-09-19 21:21:27'),
+(246, 1, 'Logout', '2025-09-19 21:23:47'),
+(247, 1, 'Login', '2025-09-19 21:23:51'),
+(248, 1, 'Login', '2025-09-22 18:01:10'),
+(249, 1, 'Login', '2025-09-22 18:06:13'),
+(250, 1, 'Login', '2025-09-22 18:14:51'),
+(251, 1, 'Login', '2025-09-22 18:19:35'),
+(252, 1, 'Login', '2025-09-22 18:32:47'),
+(253, 1, 'Login', '2025-09-22 18:57:37'),
+(254, 1, 'Login', '2025-09-22 18:57:38'),
+(255, 1, 'Login', '2025-09-22 19:04:13'),
+(256, 1, 'Login', '2025-09-22 19:09:52'),
+(257, 1, 'Login', '2025-09-22 19:37:02'),
+(258, 1, 'Login', '2025-09-22 19:48:25'),
+(259, 1, 'Login', '2025-09-22 19:59:24'),
+(260, 1, 'Login', '2025-09-22 20:09:49'),
+(261, 1, 'Login', '2025-09-22 20:18:10'),
+(262, 1, 'Login', '2025-09-24 14:15:50'),
+(263, 1, 'Logout', '2025-09-24 14:19:12'),
+(264, 1, 'Login', '2025-09-24 20:01:25'),
+(265, 1, 'Login', '2025-09-24 20:08:32'),
+(266, 1, 'Login', '2025-09-24 21:26:41'),
+(267, 1, 'Login', '2025-09-24 21:26:41'),
+(268, 1, 'Login', '2025-09-25 13:30:11'),
+(269, 1, 'Login', '2025-09-25 15:16:47'),
+(270, 1, 'Login', '2025-09-25 15:16:48'),
+(271, 1, 'Login', '2025-09-25 18:55:17'),
+(272, 1, 'Login', '2025-09-25 18:55:18'),
+(273, 1, 'Login', '2025-09-25 20:43:28'),
+(274, 1, 'Login', '2025-09-25 20:49:11'),
+(275, 1, 'Login', '2025-09-29 20:14:31'),
+(276, 1, 'Login', '2025-09-29 20:21:21'),
+(277, 1, 'Login', '2025-09-30 15:39:08'),
+(278, 1, 'Login', '2025-10-01 19:18:44'),
+(279, 1, 'Login', '2025-10-02 15:47:58'),
+(280, 1, 'Login', '2025-10-02 15:48:14'),
+(281, 1, 'Logout', '2025-10-02 15:51:09'),
+(282, 1, 'Login', '2025-10-02 16:08:28'),
+(283, 1, 'Idoso adasdas (ID 6) alterado.', '2025-10-02 16:10:33'),
+(284, 1, 'Login', '2025-10-02 16:17:44'),
+(285, 1, 'Login', '2025-10-02 16:22:33'),
+(286, 1, 'Login', '2025-10-02 16:23:20'),
+(287, 1, 'Login', '2025-10-02 16:25:00'),
+(288, 1, 'Login', '2025-10-02 16:45:32'),
+(289, 1, 'Login', '2025-10-02 18:13:00'),
+(290, 1, 'Login', '2025-10-02 18:14:29'),
+(291, 1, 'Login', '2025-10-02 18:16:11'),
+(292, 1, 'Login', '2025-10-02 18:19:36'),
+(293, 1, 'Login', '2025-10-02 18:24:31'),
+(294, 1, 'Login', '2025-10-02 18:30:24'),
+(295, 1, 'Login', '2025-10-02 18:30:32'),
+(296, 1, 'Login', '2025-10-02 19:32:08'),
+(297, 1, 'Login', '2025-10-02 19:49:48'),
+(298, 1, 'Login', '2025-10-02 19:49:48'),
+(299, 1, 'Login', '2025-10-02 19:54:48'),
+(300, 1, 'Login', '2025-10-02 20:01:21'),
+(301, 1, 'Logout', '2025-10-02 20:27:28'),
+(302, 1, 'Login', '2025-10-02 20:27:33'),
+(303, 1, 'Login', '2025-10-02 20:29:27');
 
 -- --------------------------------------------------------
 
@@ -831,16 +874,19 @@ CREATE TABLE `idoso` (
 --
 
 INSERT INTO `idoso` (`IdIdoso`, `IdResponsavel`, `IdMobilidade`, `IdNivelAutonomia`, `Nome`, `DataNascimento`, `Sexo`, `CuidadosMedicos`, `DescricaoExtra`, `FotoUrl`) VALUES
-(6, 6, 5, 3, 'adasdas', '2025-09-08', 'Masculino', 'dasdas', 'adsasdas', ''),
-(7, 4, 5, 3, 'Dona ana', '1950-06-16', 'Feminino', '', '', ''),
-(8, 8, 2, 3, 'Dona Maria', '1945-03-10', 'Feminino', 'Hipertensão, Diabetes tipo 2', 'Gosta de ouvir música clássica e ler livros', NULL),
-(9, 9, 1, 2, 'Seu José', '1940-07-22', 'Masculino', 'Artrite, Problemas de visão', 'Ex-professor, adora contar histórias', NULL),
-(10, 10, 3, 4, 'Dona Rosa', '1938-12-05', 'Feminino', 'Alzheimer, Osteoporose', 'Necessita acompanhamento constante', NULL),
-(11, 11, 1, 1, 'Seu Antonio', '1942-05-18', 'Masculino', 'Hipertensão controlada', 'Muito ativo, gosta de caminhar', NULL),
-(12, 12, 4, 4, 'Dona Carmen', '1935-08-30', 'Feminino', 'Parkinson, Diabetes', 'Necessita auxílio para alimentação', NULL),
-(13, 13, 2, 3, 'Seu Francisco', '1943-11-12', 'Masculino', 'Problemas cardíacos', 'Gosta de assistir TV e conversar', NULL),
-(14, 14, 1, 2, 'Dona Isabel', '1941-04-25', 'Feminino', 'Osteoporose leve', 'Muito independente, gosta de cozinhar', NULL),
-(15, 15, 3, 3, 'Seu Manuel', '1939-10-08', 'Masculino', 'Demência vascular', 'Necessita supervisão para medicação', NULL);
+(7, 4, 5, 3, 'Dona ana', '1950-06-16', 'Feminino', '', '', '/avatar/idosa.png'),
+(8, 8, 2, 3, 'Dona Maria', '1945-03-10', 'Feminino', 'Hipertensão, Diabetes tipo 2', 'Gosta de ouvir música clássica e ler livros', '/avatar/idosa.png'),
+(9, 9, 1, 2, 'Seu José', '1940-07-22', 'Masculino', 'Artrite, Problemas de visão', 'Ex-professor, adora contar histórias', '/avatar/idoso.png'),
+(10, 10, 3, 4, 'Dona Rosa', '1938-12-05', 'Feminino', 'Alzheimer, Osteoporose', 'Necessita acompanhamento constante', '/avatar/idosa.png'),
+(11, 11, 1, 1, 'Seu Antonio', '1942-05-18', 'Masculino', 'Hipertensão controlada', 'Muito ativo, gosta de caminhar', '/avatar/idoso.png'),
+(12, 12, 4, 4, 'Dona Carmen', '1935-08-30', 'Feminino', 'Parkinson, Diabetes', 'Necessita auxílio para alimentação', '/avatar/idosa.png'),
+(13, 13, 2, 3, 'Seu Francisco', '1943-11-12', 'Masculino', 'Problemas cardíacos', 'Gosta de assistir TV e conversar', '/avatar/idoso.png'),
+(14, 14, 1, 2, 'Dona Isabel', '1941-04-25', 'Feminino', 'Osteoporose leve', 'Muito independente, gosta de cozinhar', '/avatar/idosa.png'),
+(15, 15, 3, 3, 'Seu Manuel', '1939-10-08', 'Masculino', 'Demência vascular', 'Necessita supervisão para medicação', '/avatar/idoso.png'),
+(16, 16, 3, 3, 'Dona ana teste', '1955-10-19', 'Feminino', 'nadaasdasdasdasdas', 'nadaasddasdasdasdasd', '/avatar/idosa.png'),
+(17, 21, 3, 3, 'Dona Maria Teste', '1955-10-19', 'Feminino', 'Teste de conexão', 'Teste de fluxo completo', '/avatar/idosa.png'),
+(19, 23, 1, 1, 'asdasdassrthgsrteaa', '1955-10-19', 'Masculino', 'fgdhertsasdrfsd', 'zdfghsdf\\asdf', '/avatar/idoso.png'),
+(20, 24, 1, 1, 'asddsasads', '1955-10-20', 'Feminino', 'sdadsafgfdsgfsdeafdsfds', 'xfghjfdgshdfgzhjklfaduiojghaoiusdghfuiysdoiyg', '/avatar/idosa.png');
 
 -- --------------------------------------------------------
 
@@ -916,8 +962,12 @@ INSERT INTO `mensagem` (`IdMensagem`, `IdChat`, `IdRemetente`, `RemetenteTipo`, 
 (9, 6, 6, 'cuidador', 'Não consigo acessar o sistema para registrar o atendimento de hoje. A página fica carregando infinitamente.', '2025-09-22 17:00:00', 'Sim', 'Texto', NULL, 0),
 (10, 6, 1, 'admin', 'Cristina, tente limpar o cache do navegador ou usar outro navegador. Se o problema persistir, me avise que vou verificar do nosso lado.', '2025-09-22 17:05:00', 'Sim', 'Texto', NULL, 1),
 (11, 7, 11, 'responsavel', 'Sugestão: seria interessante ter um sistema de lembretes para os cuidadores sobre os horários dos medicamentos.', '2025-09-23 18:00:00', 'Sim', 'Texto', NULL, 0),
-(12, 8, 7, 'cuidador', 'URGENTE: O Seu Manuel está com febre alta e não consegue tomar a medicação. O que devo fazer?', '2025-09-24 19:00:00', 'Sim', 'Texto', NULL, 0),
-(13, 8, 1, 'admin', 'Marcos, ligue imediatamente para o médico do Seu Manuel. Se não conseguir contato, leve ao pronto-socorro mais próximo. Mantenha-me informado!', '2025-09-24 19:05:00', 'Sim', 'Texto', NULL, 1);
+(14, 9, 1, 'cuidador', 'asdas', '2025-09-22 18:06:43', 'Não', 'Texto', NULL, 0),
+(15, 9, 1, 'cuidador', 'asd', '2025-09-22 18:06:50', 'Não', 'Texto', NULL, 0),
+(16, 9, 1, 'cuidador', 'ola', '2025-09-22 18:06:54', 'Não', 'Texto', NULL, 0),
+(17, 9, 1, 'cuidador', 'teste', '2025-09-24 20:02:52', 'Não', 'Texto', NULL, 0),
+(18, 9, 1, 'cuidador', 'kk', '2025-09-25 15:21:20', 'Não', 'Texto', NULL, 0),
+(19, 9, 1, 'cuidador', 'asdsd', '2025-10-02 20:28:42', 'Não', 'Texto', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1005,6 +1055,20 @@ CREATE TABLE `pagamento` (
   `CodigoTransacao` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `pagamento`
+--
+
+INSERT INTO `pagamento` (`IdPagamento`, `IdAtendimento`, `MetodoPagamento`, `StatusPagamento`, `DataPagamento`, `CodigoTransacao`) VALUES
+(1, 12, 'Dinheiro', 'Pago', '2025-10-03 02:55:22', 'TXN1758564442620432'),
+(3, 10, 'PIX', 'Pago', '2025-10-01 23:51:59', 'TXN1758564443237740'),
+(4, 9, 'Cartão de Crédito', 'Pago', '2025-09-25 19:44:03', 'TXN1758564443442348'),
+(5, 8, 'Dinheiro', 'Pendente', NULL, NULL),
+(7, 6, 'Cartão de Débito', 'Pago', '2025-09-22 20:22:39', 'TXN1758564444058919'),
+(8, 5, 'PIX', 'Pago', '2025-09-24 21:26:32', 'TXN1758564444263327'),
+(9, 4, 'PIX', 'Pago', '2025-09-23 04:05:58', 'TXN1758564444469158'),
+(10, 2, 'Dinheiro', 'Pago', '2025-09-19 23:04:27', 'TXN1758564444674371');
+
 -- --------------------------------------------------------
 
 --
@@ -1028,15 +1092,13 @@ CREATE TABLE `receita` (
 
 INSERT INTO `receita` (`IdReceita`, `IdAtendimento`, `IdResponsavel`, `Valor`, `DataRecebimento`, `FormaPagamento`, `Status`, `Observacoes`) VALUES
 (1, 2, 4, 180.00, '2025-09-17 18:00:00', 'PIX', 'Pago', 'Receita do atendimento ID 2 - Fernanda Lima'),
-(2, 3, 6, 220.00, '2025-09-18 13:00:00', 'Dinheiro', 'Pago', 'Receita do atendimento ID 3 - Roberto Alves'),
 (3, 4, 8, 200.00, '2025-09-20 12:30:00', 'PIX', 'Pago', 'Receita do atendimento ID 4 - Dona Maria'),
 (4, 5, 9, 180.00, '2025-09-21 18:15:00', 'Cartão de Crédito', 'Pago', 'Receita do atendimento ID 5 - Seu José'),
 (5, 6, 10, 320.00, '2025-09-22 17:30:00', 'Transferência', 'Pago', 'Receita do atendimento ID 6 - Dona Rosa'),
-(6, 7, 11, 160.00, '2025-09-23 14:15:00', 'PIX', 'Pago', 'Receita do atendimento ID 7 - Seu Antonio'),
 (7, 8, 12, 480.00, '2025-09-24 20:30:00', 'Dinheiro', 'Pago', 'Receita do atendimento ID 8 - Dona Carmen'),
 (8, 9, 13, 200.00, '2025-09-25 19:00:00', 'Cartão de Débito', 'Pago', 'Receita do atendimento ID 9 - Seu Francisco'),
 (9, 10, 14, 180.00, '2025-09-26 15:20:00', 'PIX', 'Pago', 'Receita do atendimento ID 10 - Dona Isabel'),
-(10, 11, 15, 200.00, '2025-09-27 13:10:00', 'Transferência', 'Pago', 'Receita do atendimento ID 11 - Seu Manuel');
+(12, 12, 8, 200.00, '2025-09-22 18:56:45', 'Automático', 'Pago', 'Receita gerada automaticamente pelo sistema');
 
 -- --------------------------------------------------------
 
@@ -1069,6 +1131,7 @@ CREATE TABLE `responsavel` (
   `Email` varchar(100) DEFAULT NULL,
   `Telefone` varchar(20) DEFAULT NULL,
   `DataNascimento` date DEFAULT NULL,
+  `Senha` varchar(255) DEFAULT NULL,
   `FotoUrl` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1076,18 +1139,27 @@ CREATE TABLE `responsavel` (
 -- Dumping data for table `responsavel`
 --
 
-INSERT INTO `responsavel` (`IdResponsavel`, `IdEndereco`, `Cpf`, `Nome`, `Email`, `Telefone`, `DataNascimento`, `FotoUrl`) VALUES
-(4, 1, '48290020856', 'Maria Silva', 'dsadas@gmail.com', '11996556155', '2025-09-09', NULL),
-(6, 2, '48290020856', 'Julio', 'juliofranciscobernardino@gmail.com', '11996556155', '2005-07-31', NULL),
-(7, NULL, '49987245275', 'Álvaro', 'alvaro.machado.ferreira.am@gmail.com', '11973677837', '2001-10-31', NULL),
-(8, 4, '12345678901', 'Ana Carolina Santos', 'ana.santos@email.com', '(11) 99999-1111', '1980-05-15', NULL),
-(9, 5, '23456789012', 'Roberto Silva', 'roberto.silva@email.com', '(11) 99999-2222', '1975-08-22', NULL),
-(10, 6, '34567890123', 'Mariana Costa', 'mariana.costa@email.com', '(11) 99999-3333', '1982-12-10', NULL),
-(11, 7, '45678901234', 'Carlos Eduardo', 'carlos.eduardo@email.com', '(11) 99999-4444', '1978-03-28', NULL),
-(12, 8, '56789012345', 'Patricia Lima', 'patricia.lima@email.com', '(11) 99999-5555', '1985-07-14', NULL),
-(13, 9, '67890123456', 'João Pedro', 'joao.pedro@email.com', '(11) 99999-6666', '1972-11-05', NULL),
-(14, 10, '78901234567', 'Fernanda Oliveira', 'fernanda.oliveira@email.com', '(11) 99999-7777', '1988-09-18', NULL),
-(15, 11, '89012345678', 'Ricardo Alves', 'ricardo.alves@email.com', '(11) 99999-8888', '1976-04-12', NULL);
+INSERT INTO `responsavel` (`IdResponsavel`, `IdEndereco`, `Cpf`, `Nome`, `Email`, `Telefone`, `DataNascimento`, `Senha`, `FotoUrl`) VALUES
+(4, 1, '48290020870', 'Maria Silva', 'dsadas@gmail.com', '11996556155', '2025-09-09', NULL, NULL),
+(6, 2, '48290020890', 'Julio', 'juliofranciscobernardino@gmail.com', '11996556155', '2005-07-31', NULL, NULL),
+(7, NULL, '49987245275', 'Álvaro', 'alvaro.machado.ferreira.am@gmail.com', '11973677837', '2001-10-29', NULL, NULL),
+(8, NULL, '12345678901', 'Ana Carolina Santos', 'ana.santos@email.com', '(11) 99999-9999', '1980-05-14', NULL, NULL),
+(9, 5, '23456789012', 'Roberto Silva', 'roberto.silva@email.com', '(11) 99999-2222', '1975-08-22', NULL, NULL),
+(10, 6, '34567890123', 'Mariana Costa', 'mariana.costa@email.com', '(11) 99999-3333', '1982-12-10', NULL, NULL),
+(11, 7, '45678901234', 'Carlos Eduardo', 'carlos.eduardo@email.com', '(11) 99999-4444', '1978-03-28', NULL, NULL),
+(12, 8, '56789012345', 'Patricia Lima', 'patricia.lima@email.com', '(11) 99999-5555', '1985-07-14', NULL, NULL),
+(13, 9, '67890123456', 'João Pedro', 'joao.pedro@email.com', '(11) 99999-6666', '1972-11-05', NULL, NULL),
+(14, 10, '78901234567', 'Fernanda Oliveira', 'fernanda.oliveira@email.com', '(11) 99999-7777', '1988-09-18', NULL, NULL),
+(15, 11, '89012345678', 'Ricardo Alves', 'ricardo.alves@email.com', '(11) 99999-8888', '1976-04-12', NULL, NULL),
+(16, 16, '99988877766', 'Usuario Teste', 'usuario.teste@email.com', '11988887777', '1995-05-15', '$2a$10$ACnHNtFsYDRRNeGwwyvjpe3SxR3ZuOg6D36qPOZJCh0GtZ8l9a81u', NULL),
+(17, 17, '48290020840', 'JULIO TEST ', 'testtest@gmail.com', '11996556155', '2005-07-31', '$2a$10$KDXIP0BLFoDq7YCZBLpbMODPFt4xOQC6go./RGHMPefkSvs7vkwGG', NULL),
+(18, 18, '48290020810', 'teste teste', 'teste@gmail.com', '11996556155', '1995-10-09', '$2a$10$o68l80N55pnBTz6LavBjEuLjVpQRHD8nZJiEQ8y1lAgDZMXegyE2y', NULL),
+(19, 19, '48290020890', 'teste teste teste', 'tstw@gmail.com', '11996556155', '1995-10-09', '$2a$10$1yn1Yh1wgvHsi2gbuW7P/u1nCykTx4rcXtsF1hZSnHNrbrv0HlO7m', NULL),
+(20, 20, '48290020812', 'qwerererw qweqweqw ', 'weqweeqw@gmail.com', '11996556155', '1995-10-09', '$2a$10$0nXtLFGHZxkpOD1897fOMeNlKJVbXaJDd9rbU.ooalSVOzKCZU7Xu', NULL),
+(21, 21, '98765432100', 'Maria Santos Teste', 'maria.teste@email.com', '11888888888', '1985-05-15', '$2a$10$lI9Agj2OPNgka1/Ps3Z/n.TmnKHIQOrh/Vjhm6MuSsOssRbInVCsm', NULL),
+(22, 22, '11122233344', 'Pedro Oliveira Teste', 'pedro.teste@email.com', '11777777777', '1980-03-20', '$2a$10$2TBzKRm5ZwuH2K/qSNUJ/uwHqukq7cvVyfUI9S.i.dCQsoYRjKW1S', NULL),
+(23, 23, '48290020816', 'asddasdasasd', 'asdasddssad@gmail.com', '11996556155', '1995-10-09', '$2a$10$Ojl32DcgWXrUuy0vaJIkzuZRt5eJRJPKCDpFN2KelkLIIOZFgQDuS', NULL),
+(24, 24, '52598445805', 'dsadfsfdsffds', 'dsfkhjdsfjkhb@gmail.com', '11996556155', '1995-10-10', '$2a$10$SUv8QQASGE2gvjAqdBMaCeWL.CVp.Io0rsdXwhFdhDyfFqJK4UNtC', NULL);
 
 -- --------------------------------------------------------
 
@@ -1147,19 +1219,15 @@ ALTER TABLE `administrador`
   ADD UNIQUE KEY `Usuario` (`Usuario`);
 
 --
--- Indexes for table `adminsuporte`
---
-ALTER TABLE `adminsuporte`
-  ADD PRIMARY KEY (`IdAdmin`);
-
---
 -- Indexes for table `atendimento`
 --
 ALTER TABLE `atendimento`
   ADD PRIMARY KEY (`IdAtendimento`),
   ADD KEY `IdResponsavel` (`IdResponsavel`),
   ADD KEY `IdCuidador` (`IdCuidador`),
-  ADD KEY `IdIdoso` (`IdIdoso`);
+  ADD KEY `IdIdoso` (`IdIdoso`),
+  ADD KEY `idx_atendimento_status` (`Status`),
+  ADD KEY `idx_atendimento_datas` (`DataInicio`,`DataFim`);
 
 --
 -- Indexes for table `avaliacao`
@@ -1189,7 +1257,8 @@ ALTER TABLE `certificado`
 ALTER TABLE `chat`
   ADD PRIMARY KEY (`IdChat`),
   ADD KEY `IdCuidador` (`IdCuidador`),
-  ADD KEY `IdResponsavel` (`IdResponsavel`);
+  ADD KEY `IdResponsavel` (`IdResponsavel`),
+  ADD KEY `idx_chat_status` (`StatusSuporte`);
 
 --
 -- Indexes for table `comissao`
@@ -1197,7 +1266,8 @@ ALTER TABLE `chat`
 ALTER TABLE `comissao`
   ADD PRIMARY KEY (`IdComissao`),
   ADD KEY `IdCuidador` (`IdCuidador`),
-  ADD KEY `IdAtendimento` (`IdAtendimento`);
+  ADD KEY `comissao_ibfk_2` (`IdAtendimento`),
+  ADD KEY `idx_comissao_status` (`Status`);
 
 --
 -- Indexes for table `configuracaofinanceira`
@@ -1211,7 +1281,8 @@ ALTER TABLE `configuracaofinanceira`
 --
 ALTER TABLE `cuidador`
   ADD PRIMARY KEY (`IdCuidador`),
-  ADD KEY `IdEndereco` (`IdEndereco`);
+  ADD KEY `IdEndereco` (`IdEndereco`),
+  ADD KEY `idx_cuidador_nome` (`Nome`);
 
 --
 -- Indexes for table `cuidadorespecialidade`
@@ -1234,7 +1305,7 @@ ALTER TABLE `cuidadorservico`
 --
 ALTER TABLE `despesa`
   ADD PRIMARY KEY (`IdDespesa`),
-  ADD KEY `IdCuidador` (`IdCuidador`);
+  ADD KEY `despesa_ibfk_1` (`IdCuidador`);
 
 --
 -- Indexes for table `disponibilidade`
@@ -1310,7 +1381,8 @@ ALTER TABLE `idoso`
   ADD PRIMARY KEY (`IdIdoso`),
   ADD KEY `IdResponsavel` (`IdResponsavel`),
   ADD KEY `IdMobilidade` (`IdMobilidade`),
-  ADD KEY `IdNivelAutonomia` (`IdNivelAutonomia`);
+  ADD KEY `IdNivelAutonomia` (`IdNivelAutonomia`),
+  ADD KEY `idx_idoso_nome` (`Nome`);
 
 --
 -- Indexes for table `idosodoenca`
@@ -1373,8 +1445,9 @@ ALTER TABLE `pagamento`
 --
 ALTER TABLE `receita`
   ADD PRIMARY KEY (`IdReceita`),
-  ADD KEY `IdAtendimento` (`IdAtendimento`),
-  ADD KEY `IdResponsavel` (`IdResponsavel`);
+  ADD KEY `IdResponsavel` (`IdResponsavel`),
+  ADD KEY `receita_ibfk_1` (`IdAtendimento`),
+  ADD KEY `idx_receita_status` (`Status`);
 
 --
 -- Indexes for table `registroprofissional`
@@ -1388,7 +1461,8 @@ ALTER TABLE `registroprofissional`
 --
 ALTER TABLE `responsavel`
   ADD PRIMARY KEY (`IdResponsavel`),
-  ADD KEY `IdEndereco` (`IdEndereco`);
+  ADD KEY `IdEndereco` (`IdEndereco`),
+  ADD KEY `idx_responsavel_nome` (`Nome`);
 
 --
 -- Indexes for table `restricaoalimentar`
@@ -1411,12 +1485,6 @@ ALTER TABLE `servico`
 --
 ALTER TABLE `administrador`
   MODIFY `IdAdministrador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `adminsuporte`
---
-ALTER TABLE `adminsuporte`
-  MODIFY `IdAdmin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `atendimento`
@@ -1446,7 +1514,7 @@ ALTER TABLE `certificado`
 -- AUTO_INCREMENT for table `chat`
 --
 ALTER TABLE `chat`
-  MODIFY `IdChat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `IdChat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `comissao`
@@ -1464,7 +1532,7 @@ ALTER TABLE `configuracaofinanceira`
 -- AUTO_INCREMENT for table `cuidador`
 --
 ALTER TABLE `cuidador`
-  MODIFY `IdCuidador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `IdCuidador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `cuidadorespecialidade`
@@ -1500,7 +1568,7 @@ ALTER TABLE `doenca`
 -- AUTO_INCREMENT for table `endereco`
 --
 ALTER TABLE `endereco`
-  MODIFY `IdEndereco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `IdEndereco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `especialidade`
@@ -1524,7 +1592,7 @@ ALTER TABLE `formacao`
 -- AUTO_INCREMENT for table `historicoadministrador`
 --
 ALTER TABLE `historicoadministrador`
-  MODIFY `IdHistoricoAdm` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=242;
+  MODIFY `IdHistoricoAdm` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=304;
 
 --
 -- AUTO_INCREMENT for table `historicoatendimento`
@@ -1548,7 +1616,7 @@ ALTER TABLE `historicoresponsavel`
 -- AUTO_INCREMENT for table `idoso`
 --
 ALTER TABLE `idoso`
-  MODIFY `IdIdoso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `IdIdoso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `idosodoenca`
@@ -1572,7 +1640,7 @@ ALTER TABLE `inadimplencia`
 -- AUTO_INCREMENT for table `mensagem`
 --
 ALTER TABLE `mensagem`
-  MODIFY `IdMensagem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `IdMensagem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `metafinanceira`
@@ -1596,13 +1664,13 @@ ALTER TABLE `nivelautonomia`
 -- AUTO_INCREMENT for table `pagamento`
 --
 ALTER TABLE `pagamento`
-  MODIFY `IdPagamento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdPagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `receita`
 --
 ALTER TABLE `receita`
-  MODIFY `IdReceita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `IdReceita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `registroprofissional`
@@ -1614,7 +1682,7 @@ ALTER TABLE `registroprofissional`
 -- AUTO_INCREMENT for table `responsavel`
 --
 ALTER TABLE `responsavel`
-  MODIFY `IdResponsavel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `IdResponsavel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `restricaoalimentar`
@@ -1646,27 +1714,27 @@ ALTER TABLE `atendimento`
 ALTER TABLE `avaliacao`
   ADD CONSTRAINT `avaliacao_ibfk_1` FOREIGN KEY (`IdResponsavel`) REFERENCES `responsavel` (`IdResponsavel`),
   ADD CONSTRAINT `avaliacao_ibfk_2` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`),
-  ADD CONSTRAINT `avaliacao_ibfk_3` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`);
+  ADD CONSTRAINT `avaliacao_ibfk_3` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `certificado`
 --
 ALTER TABLE `certificado`
-  ADD CONSTRAINT `certificado_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `certificado_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `chat`
 --
 ALTER TABLE `chat`
-  ADD CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`),
-  ADD CONSTRAINT `chat_ibfk_2` FOREIGN KEY (`IdResponsavel`) REFERENCES `responsavel` (`IdResponsavel`);
+  ADD CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE,
+  ADD CONSTRAINT `chat_ibfk_2` FOREIGN KEY (`IdResponsavel`) REFERENCES `responsavel` (`IdResponsavel`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `comissao`
 --
 ALTER TABLE `comissao`
   ADD CONSTRAINT `comissao_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`),
-  ADD CONSTRAINT `comissao_ibfk_2` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`);
+  ADD CONSTRAINT `comissao_ibfk_2` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `cuidador`
@@ -1678,39 +1746,39 @@ ALTER TABLE `cuidador`
 -- Constraints for table `cuidadorespecialidade`
 --
 ALTER TABLE `cuidadorespecialidade`
-  ADD CONSTRAINT `cuidadorespecialidade_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`),
+  ADD CONSTRAINT `cuidadorespecialidade_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE,
   ADD CONSTRAINT `cuidadorespecialidade_ibfk_2` FOREIGN KEY (`IdEspecialidade`) REFERENCES `especialidade` (`IdEspecialidade`);
 
 --
 -- Constraints for table `cuidadorservico`
 --
 ALTER TABLE `cuidadorservico`
-  ADD CONSTRAINT `cuidadorservico_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`),
+  ADD CONSTRAINT `cuidadorservico_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE,
   ADD CONSTRAINT `cuidadorservico_ibfk_2` FOREIGN KEY (`IdServico`) REFERENCES `servico` (`IdServico`);
 
 --
 -- Constraints for table `despesa`
 --
 ALTER TABLE `despesa`
-  ADD CONSTRAINT `despesa_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `despesa_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `disponibilidade`
 --
 ALTER TABLE `disponibilidade`
-  ADD CONSTRAINT `disponibilidade_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `disponibilidade_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `experiencia`
 --
 ALTER TABLE `experiencia`
-  ADD CONSTRAINT `experiencia_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `experiencia_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `formacao`
 --
 ALTER TABLE `formacao`
-  ADD CONSTRAINT `formacao_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `formacao_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `historicoadministrador`
@@ -1728,13 +1796,13 @@ ALTER TABLE `historicoatendimento`
 -- Constraints for table `historicocuidador`
 --
 ALTER TABLE `historicocuidador`
-  ADD CONSTRAINT `historicocuidador_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `historicocuidador_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `historicoresponsavel`
 --
 ALTER TABLE `historicoresponsavel`
-  ADD CONSTRAINT `historicoresponsavel_ibfk_1` FOREIGN KEY (`IdResponsavel`) REFERENCES `responsavel` (`IdResponsavel`);
+  ADD CONSTRAINT `historicoresponsavel_ibfk_1` FOREIGN KEY (`IdResponsavel`) REFERENCES `responsavel` (`IdResponsavel`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `idoso`
@@ -1769,26 +1837,26 @@ ALTER TABLE `inadimplencia`
 -- Constraints for table `mensagem`
 --
 ALTER TABLE `mensagem`
-  ADD CONSTRAINT `mensagem_ibfk_1` FOREIGN KEY (`IdChat`) REFERENCES `chat` (`IdChat`);
+  ADD CONSTRAINT `mensagem_ibfk_1` FOREIGN KEY (`IdChat`) REFERENCES `chat` (`IdChat`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `pagamento`
 --
 ALTER TABLE `pagamento`
-  ADD CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`);
+  ADD CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `receita`
 --
 ALTER TABLE `receita`
-  ADD CONSTRAINT `receita_ibfk_1` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`),
+  ADD CONSTRAINT `receita_ibfk_1` FOREIGN KEY (`IdAtendimento`) REFERENCES `atendimento` (`IdAtendimento`) ON DELETE CASCADE,
   ADD CONSTRAINT `receita_ibfk_2` FOREIGN KEY (`IdResponsavel`) REFERENCES `responsavel` (`IdResponsavel`);
 
 --
 -- Constraints for table `registroprofissional`
 --
 ALTER TABLE `registroprofissional`
-  ADD CONSTRAINT `registroprofissional_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`);
+  ADD CONSTRAINT `registroprofissional_ibfk_1` FOREIGN KEY (`IdCuidador`) REFERENCES `cuidador` (`IdCuidador`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `responsavel`

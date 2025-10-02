@@ -15,7 +15,12 @@ function autenticar(req, res, next) {
 
 // Rota para obter dados do usuário logado
 router.get('/api/usuario', autenticar, (req, res) => {
-  res.json({ nome: req.session.usuario.nome });
+  res.json({ 
+    nome: req.session.usuario.nome,
+    usuario: req.session.usuario.usuario,
+    email: req.session.usuario.email,
+    tipo: req.session.usuario.tipo
+  });
 });
 
 // Rota de login (POST)

@@ -63,7 +63,9 @@ class FinanceiroModel {
                 r.Status,
                 r.Observacoes,
                 resp.Nome as NomeResponsavel,
-                a.Descricao as DescricaoAtendimento
+                a.ObservacaoExtra as DescricaoAtendimento,
+                a.Local,
+                a.DataInicio
             FROM receita r
             LEFT JOIN responsavel resp ON r.IdResponsavel = resp.IdResponsavel
             LEFT JOIN atendimento a ON r.IdAtendimento = a.IdAtendimento
@@ -195,7 +197,9 @@ class FinanceiroModel {
                 c.DataPagamento,
                 c.Status,
                 cu.Nome as NomeCuidador,
-                a.Descricao as DescricaoAtendimento
+                a.ObservacaoExtra as DescricaoAtendimento,
+                a.Local,
+                a.DataInicio
             FROM comissao c
             LEFT JOIN cuidador cu ON c.IdCuidador = cu.IdCuidador
             LEFT JOIN atendimento a ON c.IdAtendimento = a.IdAtendimento
@@ -265,7 +269,10 @@ class FinanceiroModel {
                 r.Nome as NomeResponsavel,
                 r.Email,
                 r.Telefone,
-                a.Descricao as DescricaoAtendimento
+                a.ObservacaoExtra as DescricaoAtendimento,
+                a.Local,
+                a.DataInicio,
+                a.Status as StatusAtendimento
             FROM inadimplencia i
             LEFT JOIN responsavel r ON i.IdResponsavel = r.IdResponsavel
             LEFT JOIN atendimento a ON i.IdAtendimento = a.IdAtendimento

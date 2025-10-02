@@ -6,7 +6,7 @@ const Usuario = {
   async validarLogin(usuario, senha) {
     try {
       const [rows] = await pool.query(
-        'SELECT IdAdministrador, Usuario, Senha, Tipo, UltimoAcesso FROM administrador WHERE Usuario = ?',
+        'SELECT IdAdministrador, Usuario, Senha, Tipo, Nome, Email, Ativo, UltimoAcesso FROM administrador WHERE Usuario = ? AND Ativo = 1',
         [usuario]
       );
 
@@ -28,12 +28,14 @@ const Usuario = {
 
       return {
         id: admin.IdAdministrador,
-        nome: admin.Usuario,
+        usuario: admin.Usuario,
+        nome: admin.Nome || admin.Usuario,
+        email: admin.Email,
         tipo: admin.Tipo,
         ultimoAcesso: admin.UltimoAcesso
       };
     } catch (err) {
-      console.error('Erro detalhado ao validar login:', err); // 🔹 imprimir o erro completo
+      console.error('Erro detalhado ao validar login:', err);
       throw new Error('Erro ao validar login: ' + err.message);
     }
   }

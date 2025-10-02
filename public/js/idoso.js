@@ -39,10 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 idosos.forEach(item => {
+                    // Usar imagem padrão local baseada no sexo
+                    let avatarPadrao = '/avatar/idoso.png';
+                    if (item.Sexo && item.Sexo.toLowerCase() === 'feminino') {
+                        avatarPadrao = '/avatar/idosa.png';
+                    }
+                    const fotoUrl = item.FotoUrl && item.FotoUrl.trim() !== '' ? item.FotoUrl : avatarPadrao;
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                 <td class="foto-cell">
-                  <img src="${item.FotoUrl || '/images/default-idoso.jpg'}" alt="Foto de ${item.Nome}" class="foto-idoso" />
+                  <img src="${fotoUrl}" alt="Foto de ${item.Nome}" class="foto-idoso" />
                 </td>
                 <td class="nome-cell"><strong>${item.Nome}</strong></td>
                 <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
@@ -152,15 +159,39 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-excluir').forEach(botao => {
             botao.addEventListener('click', async () => {
                 const id = botao.getAttribute('data-id');
-                if (confirm('Deseja realmente excluir este idoso?')) {
+                const nomeIdoso = botao.closest('tr').querySelector('.nome-cell').textContent.trim();
+                
+                // Mensagem de aviso detalhada
+                const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
+                    `Você está prestes a excluir o idoso: ${nomeIdoso}\n\n` +
+                    `Esta ação irá excluir PERMANENTEMENTE:\n` +
+                    `• Todos os atendimentos deste idoso\n` +
+                    `• Todas as avaliações relacionadas\n` +
+                    `• Todos os pagamentos e receitas\n` +
+                    `• Todas as comissões geradas\n` +
+                    `• Histórico completo de atendimentos\n` +
+                    `• Doenças e restrições alimentares cadastradas\n\n` +
+                    `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
+                    `Deseja realmente continuar?`;
+                
+                if (confirm(mensagemAviso)) {
                     try {
                         const response = await fetch(`/api/idosos/${id}`, {
                             method: 'DELETE'
                         });
-                        if (!response.ok) throw new Error('Erro ao excluir');
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            // Mostrar mensagem de erro específica do servidor
+                            alert(`❌ Erro ao excluir:\n\n${data.erro || 'Erro desconhecido. Tente novamente.'}`);
+                            return;
+                        }
+                        
+                        alert(`✅ Sucesso!\n\n${nomeIdoso} e todos os registros relacionados foram excluídos permanentemente.`);
                         carregarIdosos();
                     } catch (error) {
-                        alert('Erro ao excluir idoso. Tente novamente.');
+                        alert('❌ Erro de conexão ao excluir idoso. Verifique sua conexão e tente novamente.');
                         console.error(error);
                     }
                 }

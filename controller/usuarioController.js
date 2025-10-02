@@ -12,7 +12,9 @@ const usuarioController = {
       if (usuarioLogado) {
         req.session.usuario = {
           id: usuarioLogado.id,
+          usuario: usuarioLogado.usuario,
           nome: usuarioLogado.nome,
+          email: usuarioLogado.email,
           tipo: usuarioLogado.tipo,
           loginTime: Date.now()
         };

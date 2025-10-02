@@ -331,7 +331,13 @@ async function atualizarAvaliacao(event) {
 
 // Função para excluir avaliação
 async function excluirAvaliacao(idAvaliacao) {
-    if (!confirm('Tem certeza que deseja excluir esta avaliação?')) {
+    // Mensagem de aviso detalhada
+    const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
+        `Você está prestes a excluir esta avaliação.\n\n` +
+        `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
+        `Deseja realmente continuar?`;
+    
+    if (!confirm(mensagemAviso)) {
         return;
     }
     
@@ -343,7 +349,7 @@ async function excluirAvaliacao(idAvaliacao) {
         const result = await response.json();
         
         if (result.success) {
-            mostrarMensagemSucesso('Avaliação excluída com sucesso!');
+            mostrarMensagemSucesso('✅ Avaliação excluída com sucesso!');
             carregarAvaliacoes();
             carregarEstatisticas();
         } else {

@@ -45,10 +45,10 @@ const idososController = {
     try {
       const id = parseInt(req.params.id);
       await Idoso.excluir(id);
-      res.json({ mensagem: 'Idoso excluído com sucesso' });
+      res.json({ mensagem: 'Idoso e todos os registros relacionados foram excluídos com sucesso' });
     } catch (error) {
       console.error('Erro ao excluir idoso:', error);
-      res.status(500).json({ erro: 'Erro ao excluir idoso' });
+      res.status(500).json({ erro: error.message || 'Erro ao excluir idoso' });
     }
   },
 

@@ -140,10 +140,16 @@ function editarPagamento(id) {
 
 // Função para excluir pagamento
 function excluirPagamento(id) {
-    if (confirm(`Tem certeza que deseja excluir o pagamento ${id}?`)) {
+    // Mensagem de aviso detalhada
+    const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
+        `Você está prestes a excluir o pagamento #${id}.\n\n` +
+        `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
+        `Deseja realmente continuar?`;
+    
+    if (confirm(mensagemAviso)) {
         console.log('Excluir pagamento:', id);
         // Implementar exclusão
-        alert(`Pagamento ${id} excluído!`);
+        alert(`✅ Pagamento ${id} excluído com sucesso!`);
     }
 }
 

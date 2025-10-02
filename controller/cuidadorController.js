@@ -43,7 +43,8 @@ class CuidadorController {
             const msg = await CuidadorModel.excluir(req.params.id);
             res.json(msg);
         } catch (err) {
-            res.status(500).json({ error: err.message });
+            console.error('Erro ao excluir cuidador:', err);
+            res.status(500).json({ error: err.message || 'Erro ao excluir cuidador' });
         }
     }
 }

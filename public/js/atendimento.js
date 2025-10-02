@@ -71,15 +71,36 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-excluir').forEach(botao => {
             botao.addEventListener('click', async () => {
                 const id = botao.getAttribute('data-id');
-                if (confirm('Deseja realmente excluir este atendimento?')) {
+                
+                // Mensagem de aviso detalhada
+                const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
+                    `Você está prestes a excluir este atendimento.\n\n` +
+                    `Esta ação irá excluir PERMANENTEMENTE:\n` +
+                    `• O registro do atendimento\n` +
+                    `• Avaliações relacionadas a este atendimento\n` +
+                    `• Comissões geradas\n` +
+                    `• Pagamentos e receitas vinculadas\n` +
+                    `• Histórico do atendimento\n\n` +
+                    `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
+                    `Deseja realmente continuar?`;
+                
+                if (confirm(mensagemAviso)) {
                     try {
                         const response = await fetch(`/api/atendimento/${id}`, {
                             method: 'DELETE'
                         });
-                        if (!response.ok) throw new Error('Erro ao excluir');
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            alert(`❌ Erro ao excluir:\n\n${data.erro || data.error || 'Erro desconhecido. Tente novamente.'}`);
+                            return;
+                        }
+                        
+                        alert('✅ Atendimento excluído com sucesso!');
                         carregarAtendimentos();
                     } catch (error) {
-                        alert('Erro ao excluir atendimento. Tente novamente.');
+                        alert('❌ Erro de conexão ao excluir atendimento. Verifique sua conexão e tente novamente.');
                         console.error(error);
                     }
                 }

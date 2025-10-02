@@ -38,8 +38,8 @@ class HistoricoModel {
                 NULL as EmailResponsavel,
                 NULL as NomeCuidador,
                 NULL as EmailCuidador,
-                ad.Usuario as NomeAdministrador,
-                NULL as EmailAdministrador,
+                COALESCE(ad.Nome, ad.Usuario) as NomeAdministrador,
+                ad.Email as EmailAdministrador,
                 NULL as IdAtendimento,
                 NULL as NomeIdoso
             FROM historicoadministrador had
@@ -128,8 +128,8 @@ class HistoricoModel {
                 NULL as EmailResponsavel,
                 NULL as NomeCuidador,
                 NULL as EmailCuidador,
-                ad.Usuario as NomeAdministrador,
-                NULL as EmailAdministrador,
+                COALESCE(ad.Nome, ad.Usuario) as NomeAdministrador,
+                ad.Email as EmailAdministrador,
                 NULL as IdAtendimento,
                 NULL as NomeIdoso
             FROM historicoadministrador had
@@ -296,8 +296,8 @@ class HistoricoModel {
                 NULL as EmailResponsavel,
                 NULL as NomeCuidador,
                 NULL as EmailCuidador,
-                ad.Usuario as NomeAdministrador,
-                NULL as EmailAdministrador,
+                COALESCE(ad.Nome, ad.Usuario) as NomeAdministrador,
+                ad.Email as EmailAdministrador,
                 NULL as IdAtendimento,
                 NULL as NomeIdoso
             FROM historicoadministrador had
@@ -346,8 +346,8 @@ class HistoricoModel {
                 NULL as EmailResponsavel,
                 NULL as NomeCuidador,
                 NULL as EmailCuidador,
-                ad.Usuario as NomeAdministrador,
-                NULL as EmailAdministrador,
+                COALESCE(ad.Nome, ad.Usuario) as NomeAdministrador,
+                ad.Email as EmailAdministrador,
                 NULL as IdAtendimento,
                 NULL as NomeIdoso
             FROM historicoadministrador had
@@ -481,8 +481,8 @@ class HistoricoModel {
                 NULL as EmailResponsavel,
                 NULL as NomeCuidador,
                 NULL as EmailCuidador,
-                ad.Usuario as NomeAdministrador,
-                NULL as EmailAdministrador,
+                COALESCE(ad.Nome, ad.Usuario) as NomeAdministrador,
+                ad.Email as EmailAdministrador,
                 NULL as IdAtendimento,
                 NULL as NomeIdoso
             FROM historicoadministrador had
