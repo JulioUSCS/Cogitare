@@ -97,7 +97,28 @@
 .conversations-list {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 0.5rem 0;
+    scroll-behavior: smooth;
+}
+
+/* Estilização da barra de scroll da lista */
+.conversations-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.conversations-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.conversations-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.conversations-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 .conversation-item {
@@ -250,6 +271,19 @@
     border: 2px solid #e9ecef;
 }
 
+.avatar-placeholder {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #e9ecef;
+    border: 2px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
 .user-details h3 {
     margin: 0 0 0.25rem 0;
     color: #2c3e50;
@@ -296,11 +330,33 @@
 .chat-messages {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 1rem;
     background: #f8f9fa;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    scroll-behavior: smooth;
+    max-height: calc(100vh - 200px);
+}
+
+/* Estilização da barra de scroll */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 .message {
@@ -308,15 +364,19 @@
     gap: 0.5rem;
     max-width: 70%;
     animation: messageSlideIn 0.3s ease;
+    margin-bottom: 1rem;
 }
 
-.message.sent {
+/* Mensagens do usuário (cuidador/responsável) - lado esquerdo */
+.message.user.left {
+    align-self: flex-start;
+    flex-direction: row;
+}
+
+/* Mensagens do suporte (admin) - lado direito */
+.message.support.right {
     align-self: flex-end;
     flex-direction: row-reverse;
-}
-
-.message.received {
-    align-self: flex-start;
 }
 
 .message-avatar {
@@ -328,22 +388,39 @@
     flex-shrink: 0;
 }
 
+.message-avatar.avatar-placeholder {
+    background: #e9ecef;
+    border: 2px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
 .message-content {
     background: white;
     padding: 0.75rem 1rem;
     border-radius: 18px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: relative;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
-.message.sent .message-content {
-    background: #3498db;
-    color: white;
-}
-
-.message.received .message-content {
-    background: white;
+/* Mensagens do usuário (cuidador/responsável) - lado esquerdo */
+.message.user .message-content {
+    background: #ffffff;
     color: #2c3e50;
+    border: 1px solid #e9ecef;
+    border-left: 4px solid #28a745;
+}
+
+/* Mensagens do suporte (admin) - lado direito */
+.message.support .message-content {
+    background: #007bff;
+    color: white;
+    border: 1px solid #0056b3;
 }
 
 .message-text {
@@ -356,11 +433,16 @@
     font-size: 0.7rem;
     opacity: 0.7;
     margin-top: 0.25rem;
-    text-align: right;
 }
 
-.message.sent .message-time {
+/* Tempo das mensagens do usuário (esquerda) */
+.message.user .message-time {
     text-align: left;
+}
+
+/* Tempo das mensagens do suporte (direita) */
+.message.support .message-time {
+    text-align: right;
 }
 
 /* Área de input */
@@ -800,14 +882,18 @@
     background: #fff5f5;
 }
 
-.message.admin .message-content {
-    background: #e3f2fd;
-    border-left: 4px solid #2196f3;
+/* Estilos específicos para mensagens de suporte */
+.message.support .message-content {
+    background: #007bff;
+    color: white;
+    border-left: 4px solid #0056b3;
 }
 
+/* Estilos específicos para mensagens de usuários */
 .message.user .message-content {
     background: white;
-    border-left: 4px solid #4caf50;
+    color: #2c3e50;
+    border-left: 4px solid #28a745;
 }
 
 .message-header {
@@ -823,12 +909,15 @@
     color: #495057;
 }
 
-.message.admin .message-sender {
-    color: #2196f3;
+/* Cores dos nomes dos remetentes */
+.message.support .message-sender {
+    color: #ffffff;
+    font-weight: 600;
 }
 
 .message.user .message-sender {
-    color: #4caf50;
+    color: #28a745;
+    font-weight: 600;
 }
 
 /* Estilos para formulário de novo ticket */

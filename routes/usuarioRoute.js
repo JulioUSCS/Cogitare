@@ -23,6 +23,9 @@ router.get('/api/usuario', autenticar, (req, res) => {
   });
 });
 
+// Rota para obter dados da sessão
+router.get('/api/usuario/sessao', usuarioController.getSessao);
+
 // Rota de login (POST)
 router.post('/login', usuarioController.login);
 

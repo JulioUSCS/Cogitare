@@ -15,7 +15,7 @@ class ChatController {
                 });
             }
 
-            if (!['cuidador', 'responsavel'].includes(TipoUsuario)) {
+            if (!['cuidador', 'responsavel', 'admin', 'Administrador'].includes(TipoUsuario)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de usuário inválido'
@@ -70,7 +70,7 @@ class ChatController {
                 });
             }
 
-            if (!['cuidador', 'responsavel'].includes(tipo)) {
+            if (!['cuidador', 'responsavel', 'admin', 'Administrador'].includes(tipo)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de usuário inválido'
@@ -134,17 +134,32 @@ class ChatController {
     // Enviar mensagem de suporte
     async enviarMensagemSuporte(req, res) {
         try {
-            const { IdChat, IdRemetente, RemetenteTipo, Conteudo, IsAdmin = false } = req.body;
+            const { IdChat, IdRemetente, RemetenteTipo, Conteudo } = req.body;
+
+            // Verificar se o usuário está logado
+            if (!req.session.usuario) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Usuário não autenticado'
+                });
+            }
+
+            // Detectar se é administrador baseado na sessão
+            const isAdmin = req.session.usuario.tipo === 'admin' || req.session.usuario.tipo === 'administrador' || req.session.usuario.tipo === 'Administrador' || req.session.usuario.tipo === 'Adm';
+            
+            // Se for admin, usar dados da sessão
+            const finalIdRemetente = isAdmin ? req.session.usuario.id : IdRemetente;
+            const finalRemetenteTipo = isAdmin ? req.session.usuario.tipo : RemetenteTipo;
 
             // Validações
-            if (!IdChat || !IdRemetente || !RemetenteTipo || !Conteudo) {
+            if (!IdChat || !finalIdRemetente || !finalRemetenteTipo || !Conteudo) {
                 return res.status(400).json({
                     success: false,
                     message: 'Todos os campos são obrigatórios'
                 });
             }
 
-            if (!['cuidador', 'responsavel', 'admin'].includes(RemetenteTipo)) {
+            if (!['cuidador', 'responsavel', 'admin', 'Administrador'].includes(finalRemetenteTipo)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de remetente inválido'
@@ -160,10 +175,10 @@ class ChatController {
 
             const resultado = await chatModel.enviarMensagemSuporte({
                 IdChat,
-                IdRemetente,
-                RemetenteTipo,
+                IdRemetente: finalIdRemetente,
+                RemetenteTipo: finalRemetenteTipo,
                 Conteudo: Conteudo.trim(),
-                IsAdmin
+                IsAdmin: isAdmin
             });
 
             if (resultado.success) {
@@ -270,7 +285,7 @@ class ChatController {
                 });
             }
 
-            if (!['cuidador', 'responsavel'].includes(tipo)) {
+            if (!['cuidador', 'responsavel', 'admin', 'Administrador'].includes(tipo)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de usuário inválido'
@@ -311,7 +326,7 @@ class ChatController {
                 });
             }
 
-            if (!['cuidador', 'responsavel'].includes(tipo)) {
+            if (!['cuidador', 'responsavel', 'admin', 'Administrador'].includes(tipo)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de usuário inválido'

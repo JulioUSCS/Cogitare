@@ -156,10 +156,10 @@ class ChatModel {
                     ELSE 'Usuário'
                 END as NomeRemetente,
                 CASE 
-                    WHEN m.IsAdmin = TRUE THEN '/imagens/admin-avatar.png'
+                    WHEN m.IsAdmin = TRUE THEN NULL
                     WHEN m.RemetenteTipo = 'cuidador' THEN c.FotoUrl
                     WHEN m.RemetenteTipo = 'responsavel' THEN r.FotoUrl
-                    ELSE '/imagens/default-avatar.png'
+                    ELSE NULL
                 END as FotoRemetente
             FROM mensagem m
             LEFT JOIN cuidador c ON m.IdRemetente = c.IdCuidador AND m.RemetenteTipo = 'cuidador'

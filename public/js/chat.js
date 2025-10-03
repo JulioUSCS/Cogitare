@@ -11,10 +11,18 @@ let mensagens = [];
 // Função para inicializar o suporte
 async function inicializarSuporte() {
     try {
-        // Por enquanto, vamos usar IDs fixos para demonstração
-        // Em uma implementação real, você pegaria esses dados da sessão
-        currentUserId = 1; // ID do usuário logado
-        currentUserType = 'cuidador'; // Tipo do usuário (cuidador ou responsavel)
+        // Buscar informações do usuário logado via API
+        const response = await fetch('/api/usuario/sessao');
+        const data = await response.json();
+        
+        if (data.success && data.usuario) {
+            currentUserId = data.usuario.id;
+            currentUserType = data.usuario.tipo === 'admin' || data.usuario.tipo === 'administrador' || data.usuario.tipo === 'Administrador' || data.usuario.tipo === 'Adm' ? 'admin' : data.usuario.tipo;
+        } else {
+            // Fallback para demonstração
+            currentUserId = 1;
+            currentUserType = 'cuidador';
+        }
         
         await carregarEstatisticasSuporte();
         await carregarTickets();
@@ -88,7 +96,7 @@ function exibirTickets(ticketsList) {
         
         return `
             <div class="conversation-item ${temMensagensNaoLidas ? 'unread' : ''} ${prioridadeClass}" 
-                 onclick="abrirTicket(${ticket.IdChat})">
+                 onclick="abrirTicket(${ticket.IdChat}, this)">
                 <div class="conversation-header">
                     <div class="ticket-info">
                         <h4 class="conversation-name">${ticket.Assunto || 'Ticket de Suporte'}</h4>
@@ -124,7 +132,7 @@ async function carregarCategorias() {
 }
 
 // Função para abrir um ticket
-async function abrirTicket(ticketId) {
+async function abrirTicket(ticketId, element) {
     try {
         currentTicketId = ticketId;
         
@@ -138,7 +146,9 @@ async function abrirTicket(ticketId) {
         });
         
         // Adicionar classe active ao ticket selecionado
-        event.currentTarget.classList.add('active');
+        if (element) {
+            element.classList.add('active');
+        }
         
         // Carregar informações do ticket
         await carregarInformacoesTicket(ticketId);
@@ -148,6 +158,17 @@ async function abrirTicket(ticketId) {
         
         // Marcar mensagens como lidas
         await marcarMensagensComoLidas(ticketId);
+        
+        // Scroll para a última mensagem ao abrir ticket
+        setTimeout(() => {
+            const container = document.getElementById('chatMessages');
+            if (container) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }, 300);
         
     } catch (error) {
         console.error('Erro ao abrir ticket:', error);
@@ -165,7 +186,11 @@ async function carregarInformacoesTicket(ticketId) {
             const ticket = data.data;
             
             document.getElementById('chatUserName').textContent = ticket.Assunto || 'Ticket de Suporte';
-            document.getElementById('chatUserAvatar').src = '/imagens/admin-avatar.png';
+            // Avatar do admin usa placeholder com ícone
+            const avatarElement = document.getElementById('chatUserAvatar');
+            if (avatarElement) {
+                avatarElement.innerHTML = '<i class="fas fa-headset"></i>';
+            }
             document.getElementById('chatUserStatus').textContent = ticket.StatusSuporte;
             
             // Atualizar classe do status
@@ -209,12 +234,21 @@ function exibirMensagensSuporte(msgs) {
     container.innerHTML = msgs.map(msg => {
         const isAdmin = msg.IsAdmin;
         const nomeRemetente = msg.NomeRemetente || 'Usuário';
-        const fotoRemetente = msg.FotoRemetente || '/imagens/default-avatar.png';
+        const fotoRemetente = msg.FotoRemetente || null;
         const dataEnvio = formatarDataHora(msg.DataEnvio);
         
+        // Determinar se é mensagem de suporte (admin) ou usuário
+        const messageClass = isAdmin ? 'support' : 'user';
+        const messageSide = isAdmin ? 'right' : 'left';
+        
         return `
-            <div class="message ${isAdmin ? 'admin' : 'user'}">
-                <img src="${fotoRemetente}" alt="${nomeRemetente}" class="message-avatar">
+            <div class="message ${messageClass} ${messageSide}">
+                ${fotoRemetente ? 
+                    `<img src="${fotoRemetente}" alt="${nomeRemetente}" class="message-avatar">` :
+                    `<div class="message-avatar avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>`
+                }
                 <div class="message-content">
                     <div class="message-header">
                         <span class="message-sender">${nomeRemetente}</span>
@@ -226,8 +260,13 @@ function exibirMensagensSuporte(msgs) {
         `;
     }).join('');
     
-    // Scroll para a última mensagem
-    container.scrollTop = container.scrollHeight;
+    // Scroll suave para a última mensagem
+    setTimeout(() => {
+        container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 100);
 }
 
 // Função para enviar mensagem de suporte
@@ -249,8 +288,7 @@ async function enviarMensagemSuporte() {
                 IdChat: currentTicketId,
                 IdRemetente: currentUserId,
                 RemetenteTipo: currentUserType,
-                Conteudo: conteudo,
-                IsAdmin: false
+                Conteudo: conteudo
             })
         });
         
@@ -262,6 +300,17 @@ async function enviarMensagemSuporte() {
             
             // Recarregar mensagens
             await carregarMensagensSuporte(currentTicketId);
+            
+            // Scroll para a última mensagem após envio
+            setTimeout(() => {
+                const container = document.getElementById('chatMessages');
+                if (container) {
+                    container.scrollTo({
+                        top: container.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 200);
             
             // Recarregar tickets para atualizar última mensagem
             await carregarTickets();
@@ -360,7 +409,9 @@ async function criarNovoTicket() {
             
             fecharModalNovoTicket();
             await carregarTickets();
-            await abrirTicket(data.data.id);
+            // Encontrar o elemento do ticket recém-criado e abrir
+            const ticketElement = document.querySelector(`[onclick*="abrirTicket(${data.data.id}"]`);
+            await abrirTicket(data.data.id, ticketElement);
         } else {
             exibirErro(data.message);
         }
@@ -483,6 +534,21 @@ function fecharModalNotificacoes() {
     document.getElementById('notificationModal').style.display = 'none';
 }
 
+// Função para manter scroll na última mensagem
+function manterScrollUltimaMensagem() {
+    const container = document.getElementById('chatMessages');
+    if (container) {
+        const isScrolledToBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+        
+        if (isScrolledToBottom) {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    }
+}
+
 // Função para atualizar dados periodicamente
 function iniciarAtualizacaoAutomatica() {
     // Atualizar tickets a cada 30 segundos
@@ -490,6 +556,10 @@ function iniciarAtualizacaoAutomatica() {
         if (!currentTicketId) {
             await carregarTickets();
             await carregarEstatisticasSuporte();
+        } else {
+            // Se estiver em uma conversa, atualizar mensagens e manter scroll
+            await carregarMensagensSuporte(currentTicketId);
+            manterScrollUltimaMensagem();
         }
     }, 30000);
 }

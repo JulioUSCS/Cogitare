@@ -3,6 +3,28 @@ import pool from '../config/db.js';
 import Usuario from '../model/usuarioModel.js';
 
 const usuarioController = {
+  async getSessao(req, res) {
+    try {
+      if (req.session.usuario) {
+        res.json({
+          success: true,
+          usuario: req.session.usuario
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: 'Usuário não autenticado'
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar sessão:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
+    }
+  },
+
   async login(req, res) {
     const { usuario, senha } = req.body;
 
