@@ -1,5 +1,5 @@
 // controller/financeiroController.js
-import financeiroModel from '../model/financeiroModel.js';
+import financeiroModel from '../models/financeiroModel.js';
 
 class FinanceiroController {
     // ========== RECEITAS ==========
@@ -330,6 +330,10 @@ class FinanceiroController {
                 const totalVendas = parseFloat(resultado.data.TotalVendas) || 0;
                 const valorAReceber = parseFloat(resultado.data.ValorAReceber) || 0;
                 const valorRecebido = parseFloat(resultado.data.ValorRecebido) || 0;
+                
+                // Calcular métricas de repasse
+                const repasseCuidador = parseFloat(resultado.data.RepasseCuidador) || 0;
+                const receitaPlataforma = parseFloat(resultado.data.ReceitaPlataforma) || 0;
 
                 res.json({
                     success: true,
@@ -343,7 +347,10 @@ class FinanceiroController {
                         // Novas métricas de vendas
                         TotalVendas: totalVendas,
                         ValorAReceber: valorAReceber,
-                        ValorRecebido: valorRecebido
+                        ValorRecebido: valorRecebido,
+                        // Novas métricas de repasse
+                        RepasseCuidador: repasseCuidador,
+                        ReceitaPlataforma: receitaPlataforma
                     }
                 });
             } else {

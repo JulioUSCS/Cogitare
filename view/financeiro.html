@@ -88,18 +88,20 @@
                             <div class="tooltip-content">
                                 <h4>💰 O que é uma Receita?</h4>
                                 <p><strong>Receita = Dinheiro que ENTROU no seu negócio</strong></p>
-                                <p>É o pagamento que você <strong>realmente recebeu</strong> pelos serviços prestados (cuidar de idosos, consultorias, etc.)</p>
-                                
+                                <p>É o pagamento que você <strong>realmente recebeu</strong> pelos serviços prestados
+                                    (cuidar de idosos, consultorias, etc.)</p>
+
                                 <div class="calculation-example">
                                     <p><strong>Como é calculado:</strong></p>
-                                    <p><strong>Receita Total Efetiva:</strong> Soma de todas as receitas que realmente entraram no caixa (tabela receita com Status = 'Pago')</p>
+                                    <p><strong>Receita Total Efetiva:</strong> Soma de todas as receitas que realmente
+                                        entraram no caixa (tabela receita com Status = 'Pago')</p>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Fórmula SQL:</strong></p>
                                     <code>SELECT SUM(Valor) FROM receita WHERE Status = 'Pago'</code>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Exemplo prático:</strong></p>
                                     <p>• Atendimento 1: R$ 150,00 → Pago ✅</p>
@@ -107,8 +109,9 @@
                                     <p>• Atendimento 3: R$ 200,00 → Pendente ❌</p>
                                     <p><strong>Receita Total: R$ 400,00</strong> (só os pagos!)</p>
                                 </div>
-                                
-                                <p><em>💡 Dica: Receita ≠ Atendimento. Receita é o dinheiro que realmente entrou no seu bolso!</em></p>
+
+                                <p><em>💡 Dica: Receita ≠ Atendimento. Receita é o dinheiro que realmente entrou no seu
+                                        bolso!</em></p>
                             </div>
                         </div>
                     </div>
@@ -128,7 +131,8 @@
                         <div id="tooltip-despesa" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>💸 Como é calculado:</h4>
-                                <p><strong>Total de Despesas:</strong> Soma de todas as despesas pagas no período selecionado</p>
+                                <p><strong>Total de Despesas:</strong> Soma de todas as despesas pagas no período
+                                    selecionado</p>
                                 <div class="calculation-example">
                                     <p><strong>Fórmula:</strong></p>
                                     <code>SELECT SUM(Valor) FROM despesa WHERE Status = 'Pago' AND DataDespesa BETWEEN ? AND ?</code>
@@ -159,7 +163,8 @@
                         <div id="tooltip-lucro" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>📈 Como é calculado:</h4>
-                                <p><strong>Lucro Líquido:</strong> Diferença entre receitas efetivas e despesas do período</p>
+                                <p><strong>Lucro Líquido:</strong> Diferença entre receitas efetivas e despesas do
+                                    período</p>
                                 <div class="calculation-example">
                                     <p><strong>Fórmula:</strong></p>
                                     <code>Lucro = ReceitaTotalEfetiva - TotalDespesas</code>
@@ -206,7 +211,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- ========== NOVOS CARDS DE VENDAS ========== -->
                 <div class="stat-card vendas">
                     <div class="stat-icon">
@@ -219,23 +224,25 @@
                                 <i class="fas fa-question-circle"></i>
                             </button>
                         </div>
-                        <p>Total de Vendas</p>
+                        <p>Total de Aten. Contr.</p>
                         <div id="tooltip-vendas" class="tooltip hidden">
                             <div class="tooltip-content">
-                                <h4>🛒 O que são Vendas?</h4>
-                                <p><strong>Vendas = Todos os atendimentos contratados</strong></p>
-                                <p>É a soma de TODOS os atendimentos (concluídos, em andamento, agendados) - representa o potencial total do seu negócio</p>
-                                
+                                <h4>🛒 O que são Aten. Contr.?</h4>
+                                <p><strong>Aten. Contr. = Todos os atendimentos contratados</strong></p>
+                                <p>É a soma de TODOS os atendimentos (concluídos, em andamento, agendados) - representa
+                                    o potencial total do negócio</p>
+
                                 <div class="calculation-example">
                                     <p><strong>Como é calculado:</strong></p>
-                                    <p><strong>Total de Vendas:</strong> Soma de todos os valores dos atendimentos, independente do status</p>
+                                    <p><strong>Total de Vendas:</strong> Soma de todos os valores dos atendimentos,
+                                        independente do status</p>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Fórmula SQL:</strong></p>
                                     <code>SELECT SUM(Valor) FROM atendimento</code>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Exemplo prático:</strong></p>
                                     <p>• Atendimento 1: R$ 150,00 → Concluído ✅</p>
@@ -243,13 +250,14 @@
                                     <p>• Atendimento 3: R$ 200,00 → Agendado 📅</p>
                                     <p><strong>Total de Vendas: R$ 600,00</strong></p>
                                 </div>
-                                
-                                <p><em>💡 Dica: Vendas ≠ Receita. Vendas são o potencial, receita é o que já entrou!</em></p>
+
+                                <p><em>💡 Dica: Vendas ≠ Receita. Vendas são o potencial, receita é o que já
+                                        entrou!</em></p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card a-receber">
                     <div class="stat-icon">
                         <i class="fas fa-clock"></i>
@@ -266,18 +274,20 @@
                             <div class="tooltip-content">
                                 <h4>⏰ O que é Valor a Receber?</h4>
                                 <p><strong>Valor a Receber = Dinheiro que ainda vai entrar</strong></p>
-                                <p>É a soma dos atendimentos que ainda não foram concluídos (em andamento, agendados, etc.)</p>
-                                
+                                <p>É a soma dos atendimentos que ainda não foram concluídos (em andamento, agendados,
+                                    etc.)</p>
+
                                 <div class="calculation-example">
                                     <p><strong>Como é calculado:</strong></p>
-                                    <p><strong>Valor a Receber:</strong> Soma dos atendimentos com status diferente de 'Concluído'</p>
+                                    <p><strong>Valor a Receber:</strong> Soma dos atendimentos com status diferente de
+                                        'Concluído'</p>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Fórmula SQL:</strong></p>
                                     <code>SELECT SUM(Valor) FROM atendimento WHERE Status != 'Concluído'</code>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Exemplo prático:</strong></p>
                                     <p>• Atendimento 2: R$ 250,00 → Em andamento 🔄</p>
@@ -285,13 +295,13 @@
                                     <p>• Atendimento 4: R$ 180,00 → Agendado 📅</p>
                                     <p><strong>Valor a Receber: R$ 630,00</strong></p>
                                 </div>
-                                
+
                                 <p><em>💡 Dica: Este é o dinheiro que ainda vai entrar no seu caixa!</em></p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card recebido">
                     <div class="stat-icon">
                         <i class="fas fa-check-circle"></i>
@@ -309,17 +319,17 @@
                                 <h4>✅ O que é Valor Recebido?</h4>
                                 <p><strong>Valor Recebido = Atendimentos já concluídos</strong></p>
                                 <p>É a soma dos atendimentos que já foram finalizados e podem gerar receita</p>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Como é calculado:</strong></p>
                                     <p><strong>Valor Recebido:</strong> Soma dos atendimentos com status 'Concluído'</p>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Fórmula SQL:</strong></p>
                                     <code>SELECT SUM(Valor) FROM atendimento WHERE Status = 'Concluído'</code>
                                 </div>
-                                
+
                                 <div class="calculation-example">
                                     <p><strong>Exemplo prático:</strong></p>
                                     <p>• Atendimento 1: R$ 150,00 → Concluído ✅</p>
@@ -327,8 +337,96 @@
                                     <p>• Atendimento 6: R$ 200,00 → Concluído ✅</p>
                                     <p><strong>Valor Recebido: R$ 650,00</strong></p>
                                 </div>
-                                
+
                                 <p><em>💡 Dica: Estes atendimentos já podem gerar receita no caixa!</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card repasse-cuidador">
+                    <div class="stat-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <h3 id="repasseCuidador">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('repasse-cuidador')"
+                                title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
+                        <p>Repasse aos Cuidadores (90%)</p>
+                        <div id="tooltip-repasse-cuidador" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>💵 O que é Repasse aos Cuidadores?</h4>
+                                <p><strong>Repasse = 90% do valor dos atendimentos</strong></p>
+                                <p>É o valor que deve ser repassado aos cuidadores pelos serviços prestados. A
+                                    plataforma fica com 10% e o cuidador recebe 90%.</p>
+
+                                <div class="calculation-example">
+                                    <p><strong>Como é calculado:</strong></p>
+                                    <p><strong>Repasse aos Cuidadores:</strong> 90% da soma de todos os atendimentos</p>
+                                </div>
+
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula:</strong></p>
+                                    <code>Repasse = (Total de Vendas × 90) ÷ 100</code>
+                                </div>
+
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo prático:</strong></p>
+                                    <p>• Atendimento 1: R$ 100,00 (Cuidador recebe R$ 90,00 | Plataforma R$ 10,00)</p>
+                                    <p>• Atendimento 2: R$ 200,00 (Cuidador recebe R$ 180,00 | Plataforma R$ 20,00)</p>
+                                    <p>• Atendimento 3: R$ 150,00 (Cuidador recebe R$ 135,00 | Plataforma R$ 15,00)</p>
+                                    <p><strong>Total de Vendas: R$ 450,00</strong></p>
+                                    <p><strong>Repasse aos Cuidadores: R$ 405,00 (90%)</strong></p>
+                                    <p><strong>Receita da Plataforma: R$ 45,00 (10%)</strong></p>
+                                </div>
+
+                                <p><em>💡 Dica: Este é o valor total que deve ser pago aos cuidadores!</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card receita-plataforma">
+                    <div class="stat-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <h3 id="receitaPlataforma">R$ 0,00</h3>
+                            <button class="help-btn" onclick="toggleTooltip('receita-plataforma')"
+                                title="Como é calculado?">
+                                <i class="fas fa-question-circle"></i>
+                            </button>
+                        </div>
+                        <p>Receita da Plataforma (10%)</p>
+                        <div id="tooltip-receita-plataforma" class="tooltip hidden">
+                            <div class="tooltip-content">
+                                <h4>🏢 O que é Receita da Plataforma?</h4>
+                                <p><strong>Receita da Plataforma = 10% do valor dos atendimentos</strong></p>
+                                <p>É o valor que a plataforma retém de cada atendimento como taxa de serviço.</p>
+
+                                <div class="calculation-example">
+                                    <p><strong>Como é calculado:</strong></p>
+                                    <p><strong>Receita da Plataforma:</strong> 10% da soma de todos os atendimentos</p>
+                                </div>
+
+                                <div class="calculation-example">
+                                    <p><strong>Fórmula:</strong></p>
+                                    <code>Receita Plataforma = (Total de Vendas × 10) ÷ 100</code>
+                                </div>
+
+                                <div class="calculation-example">
+                                    <p><strong>Exemplo prático:</strong></p>
+                                    <p>• Total de Vendas: R$ 450,00</p>
+                                    <p><strong>Receita da Plataforma: R$ 45,00 (10%)</strong></p>
+                                    <p><strong>Repasse aos Cuidadores: R$ 405,00 (90%)</strong></p>
+                                </div>
+
+                                <p><em>💡 Dica: Esta é a receita bruta da plataforma antes das despesas!</em></p>
                             </div>
                         </div>
                     </div>

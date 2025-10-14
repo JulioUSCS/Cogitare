@@ -1,6 +1,6 @@
 // routes/financeiroRoute.js
 import express from 'express';
-import financeiroController from '../controller/financeiroController.js';
+import financeiroController from '../controllers/financeiroController.js';
 
 const router = express.Router();
 

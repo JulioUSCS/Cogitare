@@ -1,6 +1,6 @@
 // routes/avaliacaoRoute.js
 import express from 'express';
-import avaliacaoController from '../controller/avaliacaoController.js';
+import avaliacaoController from '../controllers/avaliacaoController.js';
 
 const router = express.Router();
 

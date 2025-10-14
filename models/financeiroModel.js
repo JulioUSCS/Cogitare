@@ -307,6 +307,13 @@ class FinanceiroModel {
                 (SELECT COALESCE(SUM(Valor), 0) FROM atendimento 
                  WHERE Status = 'Concluído') as ValorRecebido,
                 
+                -- ========== MÉTRICAS DE REPASSE ==========
+                -- Repasse aos cuidadores (90% do total de vendas)
+                (SELECT COALESCE(SUM(Valor), 0) * 0.90 FROM atendimento) as RepasseCuidador,
+                
+                -- Receita da plataforma (10% do total de vendas)
+                (SELECT COALESCE(SUM(Valor), 0) * 0.10 FROM atendimento) as ReceitaPlataforma,
+                
                 -- ========== MÉTRICAS DE RECEITA ==========
                 -- Receita total de todos os atendimentos concluídos
                 (SELECT COALESCE(SUM(Valor), 0) FROM atendimento 

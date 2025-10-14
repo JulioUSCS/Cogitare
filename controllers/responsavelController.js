@@ -1,4 +1,4 @@
-import Responsavel from '../model/responsavelModel.js';
+import Responsavel from '../models/responsavelModel.js';
 
 const listarTodos = async (req, res) => {
   try {

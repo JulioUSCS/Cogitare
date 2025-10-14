@@ -1,5 +1,5 @@
 import express from 'express';
-import responsavelController from '../controller/responsavelController.js';
+import responsavelController from '../controllers/responsavelController.js';
 
 const router = express.Router();
 

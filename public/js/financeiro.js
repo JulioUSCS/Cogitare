@@ -313,6 +313,10 @@ function atualizarCardsEstatisticas(dados) {
     document.getElementById('valorAReceber').textContent = formatarMoeda(dados.ValorAReceber || 0);
     document.getElementById('valorRecebido').textContent = formatarMoeda(dados.ValorRecebido || 0);
     
+    // Atualizar cards de repasse
+    document.getElementById('repasseCuidador').textContent = formatarMoeda(dados.RepasseCuidador || 0);
+    document.getElementById('receitaPlataforma').textContent = formatarMoeda(dados.ReceitaPlataforma || 0);
+    
     // Adicionar informações extras se disponíveis
     if (dados.ReceitaAtendimentosConcluidos !== undefined) {
         const diferenca = (dados.ReceitaAtendimentosConcluidos || 0) - (dados.ReceitaTotalEfetiva || 0);
@@ -327,6 +331,8 @@ function atualizarCardsEstatisticas(dados) {
     console.log(`🛒 Total de Vendas: ${formatarMoeda(dados.TotalVendas || 0)}`);
     console.log(`⏰ Valor a Receber: ${formatarMoeda(dados.ValorAReceber || 0)}`);
     console.log(`✅ Valor Recebido: ${formatarMoeda(dados.ValorRecebido || 0)}`);
+    console.log(`💵 Repasse aos Cuidadores (90%): ${formatarMoeda(dados.RepasseCuidador || 0)}`);
+    console.log(`🏢 Receita da Plataforma (10%): ${formatarMoeda(dados.ReceitaPlataforma || 0)}`);
     
     // Atualizar cores baseadas no lucro
     const lucroElement = document.getElementById('lucroLiquido');

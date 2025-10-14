@@ -1,4 +1,4 @@
-import HistoricoModel from '../model/historicoModel.js';
+import HistoricoModel from '../models/historicoModel.js';
 
 export const getHistorico = async (req, res) => {
     try {

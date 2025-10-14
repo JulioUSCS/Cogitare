@@ -1,5 +1,5 @@
 // controller/avaliacaoController.js
-import avaliacaoModel from '../model/avaliacaoModel.js';
+import avaliacaoModel from '../models/avaliacaoModel.js';
 
 class AvaliacaoController {
     // Criar nova avaliação

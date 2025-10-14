@@ -1,4 +1,4 @@
-import CuidadorModel from '../model/cuidadorModel.js';
+import CuidadorModel from '../models/cuidadorModel.js';
 
 class CuidadorController {
     static async listar(req, res) {

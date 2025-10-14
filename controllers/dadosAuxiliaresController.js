@@ -1,4 +1,4 @@
-const Idoso = require('../model/idosoModel');
+const Idoso = require('../models/idosoModel');
 
 const dadosAuxiliaresController = {
     async listarMobilidades(req, res) {

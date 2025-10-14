@@ -7,7 +7,7 @@ import {
     getHistoricoPorAdministrador,
     getHistoricoPorAcao,
     getHistoricoAtendimento
-} from '../controller/historicoController.js';
+} from '../controllers/historicoController.js';
 
 const router = express.Router();
 

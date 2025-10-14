@@ -1,6 +1,6 @@
 // controller/usuarioController.js
 import pool from '../config/db.js';
-import Usuario from '../model/usuarioModel.js';
+import Usuario from '../models/usuarioModel.js';
 
 const usuarioController = {
   async getSessao(req, res) {

@@ -1,6 +1,6 @@
-import AtendimentoModel from '../model/atendimentoModel.js';
-import financeiroModel from '../model/financeiroModel.js';
-import PagamentoModel from '../model/pagamentoModel.js';
+import AtendimentoModel from '../models/atendimentoModel.js';
+import financeiroModel from '../models/financeiroModel.js';
+import PagamentoModel from '../models/pagamentoModel.js';
 
 class AtendimentoController {
     static async listar(req, res) {

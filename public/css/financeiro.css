@@ -130,6 +130,15 @@
     background: linear-gradient(135deg, #16a085, #1abc9c);
 }
 
+/* Novos cards de repasse */
+.stat-card.repasse-cuidador .stat-icon {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+}
+
+.stat-card.receita-plataforma .stat-icon {
+    background: linear-gradient(135deg, #d35400, #e67e22);
+}
+
 .stat-content h3 {
     margin: 0 0 0.25rem 0;
     font-size: 1.5rem;

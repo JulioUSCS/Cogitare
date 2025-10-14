@@ -1,5 +1,5 @@
 // controller/dashboardController.js
-import dashboardModel from '../model/dashboardModel.js';
+import dashboardModel from '../models/dashboardModel.js';
 
 class DashboardController {
     // Buscar todas as métricas do dashboard

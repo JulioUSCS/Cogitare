@@ -1,5 +1,5 @@
 import express from 'express';
-import AtendimentoController from '../controller/atendimentoController.js';
+import AtendimentoController from '../controllers/atendimentoController.js';
 
 
 const router = express.Router();

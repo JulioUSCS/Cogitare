@@ -4,7 +4,7 @@ import {
   getPagamentoPorId, 
   getPagamentosPorResponsavel, 
   getPagamentosPorStatus 
-} from '../controller/pagamentoController.js';
+} from '../controllers/pagamentoController.js';
 
 const router = express.Router();
 

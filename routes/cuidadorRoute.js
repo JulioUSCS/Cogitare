@@ -1,5 +1,5 @@
 import express from 'express';
-import CuidadorController from '../controller/cuidadorController.js';
+import CuidadorController from '../controllers/cuidadorController.js';
 
 const router = express.Router();
 

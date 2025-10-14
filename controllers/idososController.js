@@ -1,5 +1,5 @@
 // controller/idososController.js
-import Idoso from '../model/idosoModel.js';
+import Idoso from '../models/idosoModel.js';
 
 const idososController = {
   async listar(req, res) {

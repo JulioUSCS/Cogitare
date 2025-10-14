@@ -1,5 +1,5 @@
 // controller/chatController.js
-import chatModel from '../model/chatModel.js';
+import chatModel from '../models/chatModel.js';
 
 class ChatController {
     // Criar novo ticket de suporte

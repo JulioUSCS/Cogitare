@@ -1,6 +1,6 @@
 // routes/idosoRoute.js
 import express from 'express';
-import idososController from '../controller/idososController.js';
+import idososController from '../controllers/idososController.js';
 
 const router = express.Router();
 
