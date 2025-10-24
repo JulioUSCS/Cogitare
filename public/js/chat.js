@@ -74,17 +74,22 @@ async function carregarTickets() {
 function exibirTickets(ticketsList) {
     const container = document.getElementById('ticketsList');
     
-    if (ticketsList.length === 0) {
+    // Filtrar apenas tickets abertos (não fechados)
+    const ticketsAbertos = ticketsList.filter(ticket => 
+        ticket.StatusSuporte !== 'Fechado' && ticket.StatusSuporte !== 'fechado'
+    );
+    
+    if (ticketsAbertos.length === 0) {
         container.innerHTML = `
             <div class="loading">
                 <i class="fas fa-headset"></i>
-                <span>Nenhum ticket encontrado</span>
+                <span>Nenhum ticket ativo encontrado</span>
             </div>
         `;
         return;
     }
     
-    container.innerHTML = ticketsList.map(ticket => {
+    container.innerHTML = ticketsAbertos.map(ticket => {
         const ultimaMensagem = ticket.UltimaMensagem || 'Nenhuma mensagem ainda';
         const dataUltimaMensagem = ticket.DataUltimaMensagem 
             ? formatarDataHora(ticket.DataUltimaMensagem)
@@ -156,6 +161,9 @@ async function abrirTicket(ticketId, element) {
         // Carregar mensagens
         await carregarMensagensSuporte(ticketId);
         
+        // Verificar se o ticket está fechado e desativar interface se necessário
+        await verificarStatusTicket(ticketId);
+        
         // Marcar mensagens como lidas
         await marcarMensagensComoLidas(ticketId);
         
@@ -173,6 +181,35 @@ async function abrirTicket(ticketId, element) {
     } catch (error) {
         console.error('Erro ao abrir ticket:', error);
         exibirErro('Erro ao abrir ticket');
+    }
+}
+
+// Função para verificar status do ticket
+async function verificarStatusTicket(ticketId) {
+    try {
+        const response = await fetch(`/api/suporte/ticket/${ticketId}`);
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+            const ticket = data.data;
+            
+            if (ticket.StatusSuporte === 'Fechado') {
+                // Desativar interface de envio para tickets fechados
+                desativarInterfaceEnvio();
+                
+                // Atualizar status visual
+                const statusElement = document.getElementById('chatUserStatus');
+                if (statusElement) {
+                    statusElement.textContent = 'Fechado';
+                    statusElement.className = 'status-fechado';
+                }
+            } else {
+                // Reativar interface para tickets abertos
+                reativarInterfaceEnvio();
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao verificar status do ticket:', error);
     }
 }
 
@@ -233,9 +270,21 @@ function exibirMensagensSuporte(msgs) {
     
     container.innerHTML = msgs.map(msg => {
         const isAdmin = msg.IsAdmin;
+        const isSystemMessage = msg.IsSystemMessage;
         const nomeRemetente = msg.NomeRemetente || 'Usuário';
         const fotoRemetente = msg.FotoRemetente || null;
         const dataEnvio = formatarDataHora(msg.DataEnvio);
+        
+        // Verificar se é mensagem de sistema
+        if (isSystemMessage) {
+            return `
+                <div class="message system">
+                    <div class="message-content">
+                        <p class="message-text">${msg.Conteudo}</p>
+                    </div>
+                </div>
+            `;
+        }
         
         // Determinar se é mensagem de suporte (admin) ou usuário
         const messageClass = isAdmin ? 'support' : 'user';
@@ -275,6 +324,12 @@ async function enviarMensagemSuporte() {
     const conteudo = input.value.trim();
     
     if (!conteudo || !currentTicketId) {
+        return;
+    }
+    
+    // Verificar se o input está desabilitado (ticket fechado)
+    if (input.disabled) {
+        exibirErro('Este ticket foi fechado. Não é possível enviar mensagens.');
         return;
     }
     
@@ -425,11 +480,15 @@ async function criarNovoTicket() {
 async function fecharTicket() {
     if (!currentTicketId) return;
     
-    if (!confirm('Tem certeza que deseja fechar este ticket?')) {
+    if (!confirm('Tem certeza que deseja fechar este ticket? Esta ação não pode ser desfeita.')) {
         return;
     }
     
     try {
+        // 1. Enviar mensagem programática de encerramento
+        await enviarMensagemProgramaticaEncerramento();
+        
+        // 2. Fechar o ticket no backend
         const response = await fetch(`/api/suporte/ticket/${currentTicketId}/status`, {
             method: 'PUT',
             headers: {
@@ -443,19 +502,94 @@ async function fecharTicket() {
         const data = await response.json();
         
         if (data.success) {
-            // Voltar para tela vazia
+            // 3. Desativar interface de envio de mensagem
+            desativarInterfaceEnvio();
+            
+            // 4. Voltar para tela vazia
             document.getElementById('chatEmpty').style.display = 'flex';
             document.getElementById('chatActive').style.display = 'none';
             currentTicketId = null;
             
-            // Recarregar tickets
+            // 5. Recarregar tickets (ticket fechado será ocultado)
             await carregarTickets();
+            
+            // 6. Mostrar confirmação
+            exibirSucesso('Ticket fechado com sucesso!');
         } else {
             exibirErro('Erro ao fechar ticket');
         }
     } catch (error) {
         console.error('Erro ao fechar ticket:', error);
         exibirErro('Erro ao fechar ticket');
+    }
+}
+
+// Função para enviar mensagem programática de encerramento
+async function enviarMensagemProgramaticaEncerramento() {
+    try {
+        const mensagemEncerramento = `🔒 **CONVERSA ENCERRADA** 🔒\n\nEsta conversa foi encerrada pelo suporte. Obrigado por entrar em contato conosco!\n\n_Se precisar de mais ajuda, abra um novo ticket._`;
+        
+        const response = await fetch('/api/suporte/mensagem', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                IdChat: currentTicketId,
+                IdRemetente: currentUserId,
+                RemetenteTipo: currentUserType,
+                Conteudo: mensagemEncerramento,
+                IsAdmin: true, // Marcar como mensagem do admin
+                IsSystemMessage: true // Marcar como mensagem do sistema
+            })
+        });
+        
+        if (response.ok) {
+            // Recarregar mensagens para mostrar a mensagem de encerramento
+            await carregarMensagensSuporte(currentTicketId);
+        }
+    } catch (error) {
+        console.error('Erro ao enviar mensagem de encerramento:', error);
+    }
+}
+
+// Função para desativar interface de envio
+function desativarInterfaceEnvio() {
+    const messageInput = document.getElementById('messageInput');
+    const btnSend = document.querySelector('.btn-send');
+    
+    if (messageInput) {
+        messageInput.disabled = true;
+        messageInput.placeholder = 'Este ticket foi fechado. Não é possível enviar mensagens.';
+        messageInput.style.opacity = '0.5';
+        messageInput.style.cursor = 'not-allowed';
+    }
+    
+    if (btnSend) {
+        btnSend.disabled = true;
+        btnSend.style.opacity = '0.5';
+        btnSend.style.cursor = 'not-allowed';
+        btnSend.innerHTML = '<i class="fas fa-lock"></i>';
+    }
+}
+
+// Função para reativar interface de envio (quando abrir ticket ativo)
+function reativarInterfaceEnvio() {
+    const messageInput = document.getElementById('messageInput');
+    const btnSend = document.querySelector('.btn-send');
+    
+    if (messageInput) {
+        messageInput.disabled = false;
+        messageInput.placeholder = 'Digite sua resposta...';
+        messageInput.style.opacity = '1';
+        messageInput.style.cursor = 'text';
+    }
+    
+    if (btnSend) {
+        btnSend.disabled = false;
+        btnSend.style.opacity = '1';
+        btnSend.style.cursor = 'pointer';
+        btnSend.innerHTML = '<i class="fas fa-paper-plane"></i>';
     }
 }
 
@@ -497,6 +631,20 @@ function exibirErro(mensagem) {
     setTimeout(() => {
         div.remove();
     }, 5000);
+}
+
+// Função para exibir sucesso
+function exibirSucesso(mensagem) {
+    const container = document.querySelector('.main-content');
+    const div = document.createElement('div');
+    div.className = 'success-message';
+    div.innerHTML = `<i class="fas fa-check-circle"></i> ${mensagem}`;
+    
+    container.insertBefore(div, container.firstChild);
+    
+    setTimeout(() => {
+        div.remove();
+    }, 3000);
 }
 
 // Função para configurar eventos

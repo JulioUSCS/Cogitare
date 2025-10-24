@@ -965,3 +965,78 @@
 .status-fechado {
     color: #e74c3c;
 }
+
+/* Estilos para mensagens de sistema */
+.message.system {
+    align-self: center;
+    max-width: 90%;
+    margin: 1rem 0;
+}
+
+.message.system .message-content {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+}
+
+.message.system .message-text {
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Estilos para interface desabilitada */
+#messageInput:disabled {
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-send:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Estilos para mensagens de sucesso e erro */
+.success-message {
+    background: #d4edda;
+    color: #155724;
+    padding: 1rem;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideInDown 0.3s ease;
+}
+
+.error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
