@@ -3,154 +3,49 @@ import pool from '../config/db.js';
 class PagamentoModel {
     // Lista todos os pagamentos com informações relacionadas
     static async listar() {
-        const [rows] = await pool.query(`
-            SELECT 
-                p.IdPagamento,
-                p.IdAtendimento,
-                p.MetodoPagamento,
-                p.StatusPagamento,
-                p.DataPagamento,
-                p.CodigoTransacao,
-                r.Nome as NomeResponsavel,
-                r.Email as EmailResponsavel,
-                r.Telefone as TelefoneResponsavel,
-                c.Nome as NomeCuidador,
-                c.Email as EmailCuidador,
-                i.Nome as NomeIdoso,
-                a.DataInicio,
-                a.DataFim,
-                a.Valor,
-                a.Status as StatusAtendimento
-            FROM pagamento p
-            INNER JOIN atendimento a ON p.IdAtendimento = a.IdAtendimento
-            INNER JOIN responsavel r ON a.IdResponsavel = r.IdResponsavel
-            INNER JOIN cuidador c ON a.IdCuidador = c.IdCuidador
-            INNER JOIN idoso i ON a.IdIdoso = i.IdIdoso
-            ORDER BY p.DataPagamento DESC
-        `);
-        return rows;
+        const [result] = await pool.execute('CALL sp_pagamento_listar()');
+        return result[0];
     }
 
     // Busca um pagamento específico por ID
     static async buscarPorId(id) {
-        const [rows] = await pool.query(`
-            SELECT 
-                p.IdPagamento,
-                p.IdAtendimento,
-                p.MetodoPagamento,
-                p.StatusPagamento,
-                p.DataPagamento,
-                p.CodigoTransacao,
-                r.Nome as NomeResponsavel,
-                r.Email as EmailResponsavel,
-                r.Telefone as TelefoneResponsavel,
-                c.Nome as NomeCuidador,
-                c.Email as EmailCuidador,
-                i.Nome as NomeIdoso,
-                a.DataInicio,
-                a.DataFim,
-                a.Valor,
-                a.Status as StatusAtendimento
-            FROM pagamento p
-            INNER JOIN atendimento a ON p.IdAtendimento = a.IdAtendimento
-            INNER JOIN responsavel r ON a.IdResponsavel = r.IdResponsavel
-            INNER JOIN cuidador c ON a.IdCuidador = c.IdCuidador
-            INNER JOIN idoso i ON a.IdIdoso = i.IdIdoso
-            WHERE p.IdPagamento = ?
-        `, [id]);
-        return rows[0];
+        const [result] = await pool.execute('CALL sp_pagamento_buscar_por_id(?)', [id]);
+        return result[0] ? result[0][0] : null;
     }
 
     // Busca pagamentos por responsável
     static async buscarPorResponsavel(idResponsavel) {
-        const [rows] = await pool.query(`
-            SELECT 
-                p.IdPagamento,
-                p.IdAtendimento,
-                p.MetodoPagamento,
-                p.StatusPagamento,
-                p.DataPagamento,
-                p.CodigoTransacao,
-                r.Nome as NomeResponsavel,
-                r.Email as EmailResponsavel,
-                r.Telefone as TelefoneResponsavel,
-                c.Nome as NomeCuidador,
-                c.Email as EmailCuidador,
-                i.Nome as NomeIdoso,
-                a.DataInicio,
-                a.DataFim,
-                a.Valor,
-                a.Status as StatusAtendimento
-            FROM pagamento p
-            INNER JOIN atendimento a ON p.IdAtendimento = a.IdAtendimento
-            INNER JOIN responsavel r ON a.IdResponsavel = r.IdResponsavel
-            INNER JOIN cuidador c ON a.IdCuidador = c.IdCuidador
-            INNER JOIN idoso i ON a.IdIdoso = i.IdIdoso
-            WHERE a.IdResponsavel = ?
-            ORDER BY p.DataPagamento DESC
-        `, [idResponsavel]);
-        return rows;
+        const [result] = await pool.execute('CALL sp_pagamento_buscar_por_responsavel(?)', [idResponsavel]);
+        return result[0];
     }
 
     // Busca pagamentos por status
     static async buscarPorStatus(status) {
-        const [rows] = await pool.query(`
-            SELECT 
-                p.IdPagamento,
-                p.IdAtendimento,
-                p.MetodoPagamento,
-                p.StatusPagamento,
-                p.DataPagamento,
-                p.CodigoTransacao,
-                r.Nome as NomeResponsavel,
-                r.Email as EmailResponsavel,
-                r.Telefone as TelefoneResponsavel,
-                c.Nome as NomeCuidador,
-                c.Email as EmailCuidador,
-                i.Nome as NomeIdoso,
-                a.DataInicio,
-                a.DataFim,
-                a.Valor,
-                a.Status as StatusAtendimento
-            FROM pagamento p
-            INNER JOIN atendimento a ON p.IdAtendimento = a.IdAtendimento
-            INNER JOIN responsavel r ON a.IdResponsavel = r.IdResponsavel
-            INNER JOIN cuidador c ON a.IdCuidador = c.IdCuidador
-            INNER JOIN idoso i ON a.IdIdoso = i.IdIdoso
-            WHERE p.StatusPagamento = ?
-            ORDER BY p.DataPagamento DESC
-        `, [status]);
-        return rows;
+        const [result] = await pool.execute('CALL sp_pagamento_buscar_por_status(?)', [status]);
+        return result[0];
     }
 
     // Cria um novo pagamento
     static async criar(dadosPagamento) {
         const { IdAtendimento, MetodoPagamento, StatusPagamento, CodigoTransacao } = dadosPagamento;
-        
-        const [result] = await pool.query(`
-            INSERT INTO pagamento (IdAtendimento, MetodoPagamento, StatusPagamento, CodigoTransacao)
-            VALUES (?, ?, ?, ?)
-        `, [IdAtendimento, MetodoPagamento, StatusPagamento, CodigoTransacao]);
-        
-        return result.insertId;
+        const [result] = await pool.execute('CALL sp_pagamento_criar(?, ?, ?, ?)', [
+            IdAtendimento, MetodoPagamento, StatusPagamento, CodigoTransacao
+        ]);
+        return result[0] && result[0][0] ? result[0][0].Id : null;
     }
 
     // Atualiza um pagamento existente
     static async atualizar(id, dadosPagamento) {
         const { MetodoPagamento, StatusPagamento, CodigoTransacao } = dadosPagamento;
-        
-        await pool.query(`
-            UPDATE pagamento 
-            SET MetodoPagamento = ?, StatusPagamento = ?, CodigoTransacao = ?
-            WHERE IdPagamento = ?
-        `, [MetodoPagamento, StatusPagamento, CodigoTransacao, id]);
-        
+        await pool.execute('CALL sp_pagamento_atualizar(?, ?, ?, ?)', [
+            id, MetodoPagamento, StatusPagamento, CodigoTransacao
+        ]);
         return { message: 'Pagamento atualizado com sucesso' };
     }
 
     // Exclui um pagamento
     static async excluir(id) {
-        await pool.query('DELETE FROM pagamento WHERE IdPagamento = ?', [id]);
+        await pool.execute('CALL sp_pagamento_excluir(?)', [id]);
         return { message: 'Pagamento excluído com sucesso' };
     }
 

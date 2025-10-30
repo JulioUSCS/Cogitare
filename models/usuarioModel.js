@@ -5,26 +5,16 @@ import bcrypt from 'bcrypt';
 const Usuario = {
   async validarLogin(usuario, senha) {
     try {
-      const [rows] = await pool.query(
-        'SELECT IdAdministrador, Usuario, Senha, Tipo, Nome, Email, Ativo, UltimoAcesso FROM administrador WHERE Usuario = ? AND Ativo = 1',
-        [usuario]
-      );
-
-      const admin = rows[0];
+      // Buscar admin via SP (retorna hash da senha)
+      const [result] = await pool.execute('CALL sp_buscar_admin_por_usuario(?)', [usuario]);
+      const admin = result && result[0] ? result[0][0] : null;
       if (!admin) return null;
 
       const senhaValida = await bcrypt.compare(senha, admin.Senha);
       if (!senhaValida) return null;
 
-      await pool.query(
-        'UPDATE administrador SET UltimoAcesso = NOW() WHERE IdAdministrador = ?',
-        [admin.IdAdministrador]
-      );
-
-      await pool.query(
-        'INSERT INTO historicoadministrador (IdAdministrador, Operacao, DataOperacao) VALUES (?, ?, NOW())',
-        [admin.IdAdministrador, 'Login']
-      );
+      // Registrar login via SP (atualiza UltimoAcesso e grava histórico)
+      await pool.execute('CALL sp_registrar_login_admin(?)', [admin.IdAdministrador]);
 
       return {
         id: admin.IdAdministrador,
