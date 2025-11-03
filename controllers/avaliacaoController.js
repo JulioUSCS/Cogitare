@@ -31,12 +31,15 @@ class AvaliacaoController {
                 });
             }
 
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
             const resultado = await avaliacaoModel.criarAvaliacao({
                 IdResponsavel,
                 IdCuidador,
                 IdAtendimento,
                 Nota,
-                Comentario
+                Comentario,
+                IdAdministrador
             });
 
             if (resultado.success) {
@@ -266,20 +269,15 @@ class AvaliacaoController {
                 });
             }
 
-            const resultado = await avaliacaoModel.atualizarAvaliacao(id, { Nota, Comentario });
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
+            const resultado = await avaliacaoModel.atualizarAvaliacao(id, { Nota, Comentario, IdAdministrador });
 
             if (resultado.success) {
-                if (resultado.affectedRows > 0) {
-                    res.json({
-                        success: true,
-                        message: 'Avaliação atualizada com sucesso'
-                    });
-                } else {
-                    res.status(404).json({
-                        success: false,
-                        message: 'Avaliação não encontrada'
-                    });
-                }
+                res.json({
+                    success: true,
+                    message: 'Avaliação atualizada com sucesso'
+                });
             } else {
                 res.status(500).json({
                     success: false,
@@ -307,20 +305,15 @@ class AvaliacaoController {
                 });
             }
 
-            const resultado = await avaliacaoModel.excluirAvaliacao(id);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
+            const resultado = await avaliacaoModel.excluirAvaliacao(id, IdAdministrador);
 
             if (resultado.success) {
-                if (resultado.affectedRows > 0) {
-                    res.json({
-                        success: true,
-                        message: 'Avaliação excluída com sucesso'
-                    });
-                } else {
-                    res.status(404).json({
-                        success: false,
-                        message: 'Avaliação não encontrada'
-                    });
-                }
+                res.json({
+                    success: true,
+                    message: 'Avaliação excluída com sucesso'
+                });
             } else {
                 res.status(500).json({
                     success: false,

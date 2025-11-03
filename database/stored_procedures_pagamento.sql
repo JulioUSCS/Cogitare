@@ -1,3 +1,4 @@
+
 DELIMITER $$
 
 -- Listar pagamentos com joins
@@ -168,6 +169,54 @@ CREATE DEFINER=`cogitare`@`%` PROCEDURE `sp_pagamento_excluir`(
 )
 BEGIN
     DELETE FROM pagamento WHERE IdPagamento = p_IdPagamento;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+-- Criar pagamento automaticamente
+CREATE DEFINER=`cogitare`@`%` PROCEDURE `sp_pagamento_criar_automatico`(
+    IN p_IdAtendimento INT
+)
+BEGIN
+    DECLARE v_IdPagamento INT;
+    DECLARE v_Existe INT DEFAULT 0;
+    DECLARE v_StatusAtendimento VARCHAR(20);
+    DECLARE v_CodigoTransacao VARCHAR(255);
+    
+    -- Verificar se já existe pagamento para este atendimento
+    SELECT COUNT(*)
+    INTO v_Existe
+    FROM pagamento
+    WHERE IdAtendimento = p_IdAtendimento;
+    
+    IF v_Existe > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pagamento já existe para este atendimento';
+    END IF;
+    
+    -- Buscar status do atendimento
+    SELECT Status
+    INTO v_StatusAtendimento
+    FROM atendimento
+    WHERE IdAtendimento = p_IdAtendimento;
+    
+    IF v_StatusAtendimento IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Atendimento não encontrado';
+    END IF;
+    
+    IF v_StatusAtendimento != 'Concluído' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Atendimento não está concluído';
+    END IF;
+    
+    -- Gerar código de transação automático
+    SET v_CodigoTransacao = CONCAT('AUTO-', p_IdAtendimento, '-', UNIX_TIMESTAMP(NOW()));
+    
+    -- Criar pagamento
+    INSERT INTO pagamento (IdAtendimento, MetodoPagamento, StatusPagamento, DataPagamento, CodigoTransacao)
+    VALUES (p_IdAtendimento, 'Dinheiro', 'Pago', NOW(), v_CodigoTransacao);
+    
+    SET v_IdPagamento = LAST_INSERT_ID();
+    
+    SELECT v_IdPagamento AS Id;
 END$$
 DELIMITER ;
 

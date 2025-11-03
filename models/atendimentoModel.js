@@ -3,46 +3,76 @@ import pool from '../config/db.js';
 class AtendimentoModel {
     //lista os atendimento existentes
     static async listar() {
-        const [rows] = await pool.query(`
-            SELECT a.*, 
-                   r.Nome AS NomeResponsavel, 
-                   i.Nome AS NomeIdoso, 
-                   c.Nome AS NomeCuidador
-            FROM atendimento a
-            LEFT JOIN responsavel r ON a.IdResponsavel = r.IdResponsavel
-            LEFT JOIN idoso i ON a.IdIdoso = i.IdIdoso
-            LEFT JOIN cuidador c ON a.IdCuidador = c.IdCuidador
-        `);
-        return rows;
-    }
-    //busca um atendimento especifico
-    static async buscarPorId(id) {
-        const [rows] = await pool.query('SELECT * FROM atendimento WHERE IdAtendimento = ?', [id]);
-        return rows[0];
+        const [result] = await pool.execute('CALL sp_atendimento_listar()');
+        return result[0];
     }
 
-    //cancela um atendimento existente
-    static async excluir(id) {
-        await pool.query('DELETE FROM atendimento WHERE IdAtendimento = ?', [id]);
-        return { message: 'Atendimento removido com sucesso' };
+    //busca um atendimento especifico
+    static async buscarPorId(id) {
+        const [result] = await pool.execute('CALL sp_atendimento_buscar_por_id(?)', [id]);
+        return result[0] && result[0][0] ? result[0][0] : null;
+    }
+
+    //cria um novo atendimento
+    static async criar(dados) {
+        const IdAdministrador = dados.IdAdministrador || 1; // Default para admin principal se não fornecido
+        const [result] = await pool.execute(
+            'CALL sp_atendimento_criar(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                dados.IdResponsavel || null,
+                dados.IdCuidador || null,
+                dados.IdIdoso || null,
+                dados.DataInicio || null,
+                dados.DataFim || null,
+                dados.Status || null,
+                dados.Local || null,
+                dados.Valor || null,
+                dados.ObservacaoExtra || null,
+                IdAdministrador
+            ]
+        );
+        // SELECT LAST_INSERT_ID() AS Id -> fica em result[0][0].Id
+        return result[0] && result[0][0] ? result[0][0].Id : null;
+    }
+
+    //atualiza todos os campos de um atendimento
+    static async atualizar(id, dados) {
+        const IdAdministrador = dados.IdAdministrador || 1; // Default para admin principal se não fornecido
+        await pool.execute(
+            'CALL sp_atendimento_atualizar(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                id,
+                dados.IdResponsavel || null,
+                dados.IdCuidador || null,
+                dados.IdIdoso || null,
+                dados.DataInicio || null,
+                dados.DataFim || null,
+                dados.Status || null,
+                dados.Local || null,
+                dados.Valor || null,
+                dados.ObservacaoExtra || null,
+                IdAdministrador
+            ]
+        );
     }
 
     //atualiza o status de um atendimento
-    static async atualizarStatus(id, status) {
-        const [result] = await pool.query(
-            'UPDATE atendimento SET Status = ? WHERE IdAtendimento = ?', 
-            [status, id]
+    static async atualizarStatus(id, status, IdAdministrador = 1) {
+        await pool.execute(
+            'CALL sp_atendimento_atualizar_status(?, ?, ?)',
+            [id, status, IdAdministrador]
         );
-        
-        if (result.affectedRows === 0) {
-            throw new Error('Atendimento não encontrado');
-        }
         
         return { 
             success: true, 
-            message: `Status do atendimento atualizado para: ${status}`,
-            affectedRows: result.affectedRows
+            message: `Status do atendimento atualizado para: ${status}`
         };
+    }
+
+    //cancela um atendimento existente
+    static async excluir(id, IdAdministrador = 1) {
+        await pool.execute('CALL sp_atendimento_excluir(?, ?)', [id, IdAdministrador]);
+        return { message: 'Atendimento removido com sucesso' };
     }
 }
 

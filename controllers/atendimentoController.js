@@ -24,7 +24,8 @@ class AtendimentoController {
 
     static async excluir(req, res) {
         try {
-            const msg = await AtendimentoModel.excluir(req.params.id);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            const msg = await AtendimentoModel.excluir(req.params.id, IdAdministrador);
             res.json(msg);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -35,6 +36,7 @@ class AtendimentoController {
         try {
             const { id } = req.params;
             const { status } = req.body;
+            const IdAdministrador = req.session.usuario?.id || 1;
 
             if (!status) {
                 return res.status(400).json({
@@ -44,7 +46,7 @@ class AtendimentoController {
             }
 
             // Atualizar status do atendimento
-            const resultado = await AtendimentoModel.atualizarStatus(id, status);
+            const resultado = await AtendimentoModel.atualizarStatus(id, status, IdAdministrador);
 
             // Se o status for "Concluído", criar receita e pagamento automaticamente
             if (status === 'Concluído') {

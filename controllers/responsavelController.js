@@ -23,7 +23,9 @@ const listarParaSelect = async (req, res) => {
 
 const criar = async (req, res) => {
   try {
-    const id = await Responsavel.criar(req.body);
+    const IdAdministrador = req.session.usuario?.id || 1;
+    const dados = { ...req.body, IdAdministrador };
+    const id = await Responsavel.criar(dados);
     res.status(201).json({ id });
   } catch (error) {
     console.error("Erro ao criar responsável:", error);
@@ -33,7 +35,9 @@ const criar = async (req, res) => {
 
 const atualizar = async (req, res) => {
   try {
-    await Responsavel.atualizar(req.params.id, req.body);
+    const IdAdministrador = req.session.usuario?.id || 1;
+    const dados = { ...req.body, IdAdministrador };
+    await Responsavel.atualizar(req.params.id, dados);
     res.status(200).json({ mensagem: "Responsável atualizado com sucesso" });
   } catch (error) {
     console.error("Erro ao atualizar responsável:", error);
@@ -43,7 +47,8 @@ const atualizar = async (req, res) => {
 
 const excluir = async (req, res) => {
   try {
-    await Responsavel.excluir(req.params.id);
+    const IdAdministrador = req.session.usuario?.id || 1;
+    await Responsavel.excluir(req.params.id, IdAdministrador);
     res.status(200).json({ mensagem: "Responsável excluído com sucesso" });
   } catch (error) {
     console.error("Erro ao excluir responsável:", error);

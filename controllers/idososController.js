@@ -43,8 +43,9 @@ const idososController = {
 
   async excluir(req, res) {
     try {
+      const IdAdministrador = req.session.usuario?.id || 1;
       const id = parseInt(req.params.id);
-      await Idoso.excluir(id);
+      await Idoso.excluir(id, IdAdministrador);
       res.json({ mensagem: 'Idoso e todos os registros relacionados foram excluídos com sucesso' });
     } catch (error) {
       console.error('Erro ao excluir idoso:', error);

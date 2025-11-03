@@ -29,12 +29,15 @@ class ChatController {
                 });
             }
 
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
             const resultado = await chatModel.criarTicketSuporte({
                 IdUsuario,
                 TipoUsuario,
                 Categoria,
                 Prioridade: Prioridade || 'Normal',
-                Assunto
+                Assunto,
+                IdAdministrador
             });
 
             if (resultado.success) {
@@ -173,12 +176,15 @@ class ChatController {
                 });
             }
 
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
             const resultado = await chatModel.enviarMensagemSuporte({
                 IdChat,
                 IdRemetente: finalIdRemetente,
                 RemetenteTipo: finalRemetenteTipo,
                 Conteudo: Conteudo.trim(),
-                IsAdmin: isAdmin
+                IsAdmin: isAdmin,
+                IdAdministrador
             });
 
             if (resultado.success) {
@@ -401,13 +407,14 @@ class ChatController {
                 });
             }
 
-            const resultado = await chatModel.arquivarChat(id);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
+            const resultado = await chatModel.arquivarChat(id, IdAdministrador);
 
             if (resultado.success) {
                 res.json({
                     success: true,
-                    message: 'Chat arquivado com sucesso',
-                    data: { affectedRows: resultado.affectedRows }
+                    message: 'Chat arquivado com sucesso'
                 });
             } else {
                 res.status(500).json({
@@ -469,13 +476,14 @@ class ChatController {
                 });
             }
 
-            const resultado = await chatModel.atualizarStatusTicket(id, StatusSuporte);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            
+            const resultado = await chatModel.atualizarStatusTicket(id, StatusSuporte, IdAdministrador);
 
             if (resultado.success) {
                 res.json({
                     success: true,
-                    message: 'Status do ticket atualizado com sucesso',
-                    data: { affectedRows: resultado.affectedRows }
+                    message: 'Status do ticket atualizado com sucesso'
                 });
             } else {
                 res.status(500).json({

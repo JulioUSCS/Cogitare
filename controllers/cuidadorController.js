@@ -22,7 +22,9 @@ class CuidadorController {
 
     static async criar(req, res) {
         try {
-            const novo = await CuidadorModel.criar(req.body);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            const dados = { ...req.body, IdAdministrador };
+            const novo = await CuidadorModel.criar(dados);
             res.status(201).json(novo);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -31,7 +33,9 @@ class CuidadorController {
 
     static async atualizar(req, res) {
         try {
-            const atualizado = await CuidadorModel.atualizar(req.params.id, req.body);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            const dados = { ...req.body, IdAdministrador };
+            const atualizado = await CuidadorModel.atualizar(req.params.id, dados);
             res.json(atualizado);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -40,7 +44,8 @@ class CuidadorController {
 
     static async excluir(req, res) {
         try {
-            const msg = await CuidadorModel.excluir(req.params.id);
+            const IdAdministrador = req.session.usuario?.id || 1;
+            const msg = await CuidadorModel.excluir(req.params.id, IdAdministrador);
             res.json(msg);
         } catch (err) {
             console.error('Erro ao excluir cuidador:', err);

@@ -7,34 +7,42 @@ const Responsavel = {
   },
 
   async criar(dados) {
-    const [result] = await pool.execute('CALL sp_responsavel_criar(?, ?, ?, ?, ?, ?, ?)', [
-      dados.IdEndereco || null,
-      dados.Cpf || null,
-      dados.Nome,
-      dados.Email || null,
-      dados.Telefone || null,
-      dados.DataNascimento || null,
-      dados.FotoUrl || null
+    const { IdEndereco, Cpf, Nome, Email, Telefone, DataNascimento, FotoUrl, IdAdministrador } = dados;
+    const adminId = IdAdministrador || 1;
+    
+    const [result] = await pool.execute('CALL sp_responsavel_criar(?, ?, ?, ?, ?, ?, ?, ?)', [
+      IdEndereco || null,
+      Cpf || null,
+      Nome,
+      Email || null,
+      Telefone || null,
+      DataNascimento || null,
+      FotoUrl || null,
+      adminId
     ]);
     // SELECT LAST_INSERT_ID() AS Id -> fica em result[0][0].Id
     return result[0] && result[0][0] ? result[0][0].Id : null;
   },
 
   async atualizar(id, dados) {
-    await pool.execute('CALL sp_responsavel_atualizar(?, ?, ?, ?, ?, ?, ?, ?)', [
+    const { IdEndereco, Cpf, Nome, Email, Telefone, DataNascimento, FotoUrl, IdAdministrador } = dados;
+    const adminId = IdAdministrador || 1;
+    
+    await pool.execute('CALL sp_responsavel_atualizar(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
       id,
-      dados.IdEndereco || null,
-      dados.Cpf || null,
-      dados.Nome,
-      dados.Email || null,
-      dados.Telefone || null,
-      dados.DataNascimento || null,
-      dados.FotoUrl || null
+      IdEndereco || null,
+      Cpf || null,
+      Nome,
+      Email || null,
+      Telefone || null,
+      DataNascimento || null,
+      FotoUrl || null,
+      adminId
     ]);
   },
 
-  async excluir(id) {
-    await pool.execute('CALL sp_responsavel_excluir(?)', [id]);
+  async excluir(id, IdAdministrador = 1) {
+    await pool.execute('CALL sp_responsavel_excluir(?, ?)', [id, IdAdministrador]);
   }
 };
 
