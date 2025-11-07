@@ -8,6 +8,25 @@ let tickets = [];
 let categorias = [];
 let mensagens = [];
 
+const formatarCampo = (valor, fallback = 'Não informado') => {
+    if (valor === null || valor === undefined) return fallback;
+    const texto = String(valor).trim();
+    return texto.length > 0 ? texto : fallback;
+};
+
+const formatarDataHoraDetalhada = (dataHora) => {
+    if (!dataHora) return 'Data não informada';
+    const data = new Date(dataHora);
+    if (Number.isNaN(data.getTime())) return 'Data não informada';
+    return data.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
 // Função para inicializar o suporte
 async function inicializarSuporte() {
     try {
@@ -83,17 +102,17 @@ function exibirTickets(ticketsList) {
         container.innerHTML = `
             <div class="loading">
                 <i class="fas fa-headset"></i>
-                <span>Nenhum ticket ativo encontrado</span>
+                <span>No momento não há tickets ativos.</span>
             </div>
         `;
         return;
     }
     
     container.innerHTML = ticketsAbertos.map(ticket => {
-        const ultimaMensagem = ticket.UltimaMensagem || 'Nenhuma mensagem ainda';
+        const ultimaMensagem = formatarCampo(ticket.UltimaMensagem, 'Nenhuma mensagem ainda');
         const dataUltimaMensagem = ticket.DataUltimaMensagem 
-            ? formatarDataHora(ticket.DataUltimaMensagem)
-            : '';
+            ? formatarDataHoraDetalhada(ticket.DataUltimaMensagem)
+            : 'Sem registro';
         
         const temMensagensNaoLidas = ticket.MensagensNaoLidas > 0;
         const prioridadeClass = ticket.Prioridade === 'Alta' ? 'high-priority' : 
@@ -104,8 +123,8 @@ function exibirTickets(ticketsList) {
                  onclick="abrirTicket(${ticket.IdChat}, this)">
                 <div class="conversation-header">
                     <div class="ticket-info">
-                        <h4 class="conversation-name">${ticket.Assunto || 'Ticket de Suporte'}</h4>
-                        <span class="ticket-category">${ticket.Categoria}</span>
+                        <h4 class="conversation-name">${formatarCampo(ticket.Assunto, 'Ticket sem assunto')}</h4>
+                        <span class="ticket-category">${formatarCampo(ticket.Categoria, 'Categoria não informada')}</span>
                     </div>
                     <span class="conversation-time">${dataUltimaMensagem}</span>
                 </div>
@@ -115,7 +134,7 @@ function exibirTickets(ticketsList) {
                     ${ticket.Prioridade !== 'Normal' ? `<span class="priority-badge priority-${ticket.Prioridade.toLowerCase()}">${ticket.Prioridade}</span>` : ''}
                 </div>
                 ${temMensagensNaoLidas ? 
-                    `<div class="conversation-badge">${ticket.MensagensNaoLidas}</div>` 
+                    `<div class="conversation-badge" title="${ticket.MensagensNaoLidas} mensagem(ns) pendente(s)">${ticket.MensagensNaoLidas}</div>` 
                     : ''}
             </div>
         `;
@@ -222,17 +241,17 @@ async function carregarInformacoesTicket(ticketId) {
         if (data.success && data.data) {
             const ticket = data.data;
             
-            document.getElementById('chatUserName').textContent = ticket.Assunto || 'Ticket de Suporte';
+            document.getElementById('chatUserName').textContent = formatarCampo(ticket.Assunto, 'Ticket de Suporte');
             // Avatar do admin usa placeholder com ícone
             const avatarElement = document.getElementById('chatUserAvatar');
             if (avatarElement) {
                 avatarElement.innerHTML = '<i class="fas fa-headset"></i>';
             }
-            document.getElementById('chatUserStatus').textContent = ticket.StatusSuporte;
+            document.getElementById('chatUserStatus').textContent = formatarCampo(ticket.StatusSuporte, 'Status não informado');
             
             // Atualizar classe do status
             const statusElement = document.getElementById('chatUserStatus');
-            statusElement.className = `status-${ticket.StatusSuporte.toLowerCase().replace(' ', '-')}`;
+            statusElement.className = `status-${formatarCampo(ticket.StatusSuporte, 'sem-status').toLowerCase().replace(' ', '-')}`;
         }
     } catch (error) {
         console.error('Erro ao carregar informações do ticket:', error);
@@ -273,7 +292,7 @@ function exibirMensagensSuporte(msgs) {
         const isSystemMessage = msg.IsSystemMessage;
         const nomeRemetente = msg.NomeRemetente || 'Usuário';
         const fotoRemetente = msg.FotoRemetente || null;
-        const dataEnvio = formatarDataHora(msg.DataEnvio);
+        const dataEnvio = formatarDataHoraDetalhada(msg.DataEnvio);
         
         // Verificar se é mensagem de sistema
         if (isSystemMessage) {
@@ -621,30 +640,12 @@ function formatarDataHora(dataHora) {
 
 // Função para exibir erro
 function exibirErro(mensagem) {
-    const container = document.querySelector('.main-content');
-    const div = document.createElement('div');
-    div.className = 'error-message';
-    div.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${mensagem}`;
-    
-    container.insertBefore(div, container.firstChild);
-    
-    setTimeout(() => {
-        div.remove();
-    }, 5000);
+    showToast(mensagem, 'error');
 }
 
 // Função para exibir sucesso
 function exibirSucesso(mensagem) {
-    const container = document.querySelector('.main-content');
-    const div = document.createElement('div');
-    div.className = 'success-message';
-    div.innerHTML = `<i class="fas fa-check-circle"></i> ${mensagem}`;
-    
-    container.insertBefore(div, container.firstChild);
-    
-    setTimeout(() => {
-        div.remove();
-    }, 3000);
+    showToast(mensagem, 'success');
 }
 
 // Função para configurar eventos

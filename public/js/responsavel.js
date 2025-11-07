@@ -3,52 +3,81 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalOverlay = document.getElementById('modalOverlay');
   const form = document.getElementById('formResponsavel');
 
+  const formatarCampo = (valor, fallback = 'Não informado') => {
+    if (valor === null || valor === undefined) return fallback;
+    const texto = String(valor).trim();
+    return texto.length > 0 ? texto : fallback;
+  };
+
+  const formatarTelefone = (telefone) => {
+    const apenasNumeros = (telefone || '').replace(/\D/g, '');
+    if (apenasNumeros.length === 10) {
+      return apenasNumeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    }
+    if (apenasNumeros.length === 11) {
+      return apenasNumeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+    return formatarCampo(telefone);
+  };
+
+  const normalizarUrlOpcional = (valor) => {
+    const texto = typeof valor === 'string' ? valor.trim() : '';
+    return texto ? texto : null;
+  };
+
   function calcularIdade(dataNascimento) {
     if (!dataNascimento) return 'Não informado';
     const nascimento = new Date(dataNascimento);
+    if (Number.isNaN(nascimento.getTime())) return 'Não informado';
     const hoje = new Date();
     let idade = hoje.getFullYear() - nascimento.getFullYear();
     const mes = hoje.getMonth() - nascimento.getMonth();
     if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
       idade--;
     }
-    return idade;
+    return `${idade} anos`;
   }
 
-  async function carregarResponsaveis() {
-    try {
-      // 🚀 agora usa o endpoint novo
-      const res = await fetch('/api/resp', { method: 'GET' });
+  async function carregarResponsaveis(mostrarAviso = false) {
+    if (!tabelaBody) return;
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const result = await res.json();
-      console.log("Dados CRUD:", result); // debug
-      
-      // Verificar se a resposta tem o formato { success: true, data: [...] }
-      const dados = result.success ? result.data : result;
+    tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center">Carregando responsáveis...</td></tr>`;
+
+    try {
+      const dados = await apiFetch('/api/resp', {}, {
+        suppressDefaultError: true,
+        parseJson: true
+      });
+
+      const lista = Array.isArray(dados?.data) ? dados.data : dados;
 
       tabelaBody.innerHTML = '';
 
-      if (!dados || dados.length === 0) {
+      if (!Array.isArray(lista) || lista.length === 0) {
         tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center">Nenhum responsável cadastrado.</td></tr>`;
+        if (mostrarAviso) {
+          showToast('Nenhum responsável encontrado.', 'info');
+        }
         return;
       }
 
-      dados.forEach((item) => {
-        // Usar imagem padrão local se não houver foto
+      lista.forEach((item) => {
         const avatarPadrao = '/avatar/cuidador.png';
         const fotoUrl = item.FotoUrl && item.FotoUrl.trim() !== '' ? item.FotoUrl : avatarPadrao;
-        
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="foto-cell">
-            <img src="${fotoUrl}" 
-                 alt="Foto de ${item.Nome}" class="foto-responsavel" />
+            <img src="${fotoUrl}"
+                 alt="Foto de ${formatarCampo(item.Nome, 'Responsável')}" class="foto-responsavel" />
           </td>
-          <td class="nome-cell"><strong>${item.Nome || ''}</strong></td>
-          <td class="email-cell">${item.Email || 'Não informado'}</td>
-          <td class="telefone-cell">${item.Telefone || 'Não informado'}</td>
-          <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
+          <td class="nome-cell"><strong>${formatarCampo(item.Nome, 'Responsável')}</strong></td>
+          <td class="email-cell">${formatarCampo(item.Email)}</td>
+          <td class="telefone-cell">
+            ${formatarTelefone(item.Telefone)}
+            ${item.Cpf ? `<span class="tabela-subtexto">CPF: ${item.Cpf}</span>` : ''}
+          </td>
+          <td class="idade-cell">${calcularIdade(item.DataNascimento)}</td>
           <td class="acoes-cell">
             <button class="btn-editar" data-resp='${JSON.stringify(item)}'>Editar</button>
             <button class="btn-excluir" data-id='${item.IdResponsavel}'>Excluir</button>
@@ -58,9 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       configurarBotoes();
+
+      if (mostrarAviso) {
+        showToast('Lista de responsáveis atualizada.', 'success');
+      }
     } catch (err) {
       console.error('Erro ao carregar responsáveis:', err);
-      tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red">Erro: ${err.message}</td></tr>`;
+      tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#e74c3c">Não foi possível carregar os responsáveis.</td></tr>`;
+      showDetailedError(err, 'Não foi possível carregar os responsáveis. Tente novamente.');
     }
   }
 
@@ -83,8 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
       botao.onclick = async () => {
         const id = botao.getAttribute('data-id');
         const nomeResponsavel = botao.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
-        
-        // Mensagem de aviso detalhada
+
         const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
             `Você está prestes a excluir o responsável: ${nomeResponsavel}\n\n` +
             `Esta ação irá excluir PERMANENTEMENTE:\n` +
@@ -96,22 +129,21 @@ document.addEventListener('DOMContentLoaded', () => {
             `• Histórico completo de todos os registros\n\n` +
             `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
             `Deseja realmente continuar?`;
-        
+
         if (confirm(mensagemAviso)) {
           try {
-            const res = await fetch(`/api/resp/${id}`, { method: 'DELETE' });
-            const data = await res.json();
-
-            if (!res.ok) {
-              alert(`❌ Erro ao excluir:\n\n${data.erro || 'Erro desconhecido. Tente novamente.'}`);
-              return;
-            }
-
-            alert(`✅ Sucesso!\n\n${nomeResponsavel} e todos os registros relacionados foram excluídos permanentemente.`);
-            carregarResponsaveis();
+            await apiFetch(`/api/resp/${id}`, {
+              method: 'DELETE'
+            }, {
+              loadingMessage: `Excluindo ${nomeResponsavel}...`,
+              successMessage: `${nomeResponsavel} e todos os registros relacionados foram excluídos.`,
+              suppressDefaultError: true,
+              parseJson: true
+            });
+            carregarResponsaveis(true);
           } catch (e) {
-            alert('❌ Erro de conexão ao excluir responsável. Verifique sua conexão e tente novamente.');
             console.error(e);
+            showDetailedError(e, 'Erro ao excluir responsável. Verifique vínculos existentes e tente novamente.');
           }
         }
       };
@@ -119,38 +151,95 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (form) {
+    const camposFormulario = [
+      { field: form.nome, name: 'Nome completo', rules: { required: true, minLength: 3 } },
+      { field: form.email, name: 'E-mail', rules: { required: true, email: true } },
+      {
+        field: form.telefone,
+        name: 'Telefone',
+        rules: {
+          required: true,
+          pattern: /^(\+?\d{1,3})?\s*\(?\d{2}\)?\s*\d{4,5}[- ]?\d{4}$/,
+          patternMessage: 'Informe o telefone com DDD. Ex.: (11) 98888-7777.'
+        }
+      },
+      {
+        field: form.cpf,
+        name: 'CPF',
+        rules: {
+          custom: (valor) => {
+            if (!valor) return true;
+            const somenteDigitos = valor.replace(/\D/g, '');
+            if (somenteDigitos.length !== 11) {
+              return 'CPF deve conter 11 dígitos.';
+            }
+            return true;
+          }
+        }
+      },
+      {
+        field: form.dataNascimento,
+        name: 'Data de nascimento',
+        rules: { required: true, date: true, future: false }
+      },
+      {
+        field: form.fotoUrl,
+        name: 'Foto/Avatar',
+        rules: {
+          custom: (valor) => {
+            if (!valor) return true;
+            return /^(https?:\/\/|\/)/i.test(valor) || 'Informe uma URL válida ou deixe em branco para usar o avatar padrão.';
+          }
+        }
+      }
+    ];
+
+    attachValidationListeners(camposFormulario);
+
+    const submitButton = form.querySelector('button[type="submit"]');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const idEdit = form.getAttribute('data-edit-id');
+
+      const validacao = validateFields(camposFormulario);
+      if (!validacao.valid) {
+        const mensagem = ['Corrija os campos destacados antes de continuar:', ...validacao.messages.map((msg) => `• ${msg}`)].join('\n');
+        showToast(mensagem, 'error');
+        return;
+      }
+
       const dados = {
         Nome: form.nome.value.trim(),
         Email: form.email.value.trim(),
         Telefone: form.telefone.value.trim(),
         Cpf: form.cpf.value.trim(),
         DataNascimento: form.dataNascimento.value,
-        FotoUrl: form.fotoUrl.value.trim()
+        FotoUrl: normalizarUrlOpcional(form.fotoUrl.value)
       };
 
-      try {
-        const url = idEdit ? `/api/resp/${idEdit}` : '/api/resp'; // 🚀 novo endpoint
-        const method = idEdit ? 'PUT' : 'POST';
+      const url = idEdit ? `/api/resp/${idEdit}` : '/api/resp';
+      const method = idEdit ? 'PUT' : 'POST';
 
-        const resp = await fetch(url, {
+      try {
+        await apiFetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(dados)
+        }, {
+          button: submitButton,
+          loadingButtonText: idEdit ? 'Atualizando...' : 'Salvando...',
+          successMessage: idEdit ? 'Responsável atualizado com sucesso.' : 'Responsável cadastrado com sucesso.',
+          suppressDefaultError: true,
+          parseJson: true
         });
-
-        const resposta = await resp.json();
-        if (!resp.ok) throw new Error(resposta.erro || 'Erro ao salvar');
 
         form.reset();
         form.removeAttribute('data-edit-id');
         modalOverlay.classList.remove('active');
-        carregarResponsaveis();
+        carregarResponsaveis(true);
       } catch (err) {
-        alert(err.message || 'Erro ao salvar responsável.');
         console.error(err);
+        showDetailedError(err, 'Erro ao salvar responsável. Verifique os dados informados.');
       }
     });
   }

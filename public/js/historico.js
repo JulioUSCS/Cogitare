@@ -41,25 +41,31 @@ function exibirHistorico(historico) {
     
     historico.forEach(registro => {
         const row = document.createElement('tr');
-        const dataFormatada = formatarDataHora(registro.DataHora);
+        const dataFormatada = formatarDataCompleta(registro.DataHora);
         
         row.innerHTML = `
             <td>${registro.IdHistorico}</td>
             <td>
                 <span class="tipo-badge tipo-${registro.TipoHistorico.toLowerCase()}">
-                    ${registro.TipoHistorico}
+                    ${formatarCampo(registro.TipoHistorico, 'Tipo não informado')}
                 </span>
             </td>
-            <td>${registro.NomeResponsavel || 'N/A'}</td>
-            <td>${registro.NomeCuidador || 'N/A'}</td>
-            <td>${registro.NomeAdministrador || 'N/A'}</td>
+            <td>
+                ${formatarCampo(registro.NomeResponsavel, '—')}
+                ${registro.ResponsavelContato ? `<span class="tabela-subtexto">${registro.ResponsavelContato}</span>` : ''}
+            </td>
+            <td>
+                ${formatarCampo(registro.NomeCuidador, '—')}
+                ${registro.CuidadorContato ? `<span class="tabela-subtexto">${registro.CuidadorContato}</span>` : ''}
+            </td>
+            <td>${formatarCampo(registro.NomeAdministrador, '—')}</td>
             <td>
                 <span class="acao-badge acao-${getClasseAcao(registro.Operacao)}">
-                    ${registro.Operacao}
+                    ${formatarCampo(registro.Operacao, 'Operação não informada')}
                 </span>
             </td>
             <td>${dataFormatada}</td>
-            <td>${registro.Observacoes || 'N/A'}</td>
+            <td>${formatarCampo(registro.Observacoes, 'Sem observações adicionais')}</td>
         `;
         tbody.appendChild(row);
     });
@@ -79,11 +85,16 @@ function exibirErro(mensagem) {
     }
 }
 
-// Função para formatar data e hora
-function formatarDataHora(dataHora) {
-    if (!dataHora) return 'N/A';
-    
+const formatarCampo = (valor, fallback = 'Não informado') => {
+    if (valor === null || valor === undefined) return fallback;
+    const texto = String(valor).trim();
+    return texto.length > 0 ? texto : fallback;
+};
+
+const formatarDataCompleta = (dataHora) => {
+    if (!dataHora) return 'Data não informada';
     const data = new Date(dataHora);
+    if (Number.isNaN(data.getTime())) return 'Data não informada';
     return data.toLocaleString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
@@ -91,7 +102,7 @@ function formatarDataHora(dataHora) {
         hour: '2-digit',
         minute: '2-digit'
     });
-}
+};
 
 // Função para obter classe CSS baseada na ação
 function getClasseAcao(acao) {

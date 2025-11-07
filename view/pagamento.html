@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/css/pagamento.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
   <link rel="stylesheet" href="/css/modal.css" />
-  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -60,12 +59,12 @@
         <table class="pagamentos-table">
           <thead>
             <tr>
-              <th>ID Pagamento</th>
-              <th>ID Atendimento</th>
-              <th>Método de Pagamento</th>
+              <th>Pagamento</th>
+              <th>Atendimento</th>
+              <th>Responsável</th>
+              <th>Valor</th>
               <th>Status</th>
-              <th>Data</th>
-              <th>Código Transação</th>
+              <th>Data do Pagamento</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -87,10 +86,10 @@
 
       <form id="formPagamento" class="modal-content">
         <h2 id="formTitle">Cadastrar Pagamento</h2>
-        <label>ID Atendimento:</label>
-        <input type="number" name="idAtendimento" placeholder="ID do atendimento" required />
-        <label>Método de Pagamento:</label>
-        <select name="metodoPagamento" required>
+        <label for="idAtendimento">Número do Atendimento</label>
+        <input type="number" id="idAtendimento" name="idAtendimento" placeholder="Informe o número do atendimento" min="1" required />
+        <label for="metodoPagamento">Forma de Pagamento</label>
+        <select id="metodoPagamento" name="metodoPagamento" required>
           <option value="">Selecione o método</option>
           <option value="PIX">PIX</option>
           <option value="Cartão de Crédito">Cartão de Crédito</option>
@@ -98,16 +97,16 @@
           <option value="Boleto">Boleto</option>
           <option value="Dinheiro">Dinheiro</option>
         </select>
-        <label>Status:</label>
-        <select name="statusPagamento" required>
+        <label for="statusPagamento">Status do Pagamento</label>
+        <select id="statusPagamento" name="statusPagamento" required>
           <option value="">Selecione o status</option>
           <option value="Pendente">Pendente</option>
           <option value="Pago">Pago</option>
           <option value="Processando">Processando</option>
           <option value="Cancelado">Cancelado</option>
         </select>
-        <label>Código da Transação:</label>
-        <input type="text" name="codigoTransacao" placeholder="Código da transação" />
+        <label for="codigoTransacao">Código da Transação (opcional)</label>
+        <input type="text" id="codigoTransacao" name="codigoTransacao" placeholder="Informe o código emitido pela operadora" />
         
         <div class="modal-buttons">
           <button type="button" id="btnCancel" class="btn-cancel">Cancelar</button>
@@ -119,8 +118,8 @@
   </div>
 
   <script src="/js/sidebar.js"></script>
+  <script src="/js/feedback.js"></script>
   <script src="/js/pagamento.js"></script>
-  <script>lucide.createIcons();</script>
   <script src='https://www.noupe.com/embed/019a01aae20d7c72a2e0e316038a874bd730.js'></script>
 </body>
 

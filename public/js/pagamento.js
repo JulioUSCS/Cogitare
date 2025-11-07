@@ -47,21 +47,45 @@ function exibirPagamentos(pagamentos) {
         const dataFormatada = formatarData(pagamento.DataPagamento);
         
         // Formatar valor
-        const valorFormatado = pagamento.Valor ? 
-            `R$ ${parseFloat(pagamento.Valor).toFixed(2).replace('.', ',')}` : 
-            'N/A';
+        const valorFormatado = pagamento.Valor !== null && pagamento.Valor !== undefined
+            ? new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(Number(pagamento.Valor))
+            : '—';
+
+        const idPagamentoFormatado = pagamento.IdPagamento ? `#${pagamento.IdPagamento}` : '—';
+        const idAtendimentoFormatado = pagamento.IdAtendimento ? `Atendimento #${pagamento.IdAtendimento}` : 'Não informado';
+        const nomeResponsavel = pagamento.NomeResponsavel || 'Responsável não informado';
+        const contatoResponsavel = pagamento.EmailResponsavel || pagamento.TelefoneResponsavel || '';
+        const cuidadorRelacionado = pagamento.NomeCuidador ? `Cuidador: ${pagamento.NomeCuidador}` : '';
+        const codigoTransacao = pagamento.CodigoTransacao || null;
+        const metodoPagamento = pagamento.MetodoPagamento || 'Método não informado';
+        const status = pagamento.StatusPagamento || 'Indefinido';
+        const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+        const legendaStatus = codigoTransacao ? `Código: ${codigoTransacao}` : metodoPagamento;
         
         row.innerHTML = `
-            <td>${pagamento.IdPagamento}</td>
-            <td>${pagamento.IdAtendimento}</td>
-            <td>${pagamento.MetodoPagamento}</td>
             <td>
-                <span class="status-badge status-${pagamento.StatusPagamento.toLowerCase()}">
-                    ${pagamento.StatusPagamento}
+                <strong>${idPagamentoFormatado}</strong>
+                <div class="tabela-subtexto">${metodoPagamento}</div>
+            </td>
+            <td>
+                ${idAtendimentoFormatado}
+                ${cuidadorRelacionado ? `<div class="tabela-subtexto">${cuidadorRelacionado}</div>` : ''}
+            </td>
+            <td>
+                ${nomeResponsavel}
+                ${contatoResponsavel ? `<div class="tabela-subtexto">${contatoResponsavel}</div>` : ''}
+            </td>
+            <td>${valorFormatado}</td>
+            <td>
+                <span class="status-badge status-${statusClass}">
+                    ${status}
                 </span>
+                ${legendaStatus ? `<div class="tabela-subtexto">${legendaStatus}</div>` : ''}
             </td>
             <td>${dataFormatada}</td>
-            <td>${pagamento.CodigoTransacao || 'N/A'}</td>
             <td>
                 <button class="btn-action view" onclick="verPagamento(${pagamento.IdPagamento})" title="Ver detalhes">
                     <i class="fas fa-eye"></i>
@@ -99,7 +123,7 @@ function exibirMensagemErro(mensagem) {
     if (tbody) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; padding: 2rem; color: #e74c3c;">
+                <td colspan="7" style="text-align: center; padding: 2rem; color: #e74c3c;">
                     ${mensagem}
                 </td>
             </tr>

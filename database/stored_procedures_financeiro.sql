@@ -316,6 +316,7 @@ BEGIN
     DECLARE v_PercentualComissao DECIMAL(5,2);
     DECLARE v_ComissaoExistente INT;
     DECLARE v_NomeCuidador VARCHAR(100);
+    DECLARE v_DescricaoFinal TEXT;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -379,6 +380,7 @@ BEGIN
 END$$
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `sp_criar_despesa`;
 DELIMITER $$
 CREATE DEFINER=`cogitare`@`%` PROCEDURE `sp_criar_despesa`(
     IN p_TipoDespesa VARCHAR(100),
@@ -394,6 +396,7 @@ CREATE DEFINER=`cogitare`@`%` PROCEDURE `sp_criar_despesa`(
 )
 BEGIN
     DECLARE v_NomeCuidador VARCHAR(100);
+    DECLARE v_DescricaoFinal TEXT;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         SET p_Sucesso = FALSE;
@@ -408,8 +411,14 @@ BEGIN
         SELECT Nome INTO v_NomeCuidador FROM cuidador WHERE IdCuidador = p_IdCuidador;
     END IF;
     
-    INSERT INTO despesa (TipoDespesa, Categoria, Descricao, Valor, IdCuidador, Comprovante, Observacoes)
-    VALUES (p_TipoDespesa, p_Categoria, p_Descricao, p_Valor, p_IdCuidador, p_Comprovante, p_Observacoes);
+    -- Combinar descrição e observações (tabela despesa não possui coluna Observacoes)
+    SET v_DescricaoFinal = COALESCE(p_Descricao, '');
+    IF p_Observacoes IS NOT NULL AND p_Observacoes <> '' THEN
+        SET v_DescricaoFinal = CONCAT_WS('\n', v_DescricaoFinal, CONCAT('Observações: ', p_Observacoes));
+    END IF;
+    
+    INSERT INTO despesa (TipoDespesa, Categoria, Descricao, Valor, DataDespesa, IdCuidador, Comprovante, Status)
+    VALUES (p_TipoDespesa, p_Categoria, v_DescricaoFinal, p_Valor, NOW(), p_IdCuidador, p_Comprovante, 'Pago');
     
     SET p_IdDespesa = LAST_INSERT_ID();
     

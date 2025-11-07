@@ -37,11 +37,53 @@ let filtrosAtivos = {
     dataFim: ''
 };
 
+const normalizarNumero = (valor) => {
+    if (valor === null || valor === undefined || valor === '') return 0;
+    if (typeof valor === 'number') return Number.isFinite(valor) ? valor : 0;
+    let texto = String(valor).trim();
+    if (!texto) return 0;
+
+    // Remover espaços
+    texto = texto.replace(/\s/g, '');
+
+    if (texto.includes(',') && texto.includes('.')) {
+        // Formato tipo 1.234,56 → remover pontos e trocar vírgula por ponto
+        texto = texto.replace(/\./g, '').replace(',', '.');
+    } else if (texto.includes(',')) {
+        // Formato tipo 123,45 → apenas trocar vírgula por ponto
+        texto = texto.replace(',', '.');
+    }
+
+    const numero = Number(texto);
+    return Number.isNaN(numero) ? 0 : numero;
+};
+
+const formatarMoeda = (valor) => {
+    const numero = normalizarNumero(valor);
+    return numero.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+const formatarNumero = (valor, casas = 2) => {
+    const numero = normalizarNumero(valor);
+    return numero.toFixed(casas);
+};
+
+const formatarDataCurta = (dataStr) => {
+    if (!dataStr) return 'Data não informada';
+    const data = new Date(dataStr);
+    if (Number.isNaN(data.getTime())) return 'Data não informada';
+    return data.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
+
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    definirDatasPadrao();
     inicializarFinanceiro();
     configurarEventos();
-    definirDatasPadrao();
 });
 
 // Inicializar sistema financeiro
@@ -124,7 +166,7 @@ function definirDatasPadrao() {
 async function aplicarFiltros() {
     const dataInicio = document.getElementById('dataInicio').value;
     const dataFim = document.getElementById('dataFim').value;
-    
+     
     if (!dataInicio || !dataFim) {
         exibirErro('Por favor, selecione as datas de início e fim');
         return;
@@ -161,6 +203,7 @@ async function carregarEstatisticasFinanceiras() {
         const result = await response.json();
         
         if (result.success) {
+            console.log('[Financeiro] Estatísticas recebidas:', result.data);
             atualizarCardsEstatisticas(result.data);
         } else {
             console.warn('Erro ao carregar estatísticas:', result.message);
@@ -225,7 +268,6 @@ async function carregarInadimplencia() {
     try {
         // Só carregar inadimplência se há datas definidas
         if (!filtrosAtivos.dataInicio || !filtrosAtivos.dataFim) {
-            console.log('Datas não definidas, pulando carregamento de inadimplência');
             return;
         }
         
@@ -302,37 +344,94 @@ async function carregarDadosParaFormularios() {
 
 // Atualizar cards de estatísticas
 function atualizarCardsEstatisticas(dados) {
+    console.log('[Financeiro] Atualizando cards com:', dados);
     // Atualizar cards existentes
-    document.getElementById('totalReceitas').textContent = formatarMoeda(dados.ReceitaTotalEfetiva || 0);
-    document.getElementById('totalDespesas').textContent = formatarMoeda(dados.TotalDespesas || 0);
-    document.getElementById('lucroLiquido').textContent = formatarMoeda(dados.LucroLiquido || 0);
-    document.getElementById('margemLucro').textContent = `${(dados.MargemLucro || 0).toFixed(1)}%`;
-    
-    // Atualizar novos cards de vendas
-    document.getElementById('totalVendas').textContent = formatarMoeda(dados.TotalVendas || 0);
-    document.getElementById('valorAReceber').textContent = formatarMoeda(dados.ValorAReceber || 0);
-    document.getElementById('valorRecebido').textContent = formatarMoeda(dados.ValorRecebido || 0);
-    
-    // Atualizar cards de repasse
-    document.getElementById('repasseCuidador').textContent = formatarMoeda(dados.RepasseCuidador || 0);
-    document.getElementById('receitaPlataforma').textContent = formatarMoeda(dados.ReceitaPlataforma || 0);
-    
-    // Adicionar informações extras se disponíveis
-    if (dados.ReceitaAtendimentosConcluidos !== undefined) {
-        const diferenca = (dados.ReceitaAtendimentosConcluidos || 0) - (dados.ReceitaTotalEfetiva || 0);
-        if (diferenca > 0) {
-            console.log(`💰 Receita de atendimentos concluídos: ${formatarMoeda(dados.ReceitaAtendimentosConcluidos)}`);
-            console.log(`💸 Receita efetivamente recebida: ${formatarMoeda(dados.ReceitaTotalEfetiva)}`);
-            console.log(`⚠️ Diferença (pendente): ${formatarMoeda(diferenca)}`);
-        }
+    document.getElementById('totalReceitas').textContent = formatarMoeda(dados.ReceitaTotalEfetiva ?? dados.TotalReceitas ?? 0);
+    document.getElementById('totalDespesas').textContent = formatarMoeda(dados.TotalDespesas ?? 0);
+    document.getElementById('lucroLiquido').textContent = formatarMoeda(dados.LucroLiquido ?? 0);
+    document.getElementById('margemLucro').textContent = `${formatarNumero(dados.MargemLucro ?? 0, 1)}%`;
+
+    const totalReceitasSubtextoEl = document.getElementById('totalReceitasSubtexto');
+    if (totalReceitasSubtextoEl) {
+        totalReceitasSubtextoEl.textContent = `Resultados de ${dados.QtdReceitasEfetivas ?? dados.QtdReceitas ?? 0} recebimentos confirmados.`;
     }
-    
-    // Log das novas métricas de vendas
-    console.log(`🛒 Total de Vendas: ${formatarMoeda(dados.TotalVendas || 0)}`);
-    console.log(`⏰ Valor a Receber: ${formatarMoeda(dados.ValorAReceber || 0)}`);
-    console.log(`✅ Valor Recebido: ${formatarMoeda(dados.ValorRecebido || 0)}`);
-    console.log(`💵 Repasse aos Cuidadores (90%): ${formatarMoeda(dados.RepasseCuidador || 0)}`);
-    console.log(`🏢 Receita da Plataforma (10%): ${formatarMoeda(dados.ReceitaPlataforma || 0)}`);
+
+    const totalDespesasSubtextoEl = document.getElementById('totalDespesasSubtexto');
+    if (totalDespesasSubtextoEl) {
+        totalDespesasSubtextoEl.textContent = `Inclui ${dados.QtdDespesas ?? 0} despesas registradas no período.`;
+    }
+
+    const lucroLiquidoSubtextoEl = document.getElementById('lucroLiquidoSubtexto');
+    if (lucroLiquidoSubtextoEl) {
+        lucroLiquidoSubtextoEl.textContent = `Receitas: ${formatarMoeda(dados.ReceitaTotalEfetiva ?? dados.TotalReceitas ?? 0)} • Despesas: ${formatarMoeda(dados.TotalDespesas ?? 0)}`;
+    }
+
+    const margemLucroSubtextoEl = document.getElementById('margemLucroSubtexto');
+    if (margemLucroSubtextoEl) {
+        margemLucroSubtextoEl.textContent = `Margem calculada sobre ${formatarMoeda(dados.ReceitaTotalEfetiva ?? dados.TotalReceitas ?? 0)} de receitas.`;
+    }
+
+    // Atualizar novos cards de vendas
+    const totalVendasEl = document.getElementById('totalVendas');
+    if (totalVendasEl) {
+        totalVendasEl.textContent = formatarMoeda(dados.TotalVendas ?? 0);
+    }
+
+    const valorAReceberEl = document.getElementById('valorAReceber');
+    if (valorAReceberEl) {
+        valorAReceberEl.textContent = formatarMoeda(dados.ValorAReceber ?? 0);
+    }
+
+    const valorRecebidoEl = document.getElementById('valorRecebido');
+    if (valorRecebidoEl) {
+        valorRecebidoEl.textContent = formatarMoeda(dados.ValorRecebido ?? 0);
+    }
+
+    const totalAtendimentos = dados.QtdTotalAtendimentos ?? 0;
+    const atendConcluidos = dados.QtdAtendimentosConcluidos ?? 0;
+    const atendPendentes = dados.QtdAtendimentosPendentes ?? 0;
+
+    const totalVendasSubtextoEl = document.getElementById('totalVendasSubtexto');
+    if (totalVendasSubtextoEl) {
+        totalVendasSubtextoEl.textContent = totalAtendimentos > 0
+            ? `${totalAtendimentos} atendimentos (${atendConcluidos} concluídos, ${atendPendentes} em aberto).`
+            : 'Nenhum atendimento registrado.';
+    }
+
+    const valorAReceberSubtextoEl = document.getElementById('valorAReceberSubtexto');
+    if (valorAReceberSubtextoEl) {
+        valorAReceberSubtextoEl.textContent = dados.ValorAReceber > 0
+            ? `${atendPendentes} atendimento(s) em andamento somando ${formatarMoeda(dados.ValorAReceber)}.`
+            : 'Nenhum valor pendente no momento.';
+    }
+
+    const valorRecebidoSubtextoEl = document.getElementById('valorRecebidoSubtexto');
+    if (valorRecebidoSubtextoEl) {
+        valorRecebidoSubtextoEl.textContent = atendConcluidos > 0
+            ? `Referente a ${atendConcluidos} atendimento(s) concluído(s).`
+            : 'Ainda não há atendimentos concluídos.';
+    }
+
+    // Atualizar cards de repasse
+    const repasseCuidadorEl = document.getElementById('repasseCuidador');
+    if (repasseCuidadorEl) {
+        repasseCuidadorEl.textContent = formatarMoeda(dados.RepasseCuidador ?? 0);
+    }
+
+    const receitaPlataformaEl = document.getElementById('receitaPlataforma');
+    if (receitaPlataformaEl) {
+        receitaPlataformaEl.textContent = formatarMoeda(dados.ReceitaPlataforma ?? 0);
+    }
+
+    const repasseCuidadorSubtextoEl = document.getElementById('repasseCuidadorSubtexto');
+    if (repasseCuidadorSubtextoEl) {
+        repasseCuidadorSubtextoEl.textContent = `Total estimado a repassar aos cuidadores (90% das vendas).`;
+    }
+
+    const receitaPlataformaSubtextoEl = document.getElementById('receitaPlataformaSubtexto');
+    if (receitaPlataformaSubtextoEl) {
+        receitaPlataformaSubtextoEl.textContent = `Participação da plataforma (10% das vendas).`;
+    }
     
     // Atualizar cores baseadas no lucro
     const lucroElement = document.getElementById('lucroLiquido');
@@ -643,18 +742,29 @@ async function criarNovaReceita() {
             body: JSON.stringify(receita)
         });
         
-        const result = await response.json();
+        let result = null;
+        try {
+            result = await response.clone().json();
+        } catch (jsonError) {
+            // ignora caso a resposta não seja JSON
+        }
+        const textoResposta = result ? null : await response.text().catch(() => null);
         
-        if (result.success) {
+        if (!response.ok) {
+            const mensagem = result?.message || textoResposta || `Não foi possível registrar a receita (erro ${response.status}).`;
+            throw new Error(mensagem);
+        }
+        
+        if (result?.success) {
             exibirSucesso('Receita criada com sucesso!');
             fecharModalNovaReceita();
             await carregarEstatisticasFinanceiras();
         } else {
-            exibirErro(result.message);
+            throw new Error(result?.message || textoResposta || 'Não foi possível registrar a receita.');
         }
     } catch (error) {
         console.error('Erro ao criar receita:', error);
-        exibirErro('Erro ao criar receita');
+        exibirErro(error.message || 'Erro ao criar receita');
     }
 }
 
@@ -693,19 +803,30 @@ async function criarNovaDespesa() {
             body: JSON.stringify(despesa)
         });
         
-        const result = await response.json();
+        let result = null;
+        try {
+            result = await response.clone().json();
+        } catch (jsonError) {
+            // resposta não era JSON
+        }
+        const textoResposta = result ? null : await response.text().catch(() => null);
         
-        if (result.success) {
+        if (!response.ok) {
+            const mensagem = result?.message || textoResposta || `Não foi possível registrar a despesa (erro ${response.status}).`;
+            throw new Error(mensagem);
+        }
+        
+        if (result?.success) {
             exibirSucesso('Despesa criada com sucesso!');
             fecharModalNovaDespesa();
             await carregarEstatisticasFinanceiras();
             await carregarDespesasPorCategoria();
         } else {
-            exibirErro(result.message);
+            throw new Error(result?.message || textoResposta || 'Não foi possível registrar a despesa.');
         }
     } catch (error) {
         console.error('Erro ao criar despesa:', error);
-        exibirErro('Erro ao criar despesa');
+        exibirErro(error.message || 'Erro ao criar despesa');
     }
 }
 
@@ -763,7 +884,7 @@ function atualizarSelectAtendimentos(atendimentos) {
         
         // Usar campos corretos da tabela atendimento
         const descricao = atendimento.ObservacaoExtra || `Atendimento #${atendimento.IdAtendimento}`;
-        const data = formatarData(atendimento.DataInicio);
+        const data = formatarDataCurta(atendimento.DataInicio);
         const status = atendimento.Status || 'N/A';
         const valor = formatarMoeda(atendimento.Valor || 0);
         
@@ -782,18 +903,7 @@ async function enviarCobranca(idInadimplencia) {
 
 // ========== FUNÇÕES DE UTILIDADE ==========
 
-// Formatar moeda
-function formatarMoeda(valor) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(parseFloat(valor) || 0);
-}
-
-// Formatar data
-function formatarData(data) {
-    return new Date(data).toLocaleDateString('pt-BR');
-}
+// Utilidades de formatação (já declaradas no topo do arquivo)
 
 // Mostrar carregamento
 function mostrarCarregamento() {
@@ -816,14 +926,12 @@ function removerCarregamento() {
 
 // Exibir erro
 function exibirErro(mensagem) {
-    // Implementar sistema de notificações
-    alert('Erro: ' + mensagem);
+    showToast(mensagem, 'error');
 }
 
 // Exibir sucesso
 function exibirSucesso(mensagem) {
-    // Implementar sistema de notificações
-    alert('Sucesso: ' + mensagem);
+    showToast(mensagem, 'success');
 }
 
 // Verificar se há dados financeiros

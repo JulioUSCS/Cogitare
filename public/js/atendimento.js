@@ -1,70 +1,98 @@
 document.addEventListener('DOMContentLoaded', () => {
-    function carregarAtendimentos() {
-        fetch('/api/atendimento')
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao buscar atendimentos');
-                return response.json();
-            })
-            .then(result => {
-                // Verificar se a resposta tem o formato { success: true, data: [...] }
-                const atendimentos = result.success ? result.data : result;
-                
-                const tabelaBody = document.querySelector('.atendimento-table tbody');
-                tabelaBody.innerHTML = '';
+    const formatarDataHora = (dataStr) => {
+        if (!dataStr) return '-';
+        const data = new Date(dataStr);
+        if (Number.isNaN(data.getTime())) return '-';
+        return data.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
 
-                if (!atendimentos || atendimentos.length === 0) {
-                    tabelaBody.innerHTML = `
+    const formatarValor = (valor) => {
+        if (valor === null || valor === undefined) return '—';
+        const numero = Number(valor);
+        if (Number.isNaN(numero)) return '—';
+        return numero.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
+
+    async function carregarAtendimentos(mostrarAviso = false) {
+        const tabelaBody = document.querySelector('.atendimento-table tbody');
+        if (!tabelaBody) return;
+
+        tabelaBody.innerHTML = `
+            <tr>
+              <td colspan="10" style="text-align: center;">Carregando atendimentos...</td>
+            </tr>`;
+
+        try {
+            const resultado = await apiFetch('/api/atendimento', {}, {
+                suppressDefaultError: true,
+                parseJson: true
+            });
+            const atendimentos = Array.isArray(resultado?.data) ? resultado.data : resultado;
+
+            tabelaBody.innerHTML = '';
+
+            if (!Array.isArray(atendimentos) || atendimentos.length === 0) {
+                tabelaBody.innerHTML = `
                         <tr>
                           <td colspan="10" style="text-align: center;">Nenhum atendimento cadastrado.</td>
                         </tr>`;
-                    return;
+                if (mostrarAviso) {
+                    showToast('Nenhum atendimento encontrado.', 'info');
                 }
+                return;
+            }
 
-                atendimentos.forEach(atendimento => {
-                    // Função para formatar data/hora para padrão brasileiro dd/mm/yyyy - hh:mm
-                    function formatarDataHora(dataStr) {
-                        if (!dataStr) return '-';
-                        const data = new Date(dataStr);
-                        if (isNaN(data.getTime())) return '-';
-                        const dia = String(data.getDate()).padStart(2, '0');
-                        const mes = String(data.getMonth() + 1).padStart(2, '0');
-                        const ano = data.getFullYear();
-                        const hora = String(data.getHours()).padStart(2, '0');
-                        const min = String(data.getMinutes()).padStart(2, '0');
-                        return `${dia}/${mes}/${ano} - ${hora}:${min}`;
-                    }
+            atendimentos.forEach((atendimento) => {
+                const dataInicio = formatarDataHora(atendimento.DataInicio);
+                const dataFim = formatarDataHora(atendimento.DataFim);
+                const valorFormatado = formatarValor(atendimento.Valor);
+                const endereco = atendimento.Local || 'Local não informado';
+                const status = atendimento.Status || 'Status não informado';
+                const observacoes = atendimento.ObservacaoExtra || 'Sem observações adicionais';
 
-                    const dataInicioFormatada = formatarDataHora(atendimento.DataInicio);
-                    const dataFimFormatada = formatarDataHora(atendimento.DataFim);
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="nome-cell"><strong>${atendimento.NomeCuidador || '-'}</strong></td>
-                        <td class="email-cell">${atendimento.NomeIdoso || '-'}</td>
-                        <td class="telefone-cell">${atendimento.NomeResponsavel || '-'}</td>
-                        <td class="idade-cell">${dataInicioFormatada}</td>
-                        <td class="biografia-cell">${dataFimFormatada !== '-' ? dataFimFormatada : 'Nenhuma'}</td>
-                        <td class="status-cell">${atendimento.Status || 'Nenhuma'}</td>
-                        <td class="local-cell">${atendimento.Local || 'Nenhuma'}</td>
-                        <td class="valor-cell">${atendimento.Valor || 'Nenhuma'}</td>
-                        <td class="obs-cell">${atendimento.ObservacaoExtra || 'Nenhuma'}</td>
-                        <td class="acoes-cell">
-                            <button class="btn-excluir" data-id="${atendimento.IdAtendimento}">Cancelar</button>
-                        </td>
-                        `;
-                    tabelaBody.appendChild(tr);
-                });
-
-                configurarBotoesExcluir();
-            })
-            .catch(error => {
-                console.error(error);
-                const tabelaBody = document.querySelector('.atendimento-table tbody');
-                tabelaBody.innerHTML = `
-                  <tr>
-                    <td colspan="10" style="text-align: center; color: red;">Erro ao carregar os dados dos atendimentos.</td>
-                  </tr>`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="nome-cell"><strong>${atendimento.NomeCuidador || 'Cuidador não informado'}</strong></td>
+                    <td class="email-cell">${atendimento.NomeIdoso || 'Idoso não informado'}</td>
+                    <td class="telefone-cell">
+                        ${atendimento.NomeResponsavel || 'Responsável não informado'}
+                        ${atendimento.EmailResponsavel ? `<span class="tabela-subtexto">${atendimento.EmailResponsavel}</span>` : ''}
+                    </td>
+                    <td class="idade-cell">${dataInicio}</td>
+                    <td class="biografia-cell">${dataFim}</td>
+                    <td class="status-cell">${status}</td>
+                    <td class="local-cell">
+                        ${endereco}
+                        ${atendimento.CidadeEstado ? `<span class="tabela-subtexto">${atendimento.CidadeEstado}</span>` : ''}
+                    </td>
+                    <td class="valor-cell">${valorFormatado}</td>
+                    <td class="obs-cell">${observacoes}</td>
+                    <td class="acoes-cell">
+                        <button class="btn-excluir" data-id="${atendimento.IdAtendimento}">Cancelar</button>
+                    </td>
+                `;
+                tabelaBody.appendChild(tr);
             });
+
+            configurarBotoesExcluir();
+
+            if (mostrarAviso) {
+                showToast('Lista de atendimentos atualizada.', 'success');
+            }
+        } catch (error) {
+            console.error(error);
+            tabelaBody.innerHTML = `
+                  <tr>
+                    <td colspan="10" style="text-align: center; color: #e74c3c;">Erro ao carregar os dados dos atendimentos.</td>
+                  </tr>`;
+            showDetailedError(error, 'Não foi possível carregar os atendimentos. Tente novamente.');
+        }
     }
 
     function configurarBotoesExcluir() {
@@ -86,22 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (confirm(mensagemAviso)) {
                     try {
-                        const response = await fetch(`/api/atendimento/${id}`, {
+                        await apiFetch(`/api/atendimento/${id}`, {
                             method: 'DELETE'
+                        }, {
+                            loadingMessage: 'Cancelando atendimento...',
+                            successMessage: 'Atendimento excluído com sucesso.',
+                            suppressDefaultError: true,
+                            parseJson: true
                         });
-                        
-                        const data = await response.json();
-                        
-                        if (!response.ok) {
-                            alert(`❌ Erro ao excluir:\n\n${data.erro || data.error || 'Erro desconhecido. Tente novamente.'}`);
-                            return;
-                        }
-                        
-                        alert('✅ Atendimento excluído com sucesso!');
-                        carregarAtendimentos();
+                        carregarAtendimentos(true);
                     } catch (error) {
-                        alert('❌ Erro de conexão ao excluir atendimento. Verifique sua conexão e tente novamente.');
                         console.error(error);
+                        showDetailedError(error, 'Erro ao excluir atendimento. Verifique vínculos ou tente novamente.');
                     }
                 }
             });

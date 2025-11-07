@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/css/idoso.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
   <link rel="stylesheet" href="/css/modal.css" /> <!-- Novo CSS do modal -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -65,7 +64,7 @@
               <th>Idade</th>
               <th>Sexo</th>
               <th>Condições</th>
-              <th>Idade</th>
+              <th>Responsável</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -130,9 +129,9 @@
 
 
   <script src="/js/sidebar.js"></script>
+  <script src="/js/feedback.js"></script>
   <script src="/js/idoso.js"></script>
   <script>
-    lucide.createIcons();
     document.addEventListener('DOMContentLoaded', () => {
       carregarIdosos(); // chama a função assim que a página terminar de carregar
     });

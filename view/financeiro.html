@@ -25,19 +25,19 @@
             <span class="sr-only">Menu</span>
         </button>
 
-        <ul class="nav-menu">
-            <li><a href="/view/index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+        <ul id="primary-navigation" class="nav-menu">
+            <li><a href="/view/index.html"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
             <li><a href="/view/cuidador.html"><i class="fas fa-user-nurse"></i><span>Cuidadores</span></a></li>
             <li><a href="/view/responsavel.html"><i class="fas fa-users"></i><span>Responsáveis</span></a></li>
             <li><a href="/view/idoso.html"><i class="fas fa-user-friends"></i><span>Idosos</span></a></li>
             <li><a href="/view/atendimento.html"><i class="fas fa-calendar-check"></i><span>Atendimentos</span></a></li>
-            <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
-            <li><a href="/view/avaliacao.html"><i class="fas fa-star"></i><span>Avaliações</span></a></li>
-            <li><a href="/view/chat.html"><i class="fas fa-headset"></i><span>Suporte</span></a></li>
-            <li><a href="/view/financeiro.html"><i class="fas fa-chart-line"></i><span>Financeiro</span></a></li>
-            <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
+          <li><a href="/view/pagamento.html"><i class="fas fa-wallet"></i><span>Pagamentos</span></a></li>
+          <li><a href="/view/avaliacao.html"><i class="fas fa-star"></i><span>Avaliações</span></a></li>
+                <li><a href="/view/chat.html"><i class="fas fa-comments"></i><span>Chat</span></a></li>
+                <li><a href="/view/financeiro.html"><i class="fas fa-chart-line"></i><span>Financeiro</span></a></li>
+                <li><a href="/view/historico.html"><i class="fas fa-history"></i><span>Histórico</span></a></li>
             <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a></li>
-        </ul>
+          </ul>
     </nav>
 
     <main class="main-content">
@@ -84,6 +84,7 @@
                             </button>
                         </div>
                         <p>Total de Receitas</p>
+                        <span class="tabela-subtexto" id="totalReceitasSubtexto"></span>
                         <div id="tooltip-receita" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>💰 O que é uma Receita?</h4>
@@ -128,6 +129,7 @@
                             </button>
                         </div>
                         <p>Total de Despesas</p>
+                        <span class="tabela-subtexto" id="totalDespesasSubtexto"></span>
                         <div id="tooltip-despesa" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>💸 Como é calculado:</h4>
@@ -160,6 +162,7 @@
                             </button>
                         </div>
                         <p>Lucro Líquido</p>
+                        <span class="tabela-subtexto" id="lucroLiquidoSubtexto"></span>
                         <div id="tooltip-lucro" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>📈 Como é calculado:</h4>
@@ -192,6 +195,7 @@
                             </button>
                         </div>
                         <p>Margem de Lucro</p>
+                        <span class="tabela-subtexto" id="margemLucroSubtexto"></span>
                         <div id="tooltip-margem" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>📊 Como é calculado:</h4>
@@ -225,6 +229,7 @@
                             </button>
                         </div>
                         <p>Total de Aten. Contr.</p>
+                        <span class="tabela-subtexto" id="totalVendasSubtexto"></span>
                         <div id="tooltip-vendas" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>🛒 O que são Aten. Contr.?</h4>
@@ -270,6 +275,7 @@
                             </button>
                         </div>
                         <p>Valor a Receber</p>
+                        <span class="tabela-subtexto" id="valorAReceberSubtexto"></span>
                         <div id="tooltip-a-receber" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>⏰ O que é Valor a Receber?</h4>
@@ -314,6 +320,7 @@
                             </button>
                         </div>
                         <p>Valor Recebido</p>
+                        <span class="tabela-subtexto" id="valorRecebidoSubtexto"></span>
                         <div id="tooltip-recebido" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>✅ O que é Valor Recebido?</h4>
@@ -357,6 +364,7 @@
                             </button>
                         </div>
                         <p>Repasse aos Cuidadores (90%)</p>
+                        <span class="tabela-subtexto" id="repasseCuidadorSubtexto"></span>
                         <div id="tooltip-repasse-cuidador" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>💵 O que é Repasse aos Cuidadores?</h4>
@@ -403,6 +411,7 @@
                             </button>
                         </div>
                         <p>Receita da Plataforma (10%)</p>
+                        <span class="tabela-subtexto" id="receitaPlataformaSubtexto"></span>
                         <div id="tooltip-receita-plataforma" class="tooltip hidden">
                             <div class="tooltip-content">
                                 <h4>🏢 O que é Receita da Plataforma?</h4>
@@ -605,6 +614,7 @@
     </div>
 
     <script src="/js/sidebar.js"></script>
+    <script src="/js/feedback.js"></script>
     <script src="/js/financeiro.js"></script>
     <script src='https://www.noupe.com/embed/019a01aae20d7c72a2e0e316038a874bd730.js'></script>
 </body>

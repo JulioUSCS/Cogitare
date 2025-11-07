@@ -93,6 +93,13 @@ html,body{
   box-sizing: border-box;
 }
 
+.tabela-subtexto {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
 /* RESPONSIVO: mobile */
 @media (max-width: 768px){
   .nav-toggle{display:block;}

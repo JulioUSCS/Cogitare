@@ -5,44 +5,73 @@ let avaliacoes = [];
 let atendimentosDisponiveis = [];
 let filtroAtual = 'all';
 
+const formatarCampo = (valor, fallback = 'Não informado') => {
+    if (valor === null || valor === undefined) return fallback;
+    const texto = String(valor).trim();
+    return texto.length > 0 ? texto : fallback;
+};
+
+const formatarDataHora = (dataHora) => {
+    if (!dataHora) return 'Não informado';
+    const data = new Date(dataHora);
+    if (Number.isNaN(data.getTime())) return 'Não informado';
+    return data.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
 // Função para carregar estatísticas
 async function carregarEstatisticas() {
     try {
-        const response = await fetch('/api/avaliacao/estatisticas');
-        const data = await response.json();
-        
-        if (data.success) {
-            const stats = data.data;
-            console.log('Estatísticas recebidas:', stats);
-            
-            document.getElementById('totalAvaliacoes').textContent = stats.TotalAvaliacoes || 0;
-            document.getElementById('mediaGeral').textContent = (parseFloat(stats.MediaGeral) || 0).toFixed(1);
-            document.getElementById('avaliacoesPositivas').textContent = stats.AvaliacoesPositivas || 0;
-            document.getElementById('avaliacoesNegativas').textContent = stats.AvaliacoesNegativas || 0;
-        } else {
-            console.error('Erro ao carregar estatísticas:', data.message);
+        const data = await apiFetch('/api/avaliacao/estatisticas', {}, {
+            suppressDefaultError: true,
+            parseJson: true
+        });
+
+        const stats = data?.data || data || {};
+        const totalAvaliacoesEl = document.getElementById('totalAvaliacoes');
+        const mediaGeralEl = document.getElementById('mediaGeral');
+        const avaliacoesPositivasEl = document.getElementById('avaliacoesPositivas');
+        const avaliacoesNegativasEl = document.getElementById('avaliacoesNegativas');
+
+        if (totalAvaliacoesEl) {
+            totalAvaliacoesEl.textContent = stats.TotalAvaliacoes || 0;
+        }
+        if (mediaGeralEl) {
+            mediaGeralEl.textContent = (parseFloat(stats.MediaGeral) || 0).toFixed(1);
+        }
+        if (avaliacoesPositivasEl) {
+            avaliacoesPositivasEl.textContent = stats.AvaliacoesPositivas || 0;
+        }
+        if (avaliacoesNegativasEl) {
+            avaliacoesNegativasEl.textContent = stats.AvaliacoesNegativas || 0;
         }
     } catch (error) {
-        console.error('Erro na requisição de estatísticas:', error);
+        console.error('Erro ao carregar estatísticas:', error);
+        mostrarMensagemErro('Não foi possível carregar as estatísticas.');
+        showDetailedError(error, 'Não foi possível carregar as estatísticas.');
     }
 }
 
 // Função para carregar todas as avaliações
 async function carregarAvaliacoes() {
     try {
-        const response = await fetch('/api/avaliacao');
-        const data = await response.json();
-        
-        if (data.success) {
-            avaliacoes = data.data;
-            exibirAvaliacoes(avaliacoes);
-        } else {
-            console.error('Erro ao carregar avaliações:', data.message);
-            exibirErro('Erro ao carregar avaliações');
-        }
+        const data = await apiFetch('/api/avaliacao', {}, {
+            suppressDefaultError: true,
+            parseJson: true
+        });
+
+        avaliacoes = Array.isArray(data?.data) ? data.data : data;
+        exibirAvaliacoes(avaliacoes);
     } catch (error) {
         console.error('Erro na requisição:', error);
         exibirErro('Erro de conexão');
+        mostrarMensagemErro('Erro de conexão ao carregar avaliações');
+        showDetailedError(error, 'Erro de conexão ao carregar avaliações');
     }
 }
 
@@ -59,7 +88,7 @@ function exibirAvaliacoes(avaliacoesParaExibir) {
         container.innerHTML = `
             <div class="loading">
                 <i class="fas fa-star"></i>
-                <span>Nenhuma avaliação encontrada</span>
+                <span>Nenhuma avaliação registrada ainda.</span>
             </div>
         `;
         return;
@@ -73,21 +102,21 @@ function exibirAvaliacoes(avaliacoesParaExibir) {
             <div class="avaliacao-card" data-nota="${avaliacao.Nota}">
                 <div class="avaliacao-header">
                     <div class="avaliacao-info">
-                        <h3>${avaliacao.NomeCuidador || 'Cuidador não encontrado'}</h3>
+                        <h3>${formatarCampo(avaliacao.NomeCuidador, 'Cuidador não informado')}</h3>
                         <div class="avaliacao-meta">
-                            <span><i class="fas fa-user"></i> ${avaliacao.NomeResponsavel || 'N/A'}</span>
+                            <span><i class="fas fa-user"></i> ${formatarCampo(avaliacao.NomeResponsavel, 'Responsável não informado')}</span>
                             <span><i class="fas fa-calendar"></i> ${dataFormatada}</span>
-                            <span><i class="fas fa-user-friends"></i> ${avaliacao.NomeIdoso || 'N/A'}</span>
+                            <span><i class="fas fa-user-friends"></i> ${formatarCampo(avaliacao.NomeIdoso, 'Idoso não informado')}</span>
                         </div>
                         <div class="rating">
                             ${estrelas}
                         </div>
                     </div>
                     <div class="avaliacao-actions">
-                        <button class="btn-action btn-edit" onclick="editarAvaliacao(${avaliacao.IdAvaliacao})" title="Editar">
+                        <button class="btn-action btn-edit" onclick="editarAvaliacao(${avaliacao.IdAvaliacao})" title="Editar avaliação">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn-action btn-delete" onclick="excluirAvaliacao(${avaliacao.IdAvaliacao})" title="Excluir">
+                        <button class="btn-action btn-delete" onclick="excluirAvaliacao(${avaliacao.IdAvaliacao})" title="Excluir avaliação">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -110,20 +139,6 @@ function gerarEstrelas(nota) {
         estrelas += `<i class="fas fa-star ${classe}"></i>`;
     }
     return estrelas;
-}
-
-// Função para formatar data e hora
-function formatarDataHora(dataHora) {
-    if (!dataHora) return 'N/A';
-    
-    const data = new Date(dataHora);
-    return data.toLocaleString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
 }
 
 // Função para exibir erro
@@ -206,37 +221,66 @@ async function carregarAtendimentosDisponiveis() {
     try {
         // Por enquanto, vamos usar um ID fixo. Em uma implementação real,
         // você pegaria o ID do responsável logado da sessão
-        const response = await fetch('/api/avaliacao/atendimentos/1'); // ID fixo para exemplo
-        const data = await response.json();
-        
-        if (data.success) {
-            atendimentosDisponiveis = data.data;
-            const select = document.getElementById('atendimentoSelect');
-            select.innerHTML = '<option value="">Selecione um atendimento...</option>';
-            
-            atendimentosDisponiveis.forEach(atendimento => {
-                const option = document.createElement('option');
-                option.value = atendimento.IdAtendimento;
-                option.textContent = `${atendimento.NomeCuidador} - ${atendimento.NomeIdoso} (${formatarDataHora(atendimento.DataFim)})`;
-                if (atendimento.JaAvaliado) {
-                    option.textContent += ' - Já avaliado';
-                    option.disabled = true;
-                }
-                select.appendChild(option);
-            });
-        } else {
-            console.error('Erro ao carregar atendimentos:', data.message);
-        }
+        const data = await apiFetch('/api/avaliacao/atendimentos/1', {}, {
+            suppressDefaultError: true,
+            parseJson: true
+        }); // ID fixo para exemplo
+
+        atendimentosDisponiveis = Array.isArray(data?.data) ? data.data : data;
+        const select = document.getElementById('atendimentoSelect');
+        if (!select) return;
+        select.innerHTML = '<option value="">Selecione um atendimento...</option>';
+
+        atendimentosDisponiveis.forEach(atendimento => {
+            const option = document.createElement('option');
+            option.value = atendimento.IdAtendimento;
+            option.textContent = `${atendimento.NomeCuidador} - ${atendimento.NomeIdoso} (${formatarDataHora(atendimento.DataFim)})`;
+            if (atendimento.JaAvaliado) {
+                option.textContent += ' - Já avaliado';
+                option.disabled = true;
+            }
+            select.appendChild(option);
+        });
     } catch (error) {
         console.error('Erro na requisição de atendimentos:', error);
+        mostrarMensagemErro('Erro de conexão ao carregar atendimentos.');
+        showDetailedError(error, 'Erro de conexão ao carregar atendimentos.');
     }
 }
 
 // Função para salvar nova avaliação
 async function salvarNovaAvaliacao(event) {
     event.preventDefault();
+    const form = event.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    const camposFormulario = [
+        {
+            field: form.querySelector('#atendimentoSelect'),
+            name: 'Atendimento',
+            rules: { required: true }
+        },
+        {
+            field: form.querySelector('input[name="Nota"]'),
+            name: 'Nota',
+            getValue: () => form.querySelector('input[name="Nota"]:checked')?.value || '',
+            rules: { required: true }
+        },
+        {
+            field: form.querySelector('textarea[name="Comentario"]'),
+            name: 'Comentário',
+            rules: { maxLength: 500 }
+        }
+    ];
+
+    const validacao = validateFields(camposFormulario);
+    if (!validacao.valid) {
+        const mensagem = ['Corrija os campos destacados antes de salvar:', ...validacao.messages.map((msg) => `• ${msg}`)].join('\n');
+        showToast(mensagem, 'error');
+        return;
+    }
     
-    const formData = new FormData(event.target);
+    const formData = new FormData(form);
     const dados = {
         IdResponsavel: 1, // ID fixo para exemplo
         IdCuidador: 1, // Seria obtido do atendimento selecionado
@@ -246,27 +290,27 @@ async function salvarNovaAvaliacao(event) {
     };
     
     try {
-        const response = await fetch('/api/avaliacao', {
+        const resultado = await apiFetch('/api/avaliacao', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dados)
+        }, {
+            button: submitButton,
+            loadingButtonText: 'Salvando...',
+            suppressDefaultError: true,
+            parseJson: true
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarMensagemSucesso('Avaliação criada com sucesso!');
-            fecharModalNovaAvaliacao();
-            carregarAvaliacoes();
-            carregarEstatisticas();
-        } else {
-            mostrarMensagemErro(result.message);
-        }
+
+        mostrarMensagemSucesso(resultado?.message || 'Avaliação criada com sucesso!');
+        fecharModalNovaAvaliacao();
+        carregarAvaliacoes();
+        carregarEstatisticas();
     } catch (error) {
         console.error('Erro ao salvar avaliação:', error);
-        mostrarMensagemErro('Erro ao salvar avaliação');
+        mostrarMensagemErro(error.message || 'Erro ao salvar avaliação.');
+        showDetailedError(error, 'Erro ao salvar avaliação. Verifique as informações e tente novamente.');
     }
 }
 
@@ -296,8 +340,31 @@ function fecharModalEditarAvaliacao() {
 // Função para atualizar avaliação
 async function atualizarAvaliacao(event) {
     event.preventDefault();
+    const form = event.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    const camposFormulario = [
+        {
+            field: form.querySelector('input[name="Nota"]'),
+            name: 'Nota',
+            getValue: () => form.querySelector('input[name="Nota"]:checked')?.value || '',
+            rules: { required: true }
+        },
+        {
+            field: form.querySelector('textarea[name="Comentario"]'),
+            name: 'Comentário',
+            rules: { maxLength: 500 }
+        }
+    ];
+
+    const validacao = validateFields(camposFormulario);
+    if (!validacao.valid) {
+        const mensagem = ['Corrija os campos destacados antes de salvar:', ...validacao.messages.map((msg) => `• ${msg}`)].join('\n');
+        showToast(mensagem, 'error');
+        return;
+    }
     
-    const formData = new FormData(event.target);
+    const formData = new FormData(form);
     const idAvaliacao = formData.get('IdAvaliacao');
     const dados = {
         Nota: parseInt(formData.get('Nota')),
@@ -305,27 +372,27 @@ async function atualizarAvaliacao(event) {
     };
     
     try {
-        const response = await fetch(`/api/avaliacao/${idAvaliacao}`, {
+        const resultado = await apiFetch(`/api/avaliacao/${idAvaliacao}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dados)
+        }, {
+            button: submitButton,
+            loadingButtonText: 'Atualizando...',
+            suppressDefaultError: true,
+            parseJson: true
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarMensagemSucesso('Avaliação atualizada com sucesso!');
-            fecharModalEditarAvaliacao();
-            carregarAvaliacoes();
-            carregarEstatisticas();
-        } else {
-            mostrarMensagemErro(result.message);
-        }
+
+        mostrarMensagemSucesso(resultado?.message || 'Avaliação atualizada com sucesso!');
+        fecharModalEditarAvaliacao();
+        carregarAvaliacoes();
+        carregarEstatisticas();
     } catch (error) {
         console.error('Erro ao atualizar avaliação:', error);
-        mostrarMensagemErro('Erro ao atualizar avaliação');
+        mostrarMensagemErro(error.message || 'Erro ao atualizar avaliação.');
+        showDetailedError(error, 'Erro ao atualizar avaliação.');
     }
 }
 
@@ -342,51 +409,31 @@ async function excluirAvaliacao(idAvaliacao) {
     }
     
     try {
-        const response = await fetch(`/api/avaliacao/${idAvaliacao}`, {
+        await apiFetch(`/api/avaliacao/${idAvaliacao}`, {
             method: 'DELETE'
+        }, {
+            loadingMessage: 'Excluindo avaliação...',
+            successMessage: 'Avaliação excluída com sucesso!',
+            suppressDefaultError: true,
+            parseJson: true
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarMensagemSucesso('✅ Avaliação excluída com sucesso!');
-            carregarAvaliacoes();
-            carregarEstatisticas();
-        } else {
-            mostrarMensagemErro(result.message);
-        }
+        carregarAvaliacoes();
+        carregarEstatisticas();
     } catch (error) {
         console.error('Erro ao excluir avaliação:', error);
-        mostrarMensagemErro('Erro ao excluir avaliação');
+        mostrarMensagemErro(error.message || 'Erro ao excluir avaliação.');
+        showDetailedError(error, 'Erro ao excluir avaliação.');
     }
 }
 
 // Função para mostrar mensagem de sucesso
 function mostrarMensagemSucesso(mensagem) {
-    const container = document.querySelector('.main-content');
-    const div = document.createElement('div');
-    div.className = 'success-message';
-    div.innerHTML = `<i class="fas fa-check-circle"></i> ${mensagem}`;
-    
-    container.insertBefore(div, container.firstChild);
-    
-    setTimeout(() => {
-        div.remove();
-    }, 3000);
+    showToast(mensagem, 'success');
 }
 
 // Função para mostrar mensagem de erro
 function mostrarMensagemErro(mensagem) {
-    const container = document.querySelector('.main-content');
-    const div = document.createElement('div');
-    div.className = 'error-message';
-    div.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${mensagem}`;
-    
-    container.insertBefore(div, container.firstChild);
-    
-    setTimeout(() => {
-        div.remove();
-    }, 5000);
+    showToast(mensagem, 'error');
 }
 
 // Event listeners
@@ -413,11 +460,46 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners para formulários
     const formNovaAvaliacao = document.getElementById('formNovaAvaliacao');
     if (formNovaAvaliacao) {
+        const camposNova = [
+            {
+                field: formNovaAvaliacao.querySelector('#atendimentoSelect'),
+                name: 'Atendimento',
+                rules: { required: true }
+            },
+            {
+                field: formNovaAvaliacao.querySelector('input[name="Nota"]'),
+                name: 'Nota',
+                getValue: () => formNovaAvaliacao.querySelector('input[name="Nota"]:checked')?.value || '',
+                rules: { required: true }
+            },
+            {
+                field: formNovaAvaliacao.querySelector('textarea[name="Comentario"]'),
+                name: 'Comentário',
+                rules: { maxLength: 500 }
+            }
+        ];
+
+        attachValidationListeners(camposNova);
         formNovaAvaliacao.addEventListener('submit', salvarNovaAvaliacao);
     }
     
     const formEditarAvaliacao = document.getElementById('formEditarAvaliacao');
     if (formEditarAvaliacao) {
+        const camposEditar = [
+            {
+                field: formEditarAvaliacao.querySelector('input[name="Nota"]'),
+                name: 'Nota',
+                getValue: () => formEditarAvaliacao.querySelector('input[name="Nota"]:checked')?.value || '',
+                rules: { required: true }
+            },
+            {
+                field: formEditarAvaliacao.querySelector('textarea[name="Comentario"]'),
+                name: 'Comentário',
+                rules: { maxLength: 500 }
+            }
+        ];
+
+        attachValidationListeners(camposEditar);
         formEditarAvaliacao.addEventListener('submit', atualizarAvaliacao);
     }
     

@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/css/cuidador.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
   <link rel="stylesheet" href="/css/modal.css" />
-  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="shortcut icon" href="/imagens/logotipoCogitareSemFundo.png" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -97,7 +96,7 @@
         <label>Data de nascimento:</label>
         <input type="date" name="dataNascimento" required />
         <label>Foto:</label>
-        <input type="url" name="fotoUrl" placeholder="URL da foto" />
+        <input type="text" name="fotoUrl" placeholder="URL da foto (ex: https://... ou /avatar/...)" inputmode="url" />
         <label>Biografia:</label>
         <textarea name="biografia" placeholder="Biografia"></textarea>
 
@@ -132,8 +131,8 @@
     </div>
   </div>
 
-  <script>lucide.createIcons();</script>
   <script src="/js/sidebar.js"></script>
+  <script src="/js/feedback.js"></script>
   <script src="/js/cuidador.js"></script>
   <script src='https://www.noupe.com/embed/019a01aae20d7c72a2e0e316038a874bd730.js'></script>
 </body>

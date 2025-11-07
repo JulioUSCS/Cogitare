@@ -89,26 +89,97 @@ BEGIN
     DECLARE v_Nome VARCHAR(100);
     DECLARE v_Email VARCHAR(100);
     DECLARE v_Existe INT DEFAULT 0;
-    
+
     -- Verificar se o responsável existe e buscar dados
     SELECT COUNT(*), Nome, Email
     INTO v_Existe, v_Nome, v_Email
     FROM responsavel
     WHERE IdResponsavel = p_IdResponsavel;
-    
+
     IF v_Existe = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Responsável não encontrado';
     END IF;
-    
+
     -- Registrar no histórico do administrador ANTES de excluir
     INSERT INTO historicoadministrador (IdAdministrador, Operacao, DataOperacao)
     VALUES (
         p_IdAdministrador,
-        CONCAT('Responsável excluído (ID: ', p_IdResponsavel, ') - Nome: ', IFNULL(v_Nome, 'N/A'), 
+        CONCAT('Responsável excluído (ID: ', p_IdResponsavel, ') - Nome: ', IFNULL(v_Nome, 'N/A'),
                ' | Email: ', IFNULL(v_Email, 'N/A')),
         NOW()
     );
-    
+
+    -- Excluir avaliações diretamente vinculadas ao responsável
+    DELETE FROM avaliacao
+    WHERE IdResponsavel = p_IdResponsavel;
+
+    -- Excluir avaliações e registros financeiros dos atendimentos deste responsável
+    DELETE FROM avaliacao
+    WHERE IdAtendimento IN (
+        SELECT IdAtendimento FROM (
+            SELECT IdAtendimento FROM atendimento WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_avaliacao
+    );
+
+    DELETE FROM comissao
+    WHERE IdAtendimento IN (
+        SELECT IdAtendimento FROM (
+            SELECT IdAtendimento FROM atendimento WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_comissao
+    );
+
+    DELETE FROM pagamento
+    WHERE IdAtendimento IN (
+        SELECT IdAtendimento FROM (
+            SELECT IdAtendimento FROM atendimento WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_pagamento
+    );
+
+    DELETE FROM receita
+    WHERE IdAtendimento IN (
+        SELECT IdAtendimento FROM (
+            SELECT IdAtendimento FROM atendimento WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_receita
+    );
+
+    DELETE FROM historicoatendimento
+    WHERE IdAtendimento IN (
+        SELECT IdAtendimento FROM (
+            SELECT IdAtendimento FROM atendimento WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_hist_atendimento
+    );
+
+    -- Excluir atendimentos do responsável
+    DELETE FROM atendimento WHERE IdResponsavel = p_IdResponsavel;
+
+    -- Excluir vínculos e dados de idosos ligados ao responsável
+    DELETE FROM idosodoenca
+    WHERE IdIdoso IN (
+        SELECT IdIdoso FROM (
+            SELECT IdIdoso FROM idoso WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_idoso_doenca
+    );
+
+    DELETE FROM idosorestricaoalimentar
+    WHERE IdIdoso IN (
+        SELECT IdIdoso FROM (
+            SELECT IdIdoso FROM idoso WHERE IdResponsavel = p_IdResponsavel
+        ) AS tmp_idoso_restricao
+    );
+
+    DELETE FROM idoso WHERE IdResponsavel = p_IdResponsavel;
+
+    -- Excluir histórico específico do responsável
+    DELETE FROM historicoresponsavel WHERE IdResponsavel = p_IdResponsavel;
+
+    -- Excluir mensagens e chats associados ao responsável (caso não haja CASCADE)
+    DELETE m FROM mensagem m
+    INNER JOIN chat c ON m.IdChat = c.IdChat
+    WHERE c.IdResponsavel = p_IdResponsavel;
+
+    DELETE FROM chat WHERE IdResponsavel = p_IdResponsavel;
+
+    -- Finalmente, excluir o responsável
     DELETE FROM responsavel WHERE IdResponsavel = p_IdResponsavel;
 END$$
 DELIMITER ;

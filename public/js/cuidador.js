@@ -3,79 +3,115 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formCuidador');
     const modalOverlay = document.getElementById("modalOverlay");
 
+    const formatarCampo = (valor, textoFallback = 'Não informado') => {
+        if (valor === null || valor === undefined) return textoFallback;
+        const texto = String(valor).trim();
+        return texto.length > 0 ? texto : textoFallback;
+    };
+
+    const formatarTelefone = (telefone) => {
+        const apenasDigitos = (telefone || '').replace(/\D/g, '');
+        if (apenasDigitos.length === 10) {
+            return apenasDigitos.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        }
+        if (apenasDigitos.length === 11) {
+            return apenasDigitos.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        }
+        return formatarCampo(telefone);
+    };
+
+    const normalizarUrlOpcional = (valor) => {
+        const texto = typeof valor === 'string' ? valor.trim() : '';
+        return texto ? texto : null;
+    };
+
     function calcularIdade(dataNascimento) {
         if (!dataNascimento) return 'Não informado';
         const nascimento = new Date(dataNascimento);
+        if (Number.isNaN(nascimento.getTime())) return 'Não informado';
         const hoje = new Date();
         let idade = hoje.getFullYear() - nascimento.getFullYear();
         const mes = hoje.getMonth() - nascimento.getMonth();
         if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
             idade--;
         }
-        return idade;
+        return `${idade} anos`;
     }
 
-    function carregarCuidadores() {
-        fetch('/api/cuidador')
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao buscar cuidadores');
-                return response.json();
-            })
-            .then(result => {
-                // Verificar se a resposta tem o formato { success: true, data: [...] }
-                const cuidadores = result.success ? result.data : result;
-                
-                const tabelaBody = document.querySelector('.cuidadores-table tbody');
-                tabelaBody.innerHTML = '';
+    async function carregarCuidadores(mostrarAviso = false) {
+        const tabelaBody = document.querySelector('.cuidadores-table tbody');
+        if (!tabelaBody) return;
 
-                if (!cuidadores || cuidadores.length === 0) {
-                    tabelaBody.innerHTML = `
-                        <tr>
-                          <td colspan="8" style="text-align: center;">Nenhum cuidador cadastrado.</td>
-                        </tr>`;
-                    return;
-                }
+        tabelaBody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center;">Carregando cuidadores...</td>
+            </tr>`;
 
-                cuidadores.forEach(cuidador => {
-                    // Usar imagem padrão local se não houver foto
-                    const avatarPadrao = '/avatar/cuidador.png';
-                    const fotoUrl = cuidador.FotoUrl && cuidador.FotoUrl.trim() !== '' ? cuidador.FotoUrl : avatarPadrao;
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="foto-cell">
-                          <img src="${fotoUrl}" alt="Foto de ${cuidador.Nome}" class="foto-cuidador" />
-                        </td>
-                        <td class="nome-cell"><strong>${cuidador.Nome}</strong></td>
-                        <td class="email-cell">${cuidador.Email || '-'}</td>
-                        <td class="telefone-cell">${cuidador.Telefone || '-'}</td>
-                        <td class="idade-cell">${calcularIdade(cuidador.DataNascimento)} anos</td>
-                        <td class="biografia-cell">${cuidador.Biografia || 'Nenhuma'}</td>
-                        <td class="status-cell">
-                          Fumante: ${cuidador.Fumante || 'Não'} <br>
-                          Filhos: ${cuidador.TemFilhos || 'Não'} <br>
-                          CNH: ${cuidador.PossuiCNH || 'Não'} <br>
-                          Carro: ${cuidador.TemCarro || 'Não'}
-                        </td>
-                        <td class="acoes-cell">
-                          <button class="btn-editar" data-cuidador='${JSON.stringify(cuidador)}'>Editar</button>
-                          <button class="btn-excluir" data-id="${cuidador.IdCuidador}">Excluir</button>
-                        </td>
-                      `;
-                    tabelaBody.appendChild(tr);
-                });
-
-                configurarBotoesEditar();
-                configurarBotoesExcluir();
-            })
-            .catch(error => {
-                console.error('Erro ao carregar cuidadores:', error);
-                const tabelaBody = document.querySelector('.cuidadores-table tbody');
-                tabelaBody.innerHTML = `
-                  <tr>
-                    <td colspan="8" style="text-align: center; color: red;">Erro ao carregar os dados dos cuidadores: ${error.message}</td>
-                  </tr>`;
+        try {
+            const resultado = await apiFetch('/api/cuidador', {}, {
+                suppressDefaultError: true,
+                parseJson: true
             });
+
+            const cuidadores = Array.isArray(resultado?.data) ? resultado.data : resultado;
+
+            tabelaBody.innerHTML = '';
+
+            if (!Array.isArray(cuidadores) || cuidadores.length === 0) {
+                tabelaBody.innerHTML = `
+                    <tr>
+                      <td colspan="8" style="text-align: center;">Nenhum cuidador cadastrado.</td>
+                    </tr>`;
+                if (mostrarAviso) {
+                    showToast('Nenhum cuidador encontrado.', 'info');
+                }
+                return;
+            }
+
+            cuidadores.forEach((cuidador) => {
+                const avatarPadrao = '/avatar/cuidador.png';
+                const fotoUrl = cuidador.FotoUrl && cuidador.FotoUrl.trim() !== '' ? cuidador.FotoUrl : avatarPadrao;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="foto-cell">
+                      <img src="${fotoUrl}" alt="Foto de ${formatarCampo(cuidador.Nome, 'Cuidador')}" class="foto-cuidador" />
+                    </td>
+                    <td class="nome-cell"><strong>${formatarCampo(cuidador.Nome, 'Cuidador')}</strong></td>
+                    <td class="email-cell">${formatarCampo(cuidador.Email, 'Não informado')}</td>
+                    <td class="telefone-cell">${formatarTelefone(cuidador.Telefone)}</td>
+                    <td class="idade-cell">${calcularIdade(cuidador.DataNascimento)}</td>
+                    <td class="biografia-cell">${formatarCampo(cuidador.Biografia, 'Sem biografia informada')}</td>
+                    <td class="status-cell">
+                      Fumante: ${formatarCampo(cuidador.Fumante, 'Não')} <br>
+                      Filhos: ${formatarCampo(cuidador.TemFilhos, 'Não')} <br>
+                      CNH: ${formatarCampo(cuidador.PossuiCNH, 'Não')} <br>
+                      Carro: ${formatarCampo(cuidador.TemCarro, 'Não')}
+                    </td>
+                    <td class="acoes-cell">
+                      <button class="btn-editar" data-cuidador='${JSON.stringify(cuidador)}'>Editar</button>
+                      <button class="btn-excluir" data-id="${cuidador.IdCuidador}">Excluir</button>
+                    </td>
+                  `;
+                tabelaBody.appendChild(tr);
+            });
+
+            configurarBotoesEditar();
+            configurarBotoesExcluir();
+
+            if (mostrarAviso) {
+                showToast('Lista de cuidadores atualizada.', 'success');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar cuidadores:', error);
+            tabelaBody.innerHTML = `
+              <tr>
+                <td colspan="8" style="text-align: center; color: #e74c3c;">Não foi possível carregar os dados dos cuidadores.</td>
+              </tr>`;
+            if (error?.message) {
+                showDetailedError(error, 'Não foi possível carregar os cuidadores. Tente novamente.');
+            }
+        }
     }
 
     // Preencher formulário para edição
@@ -121,22 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (confirm(mensagemAviso)) {
                     try {
-                        const response = await fetch(`/api/cuidador/${id}`, {
+                        await apiFetch(`/api/cuidador/${id}`, {
                             method: 'DELETE'
+                        }, {
+                            loadingMessage: `Excluindo ${nomeCuidador}...`,
+                            successMessage: `${nomeCuidador} foi excluído permanentemente.`,
+                            suppressDefaultError: true,
+                            parseJson: true
                         });
-                        
-                        const data = await response.json();
-                        
-                        if (!response.ok) {
-                            alert(`❌ Erro ao excluir:\n\n${data.error || data.erro || 'Erro desconhecido. Tente novamente.'}`);
-                            return;
-                        }
-                        
-                        alert(`✅ Sucesso!\n\n${nomeCuidador} foi excluído permanentemente.`);
-                        carregarCuidadores();
+                        carregarCuidadores(true);
                     } catch (error) {
-                        alert('❌ Erro de conexão ao excluir cuidador. Verifique sua conexão e tente novamente.');
                         console.error(error);
+                        showDetailedError(error, 'Erro ao excluir cuidador. Verifique se ele possui vínculos e tente novamente.');
                     }
                 }
             });
@@ -145,16 +177,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Submissão do formulário
     if (form) {
+        const camposFormulario = [
+            { field: form.nome, name: 'Nome completo', rules: { required: true, minLength: 3 } },
+            { field: form.email, name: 'E-mail', rules: { required: true, email: true } },
+            {
+                field: form.telefone,
+                name: 'Telefone',
+                rules: {
+                    required: true,
+                    pattern: /^(\+?\d{1,3})?\s*\(?\d{2}\)?\s*\d{4,5}[- ]?\d{4}$/,
+                    patternMessage: 'Informe o telefone com DDD. Ex.: (11) 98888-7777.'
+                }
+            },
+            {
+                field: form.dataNascimento,
+                name: 'Data de nascimento',
+                rules: { required: true, date: true, future: false }
+            },
+            {
+                field: form.fotoUrl,
+                name: 'Foto/Avatar',
+                rules: {
+                    custom: (valor) => {
+                        if (!valor) return true;
+                        const urlValida = /^(https?:\/\/|\/)/i.test(valor);
+                        return urlValida || 'Informe uma URL válida ou deixe em branco para usar o avatar padrão.';
+                    }
+                }
+            }
+        ];
+
+        attachValidationListeners(camposFormulario);
+
+        const submitButton = form.querySelector('.btn-save');
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const idEditando = form.getAttribute('data-edit-id');
+
+            const validacao = validateFields(camposFormulario);
+            if (!validacao.valid) {
+                const mensagem = ['Corrija os campos destacados antes de continuar:', ...validacao.messages.map((msg) => `• ${msg}`)].join('\n');
+                showToast(mensagem, 'error');
+                return;
+            }
 
             const dados = {
                 Nome: form.nome.value.trim(),
                 Email: form.email.value.trim(),
                 Telefone: form.telefone.value.trim(),
                 DataNascimento: form.dataNascimento.value,
-                FotoUrl: form.fotoUrl.value.trim(),
+                FotoUrl: normalizarUrlOpcional(form.fotoUrl.value),
                 Biografia: form.biografia.value.trim(),
                 Fumante: form.fumante.value,
                 TemFilhos: form.temFilhos.value,
@@ -162,33 +234,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 TemCarro: form.temCarro.value
             };
 
-            try {
-                let response;
-                if (idEditando) {
-                    response = await fetch(`/api/cuidador/${idEditando}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dados)
-                    });
-                } else {
-                    response = await fetch('/api/cuidador', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dados)
-                    });
-                }
+            const url = idEditando ? `/api/cuidador/${idEditando}` : '/api/cuidador';
+            const metodo = idEditando ? 'PUT' : 'POST';
 
-                if (!response.ok) {
-                    throw new Error('Erro ao salvar cuidador');
-                }
+            try {
+                await apiFetch(url, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                }, {
+                    button: submitButton,
+                    loadingButtonText: idEditando ? 'Atualizando...' : 'Salvando...',
+                    successMessage: idEditando ? 'Cuidador atualizado com sucesso.' : 'Cuidador cadastrado com sucesso.',
+                    suppressDefaultError: true,
+                    parseJson: true
+                });
 
                 form.reset();
                 form.removeAttribute('data-edit-id');
                 modalOverlay.classList.remove('active');
-                carregarCuidadores();
+                carregarCuidadores(true);
             } catch (error) {
-                alert('Erro ao salvar cuidador. Tente novamente.');
                 console.error(error);
+                showDetailedError(error, 'Erro ao salvar cuidador. Verifique os dados informados.');
             }
         });
     }

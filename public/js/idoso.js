@@ -18,67 +18,88 @@ document.addEventListener('DOMContentLoaded', () => {
         return idade;
     }
 
-    function carregarIdosos() {
-        fetch('/api/idosos')
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao buscar idosos');
-                return response.json();
-            })
-            .then(result => {
-                // Verificar se a resposta tem o formato { success: true, data: [...] }
-                const idosos = result.success ? result.data : result;
-                const tabelaBody = document.querySelector('.idosos-table tbody');
-                tabelaBody.innerHTML = '';
+    const normalizarUrlOpcional = (valor) => {
+        const texto = typeof valor === 'string' ? valor.trim() : '';
+        return texto ? texto : null;
+    };
 
-                if (!idosos || idosos.length === 0) {
-                    tabelaBody.innerHTML = `
+    async function carregarIdosos(mostrarAviso = false) {
+        const tabelaBody = document.querySelector('.idosos-table tbody');
+        if (!tabelaBody) return;
+
+        tabelaBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center;">Carregando idosos...</td>
+            </tr>`;
+
+        try {
+            const resultado = await apiFetch('/api/idosos', {}, {
+                suppressDefaultError: true,
+                parseJson: true
+            });
+            const idosos = Array.isArray(resultado?.data) ? resultado.data : resultado;
+
+            tabelaBody.innerHTML = '';
+
+            if (!Array.isArray(idosos) || idosos.length === 0) {
+                tabelaBody.innerHTML = `
                 <tr>
                   <td colspan="7" style="text-align: center;">Nenhum idoso cadastrado.</td>
                 </tr>`;
-                    return;
+                if (mostrarAviso) {
+                    showToast('Nenhum idoso encontrado.', 'info');
                 }
+                return;
+            }
 
-                idosos.forEach(item => {
-                    // Usar imagem padrão local baseada no sexo
-                    let avatarPadrao = '/avatar/idoso.png';
-                    if (item.Sexo && item.Sexo.toLowerCase() === 'feminino') {
-                        avatarPadrao = '/avatar/idosa.png';
-                    }
-                    const fotoUrl = item.FotoUrl && item.FotoUrl.trim() !== '' ? item.FotoUrl : avatarPadrao;
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+            idosos.forEach(item => {
+                let avatarPadrao = '/avatar/idoso.png';
+                if (item.Sexo && item.Sexo.toLowerCase() === 'feminino') {
+                    avatarPadrao = '/avatar/idosa.png';
+                }
+                const fotoUrl = item.FotoUrl && item.FotoUrl.trim() !== '' ? item.FotoUrl : avatarPadrao;
+                const responsavelNome = item.NomeResponsavel || 'Não informado';
+                const responsavelContato = item.EmailResponsavel || item.TelefoneResponsavel || '';
+ 
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                 <td class="foto-cell">
                   <img src="${fotoUrl}" alt="Foto de ${item.Nome}" class="foto-idoso" />
                 </td>
                 <td class="nome-cell"><strong>${item.Nome}</strong></td>
                 <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
-                <td class="sexo-cell">${item.Sexo}</td>
+                <td class="sexo-cell">${item.Sexo || 'Não informado'}</td>
                 <td class="condicoes-cell">
                   <strong>Cuidados:</strong> ${item.CuidadosMedicos || 'Nenhum'}<br>
                   <strong>Descrição:</strong> ${item.DescricaoExtra || 'Nenhuma'}
                 </td>
-                <td class="idade-cell">${calcularIdade(item.DataNascimento)} anos</td>
+                <td class="responsavel-cell">
+                  ${responsavelNome}
+                  ${responsavelContato ? `<span class="tabela-subtexto">${responsavelContato}</span>` : ''}
+                </td>
                 <td class="acoes-cell">
                   <button class="btn-ver-responsavel" data-id="${item.IdResponsavel}">Ver Responsável</button>
                   <button class="btn-editar" data-idoso='${JSON.stringify(item)}'>Editar</button>
                   <button class="btn-excluir" data-id="${item.IdIdoso}">Excluir</button>
                 </td>
               `;
-                    tabelaBody.appendChild(tr);
-                });
-
-                configurarBotoesEditar();
-                configurarBotoesExcluir();
-            })
-            .catch(error => {
-                console.error(error);
-                const tabelaBody = document.querySelector('.idosos-table tbody');
-                tabelaBody.innerHTML = `
-              <tr>
-                <td colspan="7" style="text-align: center; color: red;">Erro ao carregar os dados dos idosos.</td>
-              </tr>`;
+                tabelaBody.appendChild(tr);
             });
+
+            configurarBotoesEditar();
+            configurarBotoesExcluir();
+
+            if (mostrarAviso) {
+                showToast('Lista de idosos atualizada.', 'success');
+            }
+        } catch (error) {
+            console.error(error);
+            tabelaBody.innerHTML = `
+              <tr>
+                <td colspan="7" style="text-align: center; color: #e74c3c;">Erro ao carregar os dados dos idosos.</td>
+              </tr>`;
+            showDetailedError(error, 'Não foi possível carregar os idosos. Tente novamente.');
+        }
     }
 
     function popularSelect(selectElement, data, textoCampo, valorCampo) {
@@ -97,41 +118,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Buscar responsáveis
-    fetch('/api/responsaveis')
-        .then(res => res.json())
-        .then(result => {
-            const data = result.success ? result.data : result;
-            popularSelect(selectResponsavel, data, 'Nome', 'IdResponsavel');
-        })
-        .catch(err => {
+    async function carregarSelect(url, selectElement, textoCampo, valorCampo, mensagemErro) {
+        if (!selectElement) return;
+        selectElement.innerHTML = '<option value="">Carregando...</option>';
+        try {
+            const resultado = await apiFetch(url, {}, {
+                suppressDefaultError: true,
+                parseJson: true
+            });
+            const data = Array.isArray(resultado?.data) ? resultado.data : resultado;
+            popularSelect(selectElement, data, textoCampo, valorCampo);
+        } catch (err) {
             console.error(err);
-            selectResponsavel.innerHTML = '<option value="">Erro ao carregar responsáveis</option>';
-        });
+            selectElement.innerHTML = `<option value="">${mensagemErro}</option>`;
+            showDetailedError(err, mensagemErro);
+        }
+    }
 
-    // Buscar mobilidades
-    fetch('/api/mobilidades')
-        .then(res => res.json())
-        .then(result => {
-            const data = result.success ? result.data : result;
-            popularSelect(selectMobilidade, data, 'Descricao', 'IdMobilidade');
-        })
-        .catch(err => {
-            console.error(err);
-            selectMobilidade.innerHTML = '<option value="">Erro ao carregar mobilidades</option>';
-        });
-
-    // Buscar níveis de autonomia
-    fetch('/api/niveis-autonomia')
-        .then(res => res.json())
-        .then(result => {
-            const data = result.success ? result.data : result;
-            popularSelect(selectNivelAutonomia, data, 'Descricao', 'IdNivelAutonomia');
-        })
-        .catch(err => {
-            console.error(err);
-            selectNivelAutonomia.innerHTML = '<option value="">Erro ao carregar níveis</option>';
-        });
+    carregarSelect('/api/responsaveis', selectResponsavel, 'Nome', 'IdResponsavel', 'Erro ao carregar responsáveis');
+    carregarSelect('/api/mobilidades', selectMobilidade, 'Descricao', 'IdMobilidade', 'Erro ao carregar mobilidades');
+    carregarSelect('/api/niveis-autonomia', selectNivelAutonomia, 'Descricao', 'IdNivelAutonomia', 'Erro ao carregar níveis');
 
     // Preencher formulário para edição
     function configurarBotoesEditar() {
@@ -160,8 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             botao.addEventListener('click', async () => {
                 const id = botao.getAttribute('data-id');
                 const nomeIdoso = botao.closest('tr').querySelector('.nome-cell').textContent.trim();
-                
-                // Mensagem de aviso detalhada
+
                 const mensagemAviso = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE ⚠️\n\n` +
                     `Você está prestes a excluir o idoso: ${nomeIdoso}\n\n` +
                     `Esta ação irá excluir PERMANENTEMENTE:\n` +
@@ -173,26 +178,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     `• Doenças e restrições alimentares cadastradas\n\n` +
                     `⚠️ ESTA AÇÃO NÃO PODE SER DESFEITA! ⚠️\n\n` +
                     `Deseja realmente continuar?`;
-                
+
                 if (confirm(mensagemAviso)) {
                     try {
-                        const response = await fetch(`/api/idosos/${id}`, {
+                        await apiFetch(`/api/idosos/${id}`, {
                             method: 'DELETE'
+                        }, {
+                            loadingMessage: `Excluindo ${nomeIdoso}...`,
+                            successMessage: `${nomeIdoso} e todos os registros relacionados foram excluídos.`,
+                            suppressDefaultError: true,
+                            parseJson: true
                         });
-                        
-                        const data = await response.json();
-                        
-                        if (!response.ok) {
-                            // Mostrar mensagem de erro específica do servidor
-                            alert(`❌ Erro ao excluir:\n\n${data.erro || 'Erro desconhecido. Tente novamente.'}`);
-                            return;
-                        }
-                        
-                        alert(`✅ Sucesso!\n\n${nomeIdoso} e todos os registros relacionados foram excluídos permanentemente.`);
-                        carregarIdosos();
+                        carregarIdosos(true);
                     } catch (error) {
-                        alert('❌ Erro de conexão ao excluir idoso. Verifique sua conexão e tente novamente.');
                         console.error(error);
+                        showDetailedError(error, 'Erro ao excluir o idoso. Verifique vínculos existentes e tente novamente.');
                     }
                 }
             });
@@ -200,9 +200,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (form) {
+        const camposFormulario = [
+            { field: form.nome, name: 'Nome completo', rules: { required: true, minLength: 3 } },
+            {
+                field: form.dataNascimento,
+                name: 'Data de nascimento',
+                rules: { required: true, date: true, future: false }
+            },
+            { field: form.sexo, name: 'Sexo', rules: { required: true } },
+            {
+                field: form.idResponsavel,
+                name: 'Responsável vinculado',
+                rules: { required: true }
+            },
+            {
+                field: form.fotoUrl,
+                name: 'Foto/Avatar',
+                rules: {
+                    custom: (valor) => {
+                        if (!valor) return true;
+                        return /^(https?:\/\/|\/)/i.test(valor) || 'Informe uma URL válida ou deixe em branco para usar o avatar padrão.';
+                    }
+                }
+            },
+            {
+                field: form.cuidadosMedicos,
+                name: 'Cuidados médicos',
+                rules: { maxLength: 500 }
+            },
+            {
+                field: form.descricaoExtra,
+                name: 'Descrição adicional',
+                rules: { maxLength: 500 }
+            }
+        ];
+
+        attachValidationListeners(camposFormulario);
+
+        const submitButton = form.querySelector('button[type="submit"]');
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const idEditando = form.getAttribute('data-edit-id');
+
+            const validacao = validateFields(camposFormulario);
+            if (!validacao.valid) {
+                const mensagem = ['Corrija os campos destacados antes de continuar:', ...validacao.messages.map((msg) => `• ${msg}`)].join('\n');
+                showToast(mensagem, 'error');
+                return;
+            }
 
             const dados = {
                 Nome: form.nome.value.trim(),
@@ -210,39 +255,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 Sexo: form.sexo.value,
                 CuidadosMedicos: form.cuidadosMedicos.value.trim(),
                 DescricaoExtra: form.descricaoExtra.value.trim(),
-                FotoUrl: form.fotoUrl.value.trim(),
+                FotoUrl: normalizarUrlOpcional(form.fotoUrl.value),
                 IdResponsavel: form.idResponsavel.value,
                 IdMobilidade: form.idMobilidade.value,
                 IdNivelAutonomia: form.idNivelAutonomia.value
             };
 
-            try {
-                let response;
-                if (idEditando) {
-                    response = await fetch(`/api/idosos/${idEditando}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dados)
-                    });
-                } else {
-                    response = await fetch('/api/idosos', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dados)
-                    });
-                }
+            const url = idEditando ? `/api/idosos/${idEditando}` : '/api/idosos';
+            const metodo = idEditando ? 'PUT' : 'POST';
 
-                if (!response.ok) {
-                    throw new Error('Erro ao salvar idoso');
-                }
+            try {
+                await apiFetch(url, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                }, {
+                    button: submitButton,
+                    loadingButtonText: idEditando ? 'Atualizando...' : 'Salvando...',
+                    successMessage: idEditando ? 'Idoso atualizado com sucesso.' : 'Idoso cadastrado com sucesso.',
+                    suppressDefaultError: true,
+                    parseJson: true
+                });
 
                 form.reset();
                 form.removeAttribute('data-edit-id');
                 modalOverlay.classList.remove('active');
-                carregarIdosos();
+                carregarIdosos(true);
             } catch (error) {
-                alert('Erro ao salvar idoso. Tente novamente.');
                 console.error(error);
+                showDetailedError(error, 'Erro ao salvar idoso. Verifique os dados informados.');
             }
         });
     }
