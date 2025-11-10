@@ -44,7 +44,7 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// 🔥 Arquivos estáticos
+// Arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/view', express.static(path.join(__dirname, 'view')));
 
