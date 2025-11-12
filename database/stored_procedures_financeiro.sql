@@ -75,7 +75,9 @@ BEGIN
 END$$
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `sp_buscar_cuidadores_rentaveis`;
 DELIMITER $$
+
 CREATE DEFINER=`cogitare`@`%` PROCEDURE `sp_buscar_cuidadores_rentaveis`(
     IN p_DataInicio DATE,
     IN p_DataFim DATE
@@ -84,20 +86,44 @@ BEGIN
     SELECT 
         c.IdCuidador,
         c.Nome,
-        COUNT(a.IdAtendimento) as QtdAtendimentos,
-        COALESCE(SUM(a.Valor), 0) as TotalReceitas,
-        COALESCE(AVG(a.Valor), 0) as MediaAtendimento,
-        COALESCE(SUM(com.ValorTotal), 0) as TotalComissoes
+        SUM(CASE 
+            WHEN UPPER(p.StatusPagamento) = 'PAGO'
+                 AND DATE(COALESCE(p.DataPagamento, a.DataFim, a.DataInicio)) BETWEEN p_DataInicio AND p_DataFim
+            THEN 1 ELSE 0 END) AS QtdAtendimentos,
+        SUM(CASE 
+            WHEN UPPER(p.StatusPagamento) = 'PAGO'
+                 AND DATE(COALESCE(p.DataPagamento, a.DataFim, a.DataInicio)) BETWEEN p_DataInicio AND p_DataFim
+            THEN COALESCE(a.Valor, 0) ELSE 0 END) AS TotalReceitas,
+        CASE 
+            WHEN SUM(CASE 
+                WHEN UPPER(p.StatusPagamento) = 'PAGO'
+                     AND DATE(COALESCE(p.DataPagamento, a.DataFim, a.DataInicio)) BETWEEN p_DataInicio AND p_DataFim
+                THEN 1 ELSE 0 END) > 0
+            THEN SUM(CASE 
+                    WHEN UPPER(p.StatusPagamento) = 'PAGO'
+                         AND DATE(COALESCE(p.DataPagamento, a.DataFim, a.DataInicio)) BETWEEN p_DataInicio AND p_DataFim
+                    THEN COALESCE(a.Valor, 0) ELSE 0 END) /
+                 SUM(CASE 
+                    WHEN UPPER(p.StatusPagamento) = 'PAGO'
+                         AND DATE(COALESCE(p.DataPagamento, a.DataFim, a.DataInicio)) BETWEEN p_DataInicio AND p_DataFim
+                    THEN 1 ELSE 0 END)
+            ELSE 0
+        END AS MediaAtendimento,
+        SUM(CASE 
+            WHEN UPPER(p.StatusPagamento) = 'PAGO'
+                 AND DATE(COALESCE(p.DataPagamento, a.DataFim, a.DataInicio)) BETWEEN p_DataInicio AND p_DataFim
+            THEN COALESCE(com.ValorTotal, 0) ELSE 0 END) AS TotalComissoes
     FROM cuidador c
-    LEFT JOIN atendimento a ON c.IdCuidador = a.IdCuidador 
-        AND DATE(a.DataInicio) BETWEEN p_DataInicio AND p_DataFim
-        AND a.Status = 'Concluído'
+    LEFT JOIN atendimento a ON c.IdCuidador = a.IdCuidador
+    LEFT JOIN pagamento p ON a.IdAtendimento = p.IdAtendimento
     LEFT JOIN comissao com ON a.IdAtendimento = com.IdAtendimento
     GROUP BY c.IdCuidador, c.Nome
-    ORDER BY TotalReceitas DESC
+    ORDER BY TotalReceitas DESC, QtdAtendimentos DESC, c.Nome ASC
     LIMIT 10;
 END$$
+
 DELIMITER ;
+
 
 DELIMITER $$
 CREATE DEFINER=`cogitare`@`%` PROCEDURE `sp_buscar_despesas_categoria`(

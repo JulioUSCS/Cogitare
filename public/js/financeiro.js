@@ -153,12 +153,19 @@ function configurarEventos() {
 // Definir datas padrão (mês atual)
 function definirDatasPadrao() {
     const hoje = new Date();
-    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    
-    document.getElementById('dataInicio').value = primeiroDia.toISOString().split('T')[0];
-    document.getElementById('dataFim').value = hoje.toISOString().split('T')[0];
-    
-    filtrosAtivos.dataInicio = primeiroDia.toISOString().split('T')[0];
+    const primeiroDiaAno = new Date(hoje.getFullYear(), 0, 1);
+
+    const dataInicio = document.getElementById('dataInicio');
+    const dataFim = document.getElementById('dataFim');
+
+    if (dataInicio) {
+        dataInicio.value = primeiroDiaAno.toISOString().split('T')[0];
+    }
+    if (dataFim) {
+        dataFim.value = hoje.toISOString().split('T')[0];
+    }
+
+    filtrosAtivos.dataInicio = primeiroDiaAno.toISOString().split('T')[0];
     filtrosAtivos.dataFim = hoje.toISOString().split('T')[0];
 }
 
@@ -630,13 +637,49 @@ function atualizarTabelaCuidadoresRentaveis(dados) {
     }
     
     dados.forEach(cuidador => {
+        const nome = cuidador.Nome || cuidador.NomeCuidador || 'N/A';
+        const qtdAtendimentos = normalizarNumero(
+            cuidador.QtdAtendimentos ??
+            cuidador.TotalAtendimentos ??
+            cuidador.Atendimentos ??
+            cuidador.Total
+        );
+
+        const totalReceitas = normalizarNumero(
+            cuidador.TotalReceitas ??
+            cuidador.TotalReceita ??
+            cuidador.ReceitaTotal ??
+            cuidador.ReceitasTotais ??
+            cuidador.ValorTotal
+        );
+
+        const totalComissoes = normalizarNumero(
+            cuidador.TotalComissoes ??
+            cuidador.TotalComissao ??
+            cuidador.ComissoesTotais ??
+            cuidador.ValorComissoes ??
+            cuidador.ComissaoTotal ??
+            cuidador.Comissao
+        );
+
+        let mediaAtendimento = normalizarNumero(
+            cuidador.MediaAtendimento ??
+            cuidador.MediaPorAtendimento ??
+            cuidador.MediaReceita ??
+            cuidador.Media
+        );
+
+        if (!mediaAtendimento && qtdAtendimentos > 0) {
+            mediaAtendimento = totalReceitas / qtdAtendimentos;
+        }
+
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${cuidador.Nome || 'N/A'}</td>
-            <td>${cuidador.QtdAtendimentos || 0}</td>
-            <td>${formatarMoeda(cuidador.TotalReceitas || 0)}</td>
-            <td>${formatarMoeda(cuidador.MediaAtendimento || 0)}</td>
-            <td>${formatarMoeda(cuidador.TotalComissoes || 0)}</td>
+            <td>${nome}</td>
+            <td>${qtdAtendimentos}</td>
+            <td>${formatarMoeda(totalReceitas)}</td>
+            <td>${formatarMoeda(mediaAtendimento)}</td>
+            <td>${formatarMoeda(totalComissoes)}</td>
         `;
         tbody.appendChild(row);
     });

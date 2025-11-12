@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             configurarBotoesEditar();
             configurarBotoesExcluir();
+            configurarBotoesVerResponsavel();
 
             if (mostrarAviso) {
                 showToast('Lista de idosos atualizada.', 'success');
@@ -195,6 +196,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         showDetailedError(error, 'Erro ao excluir o idoso. Verifique vínculos existentes e tente novamente.');
                     }
                 }
+            });
+        });
+    }
+
+    function configurarBotoesVerResponsavel() {
+        document.querySelectorAll('.btn-ver-responsavel').forEach(botao => {
+            botao.addEventListener('click', () => {
+                const idResponsavel = botao.getAttribute('data-id');
+                if (!idResponsavel) {
+                    showToast('Responsável não informado para este idoso.', 'warning');
+                    return;
+                }
+
+                const url = `/view/responsavel.html?id=${encodeURIComponent(idResponsavel)}`;
+                window.location.href = url;
             });
         });
     }

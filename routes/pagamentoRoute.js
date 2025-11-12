@@ -1,23 +1,23 @@
 import express from 'express';
-import { 
-  getPagamentos, 
-  getPagamentoPorId, 
-  getPagamentosPorResponsavel, 
-  getPagamentosPorStatus 
+import {
+  getPagamentos,
+  getPagamentoPorId,
+  getPagamentosPorResponsavel,
+  getPagamentosPorStatus,
+  criarPagamento,
+  atualizarPagamento,
+  excluirPagamento
 } from '../controllers/pagamentoController.js';
 
 const router = express.Router();
 
-// Rota para buscar todos os pagamentos
 router.get('/pagamentos', getPagamentos);
-
-// Rota para buscar um pagamento específico por ID
 router.get('/pagamentos/:id', getPagamentoPorId);
-
-// Rota para buscar pagamentos por responsável
 router.get('/pagamentos/responsavel/:idResponsavel', getPagamentosPorResponsavel);
-
-// Rota para buscar pagamentos por status
 router.get('/pagamentos/status/:status', getPagamentosPorStatus);
+
+router.post('/pagamentos', criarPagamento);
+router.put('/pagamentos/:id', atualizarPagamento);
+router.delete('/pagamentos/:id', excluirPagamento);
 
 export default router;

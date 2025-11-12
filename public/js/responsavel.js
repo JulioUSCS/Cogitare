@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabelaBody = document.querySelector('.responsaveis-table tbody');
   const modalOverlay = document.getElementById('modalOverlay');
   const form = document.getElementById('formResponsavel');
+  const params = new URLSearchParams(window.location.search);
+  const responsavelIdDirecionado = params.get('id');
 
   const formatarCampo = (valor, fallback = 'Não informado') => {
     if (valor === null || valor === undefined) return fallback;
@@ -66,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fotoUrl = item.FotoUrl && item.FotoUrl.trim() !== '' ? item.FotoUrl : avatarPadrao;
 
         const tr = document.createElement('tr');
+        tr.dataset.idResponsavel = item.IdResponsavel;
         tr.innerHTML = `
           <td class="foto-cell">
             <img src="${fotoUrl}"
@@ -87,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       configurarBotoes();
+      destacarResponsavelSelecionado(responsavelIdDirecionado);
 
       if (mostrarAviso) {
         showToast('Lista de responsáveis atualizada.', 'success');
@@ -148,6 +152,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
     });
+  }
+
+  function destacarResponsavelSelecionado(id) {
+    if (!id || !tabelaBody) return;
+
+    const linhaSelecionada = tabelaBody.querySelector(`tr[data-id-responsavel="${id}"]`);
+
+    if (!linhaSelecionada) {
+      showToast('Responsável não encontrado ou removido.', 'info');
+      return;
+    }
+
+    tabelaBody.querySelectorAll('.linha-destacada').forEach(linha => {
+      linha.classList.remove('linha-destacada');
+    });
+
+    linhaSelecionada.classList.add('linha-destacada');
+    linhaSelecionada.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   if (form) {

@@ -168,11 +168,35 @@ class FinanceiroModel {
         }
     }
 
-    // Buscar cuidadores mais rentáveis usando stored procedure
+    // Buscar cuidadores mais rentáveis via stored procedure
     async buscarCuidadoresMaisRentaveis(dataInicio, dataFim) {
         try {
-            const [rows] = await db.execute('CALL sp_buscar_cuidadores_rentaveis(?, ?)', [dataInicio, dataFim]);
-            return { success: true, data: rows[0] };
+            const [rows] = await db.execute(
+                'CALL sp_buscar_cuidadores_rentaveis(?, ?)',
+                [dataInicio, dataFim]
+            );
+
+            const lista = Array.isArray(rows) && rows[0] ? rows[0] : [];
+
+            const dados = lista.map((row) => {
+                const qtdAtendimentos = Number(row.QtdAtendimentos) || 0;
+                const totalReceitas = Number(row.TotalReceitas) || 0;
+                const totalComissoes = Number(row.TotalComissoes) || 0;
+                const mediaAtendimento = Number(row.MediaAtendimento) || (
+                    qtdAtendimentos > 0 ? totalReceitas / qtdAtendimentos : 0
+                );
+
+                return {
+                    IdCuidador: row.IdCuidador,
+                    Nome: row.Nome,
+                    QtdAtendimentos: qtdAtendimentos,
+                    TotalReceitas: totalReceitas,
+                    MediaAtendimento: mediaAtendimento,
+                    TotalComissoes: totalComissoes
+                };
+            });
+
+            return { success: true, data: dados };
         } catch (error) {
             console.error('Erro ao buscar cuidadores mais rentáveis:', error);
             return { success: false, message: 'Erro ao buscar cuidadores mais rentáveis' };
